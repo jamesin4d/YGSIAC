@@ -29,38 +29,6 @@ def sort_by_type(what):
         enemy.rect = pygame.Rect(what[0], what[1], 32, 32)
         return enemy
 
-
-class TurretBullet(Master):
-    def __init__(self, owner):
-        self.image = pygame.image.load('img/bullet2.png')
-        self.rect = self.image.get_rect()
-        self.owner = owner
-        self.target = owner.target
-        self.vector = None
-        self.speed = 10
-        self.damage = 5
-        self.exact_pos = list(self.rect.topleft)
-
-        Master.__init__(self)
-
-    def getVector(self):
-        targ = self.target
-        own = self.owner
-        x = targ.rect.centerx-own.rect.centerx
-        y = targ.rect.centery-own.rect.centery
-        m = math.hypot(x,y)
-        vec_x = self.speed*(x/m)
-        vec_y = self.speed*(y/m)
-        return (vec_x, vec_y)
-
-    def update(self):
-        self.old_pos = self.exact_pos[:]
-        if not self.vector:
-            self.vector = self.getVector()
-        self.exact_pos[0] += self.vector[0]
-        self.exact_pos[1] += self.vector[1]
-        self.rect.topleft = self.exact_pos
-
 # Turret enemy class
 # enemy_id: 117
 class Turret(Master):

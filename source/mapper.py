@@ -1,8 +1,9 @@
 import json
-from entities import *
+import random
+
 from badguys import *
 from utilities import *
-import random
+
 random.seed()
 
 
@@ -94,8 +95,9 @@ class Mapper(object):
                     id_key = data[index]
                     if id_key != 0:
                         if collider:
+                    # the solids get a 26x26 rect so the player sinks into them a bit
                             tile = Solid()
-                            tile.rect = pygame.Rect(x*32, y*32, 32, 32)
+                            tile.rect = pygame.Rect(x*32, y*32, 26, 26)
                             tile.image = self.all_tiles[id_key]
                             self.collisionList.append(tile)
                         if left:

@@ -77,7 +77,7 @@ class Player(pygame.sprite.Sprite):
         self.image = self.WFD[0]
 # the player maintains a 32,32 rect, the ground tiles get a 32,16 rect so that the
 # player sinks into things a bit
-        self.rect = pygame.Rect(32, 32, 32, 22)
+        self.rect = self.image.get_rect()
         self.xvel = 0
         self.yvel = 0
 #makes an instance of the Bar class from the widgets.py
