@@ -4,6 +4,23 @@
 #3:53 PM
 # f(n) = g(n) + h(n)
 #
+"""
+def update(self,Surf):
+        self.add_barriers()
+        if self.mode == "RUN":
+            if not self.Solver:
+                self.time_start = pg.time.get_ticks()
+                self.Solver = solver.Star(self.start_cell,self.goal_cell,self.piece_type,self.barriers)
+            if self.animate:
+                self.Solver.evaluate()
+            else:
+                while not self.Solver.solution:
+                    self.Solver.evaluate()
+            if self.Solver.solution:
+                self.found_solution()
+        if self.mode != "RUN" or self.animate:
+            self.draw(Surf)
+"""
 
 import pygame as pg
 

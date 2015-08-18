@@ -13,7 +13,8 @@ random.seed()
 class Mapper(object):
     def __init__(self):
          self.map_list = [
-        'maps/StartRoom.json',
+        'maps/start.json',
+        'maps/level.json',
         'maps/RoomTwo.json',
         'maps/RoomThree.json'
     ]

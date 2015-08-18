@@ -87,7 +87,7 @@ class Master(pygame.sprite.Sprite):
     def hitting(self, what):
         damage = self.damage
         what.hp -= damage
-    
+
     def move(self, (x,y)):
         self.speed = (x,y)
 
