@@ -15,9 +15,9 @@ class Mapper(object):
     def __init__(self):
          self.map_list = [
         'maps/start.json',
-        'maps/level.json',
-        'maps/RoomTwo.json',
-        'maps/RoomThree.json'
+        'maps/startsecond.json',
+        'maps/startthird.json',
+        'maps/startteleporter.json'
     ]
     def new_inst(self, x):
         open_map = open(self.map_list[x]).read()
