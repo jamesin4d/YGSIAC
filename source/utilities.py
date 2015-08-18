@@ -1,0 +1,203 @@
+import pygame
+"""
+welcome to the utility kingdom!
+"""
+
+
+
+#---------------------------------------------------------------------
+# Camera object, non-working, though i've used this setup successfully
+# before, so it does work, just not with my mapper module.
+#----------------------------------------------------------------------
+class Camera(object):
+    def __init__(self, camera_func, width, height):
+        self.camera_func = camera_func
+        self.state = pygame.Rect(0, 0, width, height)
+
+    def apply(self, target):
+        return target.rect.move(self.state.topleft)
+
+    def update(self, target):
+        self.state = self.camera_func(self.state, target.rect)
+
+def simple_camera(camera, target_rect):
+    l, t, _, _ = target_rect
+    _, _, w, h = camera
+    return pygame.Rect(-l+400, -t+300, w, h)
+
+
+class SpriteSheet(object):
+#-------------------------------------------------------------------------
+#pulls an image from a sheet, works well
+# directions:
+#   sheet = 'img/spritesheetpicture.png'
+#   s = SpriteSheet(sheet)
+#   s.get_image(x, y, w, h)
+#           x: x location on sheet, y: y location
+#           w: width of subimage, h: height
+#-------------------------------------------------------------------------
+    sprite_sheet = None
+    def __init__(self, file_name):
+        self.sprite_sheet = pygame.image.load(file_name).convert()
+    def get_image(self, x, y, width, height):
+        image = pygame.Surface([width, height]).convert()
+        image.blit(self.sprite_sheet, (0, 0), (x, y, width, height))
+        image.set_colorkey((255,255,255))
+        return image
+
+def timer(length, interval):
+    l = length
+    i = interval
+    done = False
+    while not done:
+        i += 1
+        if i >= l:
+            done = True
+            i = 0
+
+# basic Timer class, counts things
+class Timer:
+    def __init__(self, interval):
+        self.count = 0
+        self.interval = interval
+        #timer, are you sexually active?
+        self.active = True
+
+    def update(self):
+        if not self.active:
+            return None
+        if self.count<self.interval:
+            self.count += 1
+        if self.count >= self.interval:  # finish counting
+            self.count = 0
+            return True
+        return False
+
+    def set_int(self, value):
+        self.interval = value
+
+    def deactivate(self):
+        self.active = False
+
+    def activate(self):
+        self.count = 0
+        self.active = True
+
+#centers one image in another->(surface)
+def center(img_size, surf_size):
+    img_x, img_y = img_size
+    sur_x, sur_y = surf_size
+    cen_x = sur_x/2 - img_x/2
+    cen_y = sur_y/2 - img_y/2
+    return [cen_x, cen_y]
+
+def velocity_towards(from_pos, dest_pos, speed = 100.0):
+    fx, fy = from_pos
+    dx, dy = dest_pos
+    a = dx-fx
+    b = dy-fy
+    vx, vy = a, b
+    a = abs(a)
+    b = abs(b)
+
+    if a < b:
+        tmp = a
+        a = b
+        b = tmp
+
+    if a == 0:
+        return(0,0)
+    mod = speed / a
+    vx *= mod
+    vy *= mod
+    return (vx, vy)
+
+#-----------------------------------------------------------------------------------
+#Generic parent class for GUIs
+# below is my attempts at gui. the parent class Widget works pretty well
+# as does the Line_of_text class, the Bar won't update right
+#TODO fix  bar.update
+#-----------------------------------------------------------------------------------
+class Widget(pygame.Surface):
+    def __init__(self, size):
+        pygame.Surface.__init__(self, size)
+        self.size = size
+        self.screen = pygame.display.get_surface()
+        self.rect = self.get_rect()
+#---positioning methods
+    def set_pos(self, pos):
+        self.rect.topleft = pos
+    def get_pos(self):
+        return self.rect.topleft
+#-------------drawing method
+    def redraw(self):
+        self.screen.blit(self, self.rect)
+        pygame.display.update(self.rect)
+
+#int(max(min(currentHP / float(maxHP) * health_bar_width, health_bar_width), 0))
+# health bar widget
+class Bar(Widget):
+    def __init__(self, size=(100, 14)):
+        Widget.__init__(self, size)
+        self.length = size[0]
+    def update(self, length, max_length):
+        self.fill((100,130,90))
+        self.length = int(max(min(length/ float(max_length)*100, 100), 0))
+        #pygame.draw.line(self, (100,130,100), (0, 2), (self.length*perc,2),10)
+        self.redraw()
+# line of text widget
+class Line_of_text(Widget):
+    def __init__(self, text, bgc, size=16, font="8bit.ttf"):
+        self.font = pygame.font.Font(font, size)
+        image = self.font.render(text, 0, (0,0,0), bgc)
+        Widget.__init__(self, image.get_size())
+        self.blit(image, (0,0))
+
+    def update(self, text, bgc):
+        image = self.font.render(text, 0, (0,0,0), bgc)
+        self.blit(image, (0,0))
+        self.redraw()
+
+class Menu(object):
+    def __init__(self, font, options):
+        self.font = font
+        self.options = options
+        self.option = 0
+        self.height = (len(self.options)+1)*self.font.get_height()
+        self.width = 0
+        for o in self.options:
+            w = (len(o)+1)*self.font.get_width()
+            if w > self.width:
+                self.width = w
+    def draw(self, surface, pos, bg = None, border = None):
+        ypos = pos[1]
+        i = 0
+        if bg:
+            pygame.draw.rect(surface, bg, (pos[0]-4, pos[1]-4,
+                                           self.width+8, self.height+6))
+        if border:
+            pygame.draw.rect(surface, border,(pos[0]-4, pos[1]-4,
+                                              self.width+8, self.height+6), 1)
+        for opt in self.options:
+            if i == self.option:
+                icon = ">"
+            else:
+                icon = " "
+            ren = self.font.render(icon + opt)
+            surface.blit(ren, (pos[0], ypos))
+            ypos += ren.get_height()+3
+            i += 1
+
+    def move_cursor(self, dir):
+        if dir > 0:
+            if self.option < len(self.options)-1:
+                self.option += 1
+        elif dir < 0:
+            if self.option > 0:
+                self.option -= 1
+
+    def get_option(self):
+        return self.option, self.options[self.option]
+
+
+
