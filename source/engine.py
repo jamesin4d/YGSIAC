@@ -83,20 +83,4 @@ class State(object):
     def close_game(self):
         sys.exit(0)
 
-class EnemyState(State):
-    def __init__(self):
-        State.__init__(self)
 
-    def quit(self):
-        self.done = True
-        return self.next, self.paused
-    def mainloop(self):
-        self.main_start()
-        while not self.done:
-            self.check_collisions()
-            self.update_screen()
-            self.tick()
-        return self.next, self.paused
-
-    def close_game(self):
-        print 'haha, nice try'
