@@ -38,7 +38,8 @@
     
    # entityKing.py
     ALL HAIL THE MASTER
-    #game_states.py
+    
+    # game_states.py
     classes:
     Logo():
     *splash screen state
