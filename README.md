@@ -2,18 +2,21 @@
 
 
 This is the game project so far 
-/img -
-    > contains all the images used, and then some, still working on the artwork
-/maps - 
-    > contains the .json files for the test levels made up so far
-/source -
-    > contains the .py source files
+img -
+    - contains all the images used, and then some, still working on the artwork
+maps - 
+    - contains the .json files for the test levels made up so far
+source -
+    
+    
+    
+    - contains the .py source files
     --Modules:
-    __init__.py
+    init.py
     badguys.py
       --functions: 
-        sort_enemy_data - takes location (x,y), id_key, and image data
-        sort_by_type - probably redundant, takes the return from sort_enemy_data and 
+        sortenemydata - takes location (x,y), id_key, and image data
+        sortbytype - probably redundant, takes the return from sortenemydata and 
                         makes an instance of an Enemy()
       --classes:
       TurretBullet()
