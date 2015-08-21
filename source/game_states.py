@@ -215,7 +215,6 @@ class Game(State):
         self.screen.fill((0,0,0))
         #this is how maps get changed
         self.i = 0
-        #TODO put in if statement to prevent index out of range
         self.level = Mapper()
         self.level.new_inst(self.i)
         self.level.re_init()
@@ -266,8 +265,6 @@ class Game(State):
 # events loop, feeds the player.dir values to handle player
 # animation, also handles the player jump and walk speed
     def check_events(self):
-
-
         p = self.player
         for e in pygame.event.get():
             if e.type == pygame.QUIT:
@@ -331,6 +328,8 @@ class Game(State):
                 if e.hp<0: #if the enemy is out of health:
                     enemy.remove(e) #remove it from the level's list
             e.update()
+
+        player.check_collisions(solids)
         player.update()
         # TODO slow down the rate the player can be hit with a timer
         playerHitEnemy = pygame.sprite.spritecollide(player, enemy, False)
@@ -348,23 +347,7 @@ class Game(State):
                 if s.hp<0:
                     s.die()
                     solids.remove(s)
-#his collision detection works on each vector individually,
-# first the Y axis of the player gets velocity added to it.
-        player.rect.y += player.yvel
-        player_hit_solid = pygame.sprite.spritecollide(player, solids, False)
-        for solid in player_hit_solid: # then check collision
-            if player.yvel > 0:
-                player.rect.bottom = solid.rect.top
-            if player.yvel < 0:
-                player.rect.top = solid.rect.bottom
-        #then test the X axis for collisions
-        player.rect.x += player.xvel
-        player_hit_solid = pygame.sprite.spritecollide(player, solids, False)
-        for solid in player_hit_solid:
-            if player.xvel > 0:
-                player.rect.right = solid.rect.left
-            else:
-                player.rect.left = solid.rect.right
+
 
 # here is the best solution i've found to the 'room change' effect.
 # it works well, and it's only 14 lines

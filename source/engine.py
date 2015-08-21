@@ -87,7 +87,8 @@ class State(object):
 class AI(Engine):
     def __init__(self):
         Engine.__init__(self)
-
+        self.current_state = EntityState()
+        self.states = []
 # entity state object to be used with AI engine
 class EntityState(object):
     def __init__(self):
