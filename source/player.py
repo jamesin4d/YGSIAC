@@ -129,6 +129,22 @@ class Player(pygame.sprite.Sprite):
         self.xvel = x
     def speedY(self, y):
         self.yvel = y
+
+    def check_collisions(self, objects):
+        self.rect.x += self.xvel
+        for o in objects:
+            if pygame.sprite.collide_rect(self, o):
+                if self.xvel < 0:
+                    self.rect.left = o.rect.right
+                if self.xvel > 0:
+                    self.rect.right = o.rect.left
+        self.rect.y += self.yvel
+        for o in objects:
+            if pygame.sprite.collide_rect(self, o):
+                if self.yvel > 0:
+                    self.rect.bottom = o.rect.top
+                if self.yvel < 0:
+                    self.rect.top = o.rect.bottom
 #the update method checks if the player is:
     def update(self):
         # walking left?

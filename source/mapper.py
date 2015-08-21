@@ -55,7 +55,7 @@ class Mapper(object):
                     self.tile_id += 1
         return self.all_tiles
 
-#-populates the layers lists and produces collide sprites
+# -populates the layers lists and produces collide sprites
     def build_it(self):
         # these lists hold all the sprites in the currently rendered room
         self.exitL = []
@@ -66,11 +66,11 @@ class Mapper(object):
         self.foreground = []
 
         for layer in self.layers:
-            collider = False #flag for a collidable sprite
-            left = False #flag for the left side room exit tiles
-            right = False #flag for the right side exit
-            enemy = False #flag for the enemy
-            item = False #flag for item in foreground
+            collider = False # flag for a collidable sprite
+            left = False # flag for the left side room exit tiles
+            right = False # flag for the right side exit
+            enemy = False # flag for the enemy
+            item = False # flag for item in foreground
 
 # every flag produces a different type of sprite and puts that sprite into
 # the above empty lists using the layer data gathered below.
@@ -94,6 +94,7 @@ class Mapper(object):
                 for x in range(0, layer["width"]):
                     id_key = data[index]
                     if id_key != 0:
+                        print id_key
                         if collider:
                     # the solids get a 26x26 rect so the player sinks into them a bit
                             tile = Solid()
