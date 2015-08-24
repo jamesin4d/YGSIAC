@@ -291,6 +291,8 @@ class Game(State):
                     p.move_y(-5)
                 elif e.key == pygame.K_s:
                     p.move_y(5)
+                elif e.key == pygame.K_e:
+                    p.action = True
             elif e.type == pygame.KEYUP:
                 if e.key == pygame.K_a:
                     p.move_x(0)
@@ -300,6 +302,8 @@ class Game(State):
                     p.move_y(0)
                 if e.key == pygame.K_s:
                     p.move_y(0)
+                if e.key == pygame.K_e:
+                    p.action = False
             if p.xvelocity < 0:
                 p.direction = 'left'
             if p.xvelocity > 0:
@@ -323,11 +327,11 @@ class Game(State):
 
         # sets the enemy target to player
         for e in enemy:
-            e.target = player
-            e.activate()
+           # e.target = player
+            #e.activate()
             e_p = pygame.sprite.spritecollide(e, projectiles, True)
             if e_p: # if the enemy is shot
-                e.get_hit(player.damage)
+                e.take_damage(player.damage)
                 print e.health
                 if e.health<0: #if the enemy is out of health:
                     enemy.remove(e) #remove it from the level's list

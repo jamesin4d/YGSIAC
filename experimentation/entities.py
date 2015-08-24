@@ -45,7 +45,7 @@ class Bullet(pygame.sprite.Sprite):
 class Base(pygame.sprite.Sprite):
     direction = None # used for determining which frame is shown
     dead = False     # self
-    canShoot = False # explanitory
+    canShoot = False # explanatory
     health = 0       # variables
     max_health = 0.0 # here
 
@@ -63,8 +63,13 @@ class Base(pygame.sprite.Sprite):
         pygame.sprite.Sprite.__init__(self)
 
     def get_frames(self, spritesheet):
+        self.walking_frames_down = []
+        self.walking_frames_up = []
+        self.walking_frames_right = []
+        self.walking_frames_left = []
         sheet = spritesheet
         s = SpriteSheet(sheet)
+
         # left walking frames
         i = s.get_image(0,32,32,32)
         self.walking_frames_left.append(i)
@@ -72,6 +77,7 @@ class Base(pygame.sprite.Sprite):
         self.walking_frames_left.append(i)
         i = s.get_image(64,32,32,32)
         self.walking_frames_left.append(i)
+
         # right walking frames
         i = s.get_image(0,64,32,32)
         self.walking_frames_right.append(i)
@@ -79,6 +85,7 @@ class Base(pygame.sprite.Sprite):
         self.walking_frames_right.append(i)
         i = s.get_image(64,64,32,32)
         self.walking_frames_right.append(i)
+
         # down walking frames
         i = s.get_image(0,0,32,32)
         self.walking_frames_down.append(i)
@@ -87,6 +94,7 @@ class Base(pygame.sprite.Sprite):
         i = s.get_image(64,0,32,32)
         self.walking_frames_down.append(i)
         # up walking frames
+
         i = s.get_image(0,96,32,32)
         self.walking_frames_up.append(i)
         i = s.get_image(32,96,32,32)
@@ -134,6 +142,8 @@ class Tile(Base):
 
 
 class Solid(Base):
+    health = 1000
+    max_health = 1000.0
     def __init__(self):
         Base.__init__(self)
 
@@ -141,18 +151,6 @@ class Solid(Base):
 class Exit(Base):
     def __init__(self):
         Base.__init__(self)
-
-#----------------------------------------------------------------
-# These two will be subclassed for readability
-# for example:
-# class Dickhead(Enemy): OR class Gun(Item):
-class Enemy(Base):
-    def __init__(self):
-        Base.__init__(self)
-class Item(Base):
-    def __init__(self):
-        Base.__init__(self)
-#----------------------------------------------------------------
 
 
 

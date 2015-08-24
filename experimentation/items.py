@@ -8,6 +8,16 @@
 
 from entities import *
 
+
+class Item(Base):
+    def __init__(self):
+        Base.__init__(self)
+
+class Sign(Item):
+    def __init__(self):
+        Item.__init__(self)
+
+
 class Peashooter(Item):
     damage = random.randint(5,10)
     def __init__(self):

@@ -22,10 +22,11 @@ class Player(Base):
     body = equipment['body']
     weapon = equipment['weapon']
     feet = equipment['feet']
-
+    action = False
     def __init__(self):
         Base.__init__(self)
         self.get_frames('img/hero.png')
+
         self.angle = self.mouse_angle(pygame.mouse.get_pos())
         if self.weapon is not None:
             self.canShoot = True
@@ -41,6 +42,9 @@ class Player(Base):
         self.rect.x += self.xvelocity
         for obj in objects:
             if pygame.sprite.collide_rect(self, obj):
+                if isinstance(obj, Sign):
+                    if self.action:
+                        print "hella"
                 if self.xvelocity < 0:
                     self.rect.left = obj.rect.right
                 if self.xvelocity > 0:
@@ -48,6 +52,9 @@ class Player(Base):
         self.rect.y += self.yvelocity
         for obj in objects:
             if pygame.sprite.collide_rect(self, obj):
+                if isinstance(obj, Sign):
+                    if self.action:
+                        print "hella"
                 if self.yvelocity < 0:
                     self.rect.top = obj.rect.bottom
                 if self.yvelocity > 0:

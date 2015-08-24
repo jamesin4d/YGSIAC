@@ -7,6 +7,7 @@
 # --------------------------------------------------------------------
 import json
 from items import *
+from enemies import *
 
 
 class Sorter(object):
@@ -16,25 +17,41 @@ class Sorter(object):
     @staticmethod
     def gather_data(x, y, idkey, image):
         return x, y, idkey, image
+    # the staticmethod allows the use of this method without a 'self' argument,
     @staticmethod
     def sort_type(what):
         x = what[0]
         y = what[1]
         idkey = what[2]
         image = what[3]
-        print (x,y,idkey,image)
+        if idkey == 89:
+            item = Sign()
+            item.image = image
+            item.rect = item.image.get_rect()
+            item.rect.x = x
+            item.rect.y = y
+            item.idkey = idkey
+            return item
+        if idkey == 28:
+            enemy = Walker()
+            enemy.rect.x = x
+            enemy.rect.y = y
+            enemy.idkey = idkey
+            return enemy
 
 
 # Mapper class *NOW WITH COMMENTS*
 #-------------------------------------------------------------------------
 class Mapper(object):
     def __init__(self):
-         self.map_list = [
+        self.tilewidth = 0
+        self.tileheight = 0
+        self.map_list = [
         'maps/start.json',
         'maps/startsecond.json',
         'maps/startthird.json',
-        'maps/startteleporter.json'
-    ]
+        'maps/startteleporter.json']
+
     def new_inst(self, x):
         open_map = open(self.map_list[x]).read()
         self.mapdict = json.loads(open_map)
@@ -61,6 +78,8 @@ class Mapper(object):
     def tile_sets(self):
         self.all_tiles = {}
         for tileset in self.tilesets:
+            self.tileheight = tileset['tileheight']
+            self.tilewidth = tileset['tilewidth']
             tilesurface = pygame.image.load("maps/" + tileset["image"])
             tilesurface.set_colorkey((255,255,255))
             for y in range(0, tileset["imageheight"], tileset["tileheight"]):
@@ -69,7 +88,7 @@ class Mapper(object):
                     tile = tilesurface.subsurface(rect)
                     self.all_tiles[self.tile_id] = tile
                     self.tile_id += 1
-        return self.all_tiles
+        return self.all_tiles, self.tileheight, self.tilewidth
 
 # -populates the layers lists and produces collide sprites
     def build_it(self):
@@ -81,6 +100,8 @@ class Mapper(object):
         self.collisionList = []
         self.background = []
         self.foreground = []
+        tw = self.tilewidth
+        th = self.tileheight
 
         for layer in self.layers:
             collide = False # flag for a collidable sprite
@@ -115,31 +136,34 @@ class Mapper(object):
                         if collide:
                     # the solids get a 26x26 rect so the player sinks into them a bit
                             tile = Solid()
-                            tile.rect = pygame.Rect(x*32, y*32, 26, 26)
+                            tile.rect = pygame.Rect(x*tw, y*th, 26, 26)
                             tile.image = self.all_tiles[id_key]
                             self.collisionList.append(tile)
                         if left:
                             L = Exit()
-                            L.rect = pygame.Rect(x*32, y*32, 32, 32)
+                            L.rect = pygame.Rect(x*tw, y*th, tw, th)
                             L.image = self.all_tiles[id_key]
                             self.exitL.append(L)
                         if right:
                             R = Exit()
-                            R.rect = pygame.Rect(x*32, y*32, 32, 32)
+                            R.rect = pygame.Rect(x*tw, y*th, tw, th)
                             R.image = self.all_tiles[id_key]
                             self.exitR.append(R)
                         if enemy:
+                            print id_key
                             img = self.all_tiles[id_key]
-                            en = sorter.gather_data(x*32, y*32, id_key, img)
+                            en = sorter.gather_data(x*tw, y*th, id_key, img)
                             enem = sorter.sort_type(en)
+                            #self.collisionList.append(enem)
                             self.enemyList.append(enem)
                         if item:
                             img = self.all_tiles[id_key]
-                            it = sorter.gather_data(x*32, y*32, id_key, img)
+                            it = sorter.gather_data(x*tw, y*th, id_key, img)
                             item = sorter.sort_type(it)
-                            self.foreground.append(item)
+                            self.collisionList.append(item)
+                            #self.foreground.append(item)
                         tile = Tile()
-                        tile.rect = pygame.Rect(x*32, y*32, 32, 32)
+                        tile.rect = pygame.Rect(x*tw, y*th, tw, th)
                         tile.image = self.all_tiles[id_key]
                         self.background.append(tile)
                     index += 1
