@@ -1,5 +1,5 @@
 # YGSIAC-
-=========
+
 
 
 #This is the game project so far 
@@ -36,8 +36,7 @@
     contains the same sort methods as badguys.py
     this is more a module to contain inanimate objects
     
-   # entityKing.py
-    ALL HAIL THE MASTER
+
     
     # game_states.py
     classes:
