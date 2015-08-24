@@ -1,6 +1,13 @@
+# Created by a human
+# when:
+#8/22/2015
+#6:26 AM
+#
+#
+#--------------------------------------------------------------------
 import pygame
 import sys
-from utilities import Line_of_text
+
 class Engine(object):
     #a generic state mach
     def __init__(self):
@@ -27,7 +34,6 @@ class Engine(object):
 
 #generic parent class for a state
 class State(object):
-
     def __init__(self):
         self.done = False
         self.next = None
@@ -81,52 +87,7 @@ class State(object):
 
     def close_game(self):
         sys.exit(0)
-#------------------------------------------------------------
-# subclassing Engine() to use as an AI state machine
-# -----------------------------------------------------------
-class AI(Engine):
-    def __init__(self):
-        Engine.__init__(self)
-        self.current_state = EntityState()
-        self.states = []
-# entity state object to be used with AI engine
-class EntityState(object):
-    def __init__(self):
-        self.done = False
-        self.next = None
-        self.clock = pygame.time.Clock()
-        self.paused = False
-        self.kill_prev = False
 
-    def reinit(self):
-        pass
-    def pause(self):
-        self.paused = True
 
-    def unpause(self):
-        self.paused = False
-        self.done = False
-        self.next = None
 
-    def main_start(self):
-        pass
-    def main_loop(self):
-        self.main_start()
-        while not self.done:
-            self.check_surroundings()
-            self.update()
-            self.tick()
-        return self.next, self.paused
 
-    def check_surroundings(self):
-        pass
-
-    def update(self):
-        pass
-
-    def tick(self):
-        self.clock.tick(30)
-
-    def quit(self):
-        self.done = True
-        return self.next, self.paused
