@@ -168,9 +168,7 @@ class Player(Entity):
         self.onGround = False;
         # do y-axis collisions
         self.collide(0, self.yvel, platforms)
-    def get(self):
 
-        return self.rect.collidedict(self.dict), self.dict
 
     def collide(self, xvel, yvel, platforms):
         for p in platforms:
