@@ -1,31 +1,49 @@
+# Created by a human
+# when:
+#8/22/2015
+#4:55 AM
+#
+#
 import pygame
-"""
-welcome to the utility kingdom!
-"""
 
 
+class Timer(object):
+    def __init__(self, interval):
+        self.count = 0
+        self.interval = interval
+        self.active = True
 
-#---------------------------------------------------------------------
-# Camera object, non-working, though i've used this setup successfully
-# before, so it does work, just not with my mapper module.
-#----------------------------------------------------------------------
-class Camera(object):
-    def __init__(self, camera_func, width, height):
-        self.camera_func = camera_func
-        self.state = pygame.Rect(0, 0, width, height)
+    def update(self):
+        if not self.active:
+            return None
+        if self.count < self.interval:
+            self.count += 1
+        if self.count >= self.interval:
+            self.count = 0
+            return True
+        return False
 
-    def apply(self, target):
-        return target.rect.move(self.state.topleft)
+    def set_interval(self, value):
+        self.interval = value
 
-    def update(self, target):
-        self.state = self.camera_func(self.state, target.rect)
+    def deactivate(self):
+        self.active = False
 
-def simple_camera(camera, target_rect):
-    l, t, _, _ = target_rect
-    _, _, w, h = camera
-    return pygame.Rect(-l+400, -t+300, w, h)
+    def activate(self):
+        self.count = 0
+        self.active = True
 
 
+#centers one image in another->(surface)
+def center(img_size, surf_size):
+    img_x, img_y = img_size
+    sur_x, sur_y = surf_size
+    cen_x = sur_x/2 - img_x/2
+    cen_y = sur_y/2 - img_y/2
+    return [cen_x, cen_y]
+
+
+#--------------------------------------------------------------------
 class SpriteSheet(object):
 #-------------------------------------------------------------------------
 #pulls an image from a sheet, works well
@@ -44,73 +62,6 @@ class SpriteSheet(object):
         image.blit(self.sprite_sheet, (0, 0), (x, y, width, height))
         image.set_colorkey((255,255,255))
         return image
-
-def timer(length, interval):
-    l = length
-    i = interval
-    done = False
-    while not done:
-        i += 1
-        if i >= l:
-            done = True
-            i = 0
-
-# basic Timer class, counts things
-class Timer:
-    def __init__(self, interval):
-        self.count = 0
-        self.interval = interval
-        #timer, are you sexually active?
-        self.active = True
-
-    def update(self):
-        if not self.active:
-            return None
-        if self.count<self.interval:
-            self.count += 1
-        if self.count >= self.interval:  # finish counting
-            self.count = 0
-            return True
-        return False
-
-    def set_int(self, value):
-        self.interval = value
-
-    def deactivate(self):
-        self.active = False
-
-    def activate(self):
-        self.count = 0
-        self.active = True
-
-#centers one image in another->(surface)
-def center(img_size, surf_size):
-    img_x, img_y = img_size
-    sur_x, sur_y = surf_size
-    cen_x = sur_x/2 - img_x/2
-    cen_y = sur_y/2 - img_y/2
-    return [cen_x, cen_y]
-
-def velocity_towards(from_pos, dest_pos, speed = 100.0):
-    fx, fy = from_pos
-    dx, dy = dest_pos
-    a = dx-fx
-    b = dy-fy
-    vx, vy = a, b
-    a = abs(a)
-    b = abs(b)
-
-    if a < b:
-        tmp = a
-        a = b
-        b = tmp
-
-    if a == 0:
-        return(0,0)
-    mod = speed / a
-    vx *= mod
-    vy *= mod
-    return (vx, vy)
 
 #-----------------------------------------------------------------------------------
 #Generic parent class for GUIs
@@ -157,47 +108,3 @@ class Line_of_text(Widget):
         image = self.font.render(text, 0, (0,0,0), bgc)
         self.blit(image, (0,0))
         self.redraw()
-
-class Menu(object):
-    def __init__(self, font, options):
-        self.font = font
-        self.options = options
-        self.option = 0
-        self.height = (len(self.options)+1)*self.font.get_height()
-        self.width = 0
-        for o in self.options:
-            w = (len(o)+1)*self.font.get_width()
-            if w > self.width:
-                self.width = w
-    def draw(self, surface, pos, bg = None, border = None):
-        ypos = pos[1]
-        i = 0
-        if bg:
-            pygame.draw.rect(surface, bg, (pos[0]-4, pos[1]-4,
-                                           self.width+8, self.height+6))
-        if border:
-            pygame.draw.rect(surface, border,(pos[0]-4, pos[1]-4,
-                                              self.width+8, self.height+6), 1)
-        for opt in self.options:
-            if i == self.option:
-                icon = ">"
-            else:
-                icon = " "
-            ren = self.font.render(icon + opt)
-            surface.blit(ren, (pos[0], ypos))
-            ypos += ren.get_height()+3
-            i += 1
-
-    def move_cursor(self, dir):
-        if dir > 0:
-            if self.option < len(self.options)-1:
-                self.option += 1
-        elif dir < 0:
-            if self.option > 0:
-                self.option -= 1
-
-    def get_option(self):
-        return self.option, self.options[self.option]
-
-
-

@@ -1,3 +1,10 @@
+# Created by a human
+# when:
+# 8/22/2015
+# 6:29 AM
+#
+#
+# --------------------------------------------------------------------
 from mapper import *
 from engine import State
 from utilities import *
@@ -6,7 +13,7 @@ from player import Player
 import sys
 pygame.init()
 
-#-----------------Splash screen state---------------------------------------------
+# -----------------Splash screen state---------------------------------------------------------
 class Logo(State):
     def __init__(self):
         State.__init__(self)
@@ -55,13 +62,11 @@ class Logo(State):
 
     def quit(self):
         State.quit(self)
-
-
-# cursor object ---------------------------------------------------------
+# cursor object -------------------------------------------------------------------------------
 # currently hardcoded for only startscreen state positions, but works well
 # extending it to work else where would probably only require putting
 # in more location dictionaries to cycle through for different screens
-#------------------------------------------------------------------------
+# ----------------------------------------------------------------------------------------------
 class Cursor(object):
     def __init__(self):
         self.image = pygame.image.load('img/cursor.png')
@@ -106,8 +111,7 @@ class Cursor(object):
 
     def display(self, screen):
         screen.blit(self.image, self.pos)
-
-# ----------------Start screen state--------------------------------------------
+# ----------------Start screen state-------------------------------------------------------------
 class StartScreen(State):
     def __init__(self):
         State.__init__(self)
@@ -143,7 +147,7 @@ class StartScreen(State):
                 if e.key == pygame.K_ESCAPE:
                     self.next = RealitySimulator()
                     self.quit()
-# --------------------now...close your eyes...--------------------------
+# --------------------now...close your eyes...----------------------------------------------------
 class RealitySimulator(State):
     def __init__(self):
         State.__init__(self)
@@ -206,7 +210,7 @@ class GameOver(State):
                 self.close_game()
             if e.type == pygame.KEYDOWN:
                 self.quit()
-#------------------------ Game state!-------------------------------------------------------
+#------------------------ Game state!--------------------------------------------------------------
 class Game(State):
     def __init__(self):
         #blam, initiate that parent class
@@ -280,30 +284,34 @@ class Game(State):
                     self.close_game()
                     sys.exit()
                 if e.key == pygame.K_a:
-                    p.speedX(-5)
+                    p.move_x(-5)
                 elif e.key == pygame.K_d:
-                    p.speedX(5)
+                    p.move_x(5)
                 elif e.key == pygame.K_w:
-                    p.speedY(-5)
+                    p.move_y(-5)
                 elif e.key == pygame.K_s:
-                    p.speedY(5)
+                    p.move_y(5)
+                elif e.key == pygame.K_e:
+                    p.action = True
             elif e.type == pygame.KEYUP:
                 if e.key == pygame.K_a:
-                    p.speedX(0)
+                    p.move_x(0)
                 if e.key == pygame.K_d:
-                    p.speedX(0)
+                    p.move_x(0)
                 if e.key == pygame.K_w:
-                    p.speedY(0)
+                    p.move_y(0)
                 if e.key == pygame.K_s:
-                    p.speedY(0)
-            if p.xvel < 0:
-                p.dir = 'left'
-            if p.xvel > 0:
-                p.dir = 'right'
-            if p.yvel < 0:
-                p.dir = 'up'
-            if p.yvel > 0:
-                p.dir = 'down'
+                    p.move_y(0)
+                if e.key == pygame.K_e:
+                    p.action = False
+            if p.xvelocity < 0:
+                p.direction = 'left'
+            if p.xvelocity > 0:
+                p.direction = 'right'
+            if p.yvelocity < 0:
+                p.direction = 'up'
+            if p.yvelocity > 0:
+                p.direction = 'down'
 # the collision detection has been cleaned up quite a bit, it's no longer
 # a jumbled ass giant mess, also WHY HAVEN'T I BEEN USING LOCAL VARIABLES?!
     def check_collisions(self):
@@ -320,12 +328,12 @@ class Game(State):
         # sets the enemy target to player
         for e in enemy:
             e.target = player
-            e.activate()
+           # e.path_finding(player, solids)
             e_p = pygame.sprite.spritecollide(e, projectiles, True)
             if e_p: # if the enemy is shot
-                e.get_hit(player.damage)
-                print e.hp
-                if e.hp<0: #if the enemy is out of health:
+                e.take_damage(player.damage)
+                print e.health
+                if e.health<0: #if the enemy is out of health:
                     enemy.remove(e) #remove it from the level's list
             e.update()
 
@@ -334,18 +342,18 @@ class Game(State):
         # TODO slow down the rate the player can be hit with a timer
         playerHitEnemy = pygame.sprite.spritecollide(player, enemy, False)
         if playerHitEnemy:
-            player.get_hit(1)
-            print player.hp
+            player.take_damage(1)
+            print player.health
         # below handles bullet collision with solids
         projectiles.update()
         for s in solids:
             s_p = pygame.sprite.spritecollide(s, projectiles, True)
          # the True here removes the bullet if it hits a wall ^^^^
             if s_p:
-                s.get_hit(player.damage)
-                print s.hp
-                if s.hp<0:
-                    s.die()
+                s.take_damage(player.damage)
+                print s.health
+                if s.health<0:
+                    s.kill()
                     solids.remove(s)
 
 
@@ -376,7 +384,6 @@ class Game(State):
         self.solids.draw(self.screen)
         self.foreground.draw(self.screen)
         self.projectiles.draw(self.screen)
-        self.player.hud_draw()
         pygame.display.update()
 
 
