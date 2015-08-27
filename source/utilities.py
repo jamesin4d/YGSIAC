@@ -6,8 +6,69 @@
 #
 import pygame
 
-def get_image(img):
-    return pygame.image.load(img).convert()
+
+
+try:
+    pygame.mixer.init()
+except:
+    print "could not initialize sound"
+    sound = False
+
+class NoSound:
+    def play(self): pass
+
+# ----------------------------------------------------------------------------------------------------
+# DataGod prototype object for a data caching script to load all graphics and sounds once on start up.
+# ----------------------------------------------------------------------------------------------------
+class DataGod(object):
+    def __init__(self):
+        self.game_images = None
+        self.game_sounds = None
+
+
+    def load_game_images(self):
+        names = [
+            "img/logo.png",
+            "img/startscreen.png",
+            "img/quitscreen.png",
+            "img/security.png",
+            "img/hero.png",
+            "img/bullet2.png",
+            "img/cursor.png",
+            "img/dialog.png",
+            "img/health.png",
+            "maps/set.png",  ]
+        self.game_images = self.load_graphics(names)
+
+        return self.game_images
+    def load_sound(self, sound_file):
+        try:
+            return pygame.mixer.Sound(sound_file)
+        except:
+            print "could not load sound:", sound_file
+        return NoSound()
+
+    def set_music(self, filename):
+        pygame.mixer.music.load(filename)
+
+    def load_graphics(self, names):
+        gfx = {}
+        for n in names:
+            gfx[n] = self.get_image(n)
+        return gfx
+
+    def load_sounds(self, names):
+        sounds = {}
+        for n in names:
+            sounds[n] = self.load_sound(n)
+        return sounds
+
+
+    def get_image(self, image):
+        img =  pygame.image.load(image).convert()
+        img.set_colorkey((255,255,255))
+        return img
+
 def color(r,g,b,a):
     return pygame.Color((r,g,b,a))
 
