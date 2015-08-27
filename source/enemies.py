@@ -12,7 +12,7 @@ from entities import *
 # this dictionary describes the move types available to the NPC
 # using (x, y) coordinates for the grid that makes up the room
 adjacent = {
-    'direct' : [(1,0),(-1,0),(0,1),(0,-1)],
+    'direct' : [(32,0),(-32,0),(0,32),(0,-32)],
     'diagonal': [(1,0),(-1,0),(0,1),(0,-1),(1,1),(1,-1),(-1,1),(-1,-1)],
     'knight' : [(1,-2),(1,2),(-1,-2),(-1,2),(2,1),(2,-1),(-2,1),(-2,-1)] }
 
@@ -64,8 +64,9 @@ class Enemy(Base):
         neighbors = set()
         for (i, j) in self.moves:
             check = (self.current[0]+i, self.current[1]+j)
-            if check not in (self.barriers|self.close_set):
+            if check not in self.barriers or self.close_set:
                 neighbors.add(check)
+                #print neighbors
         return neighbors
 
     def follow_path(self):
@@ -112,8 +113,74 @@ class Enemy(Base):
 
 class Walker(Enemy):
     move_type = 'direct'
+    barriers = None
     def __init__(self):
         self.get_frames('img/security.png')
         Enemy.__init__(self)
         self.health = random.randint(40,60)
         self.max_health = 60.0
+
+
+
+    def check_collisions(self, objects):
+        self.rect.x += self.xvelocity
+        for o in objects:
+            if pygame.sprite.collide_rect(self, o):
+                if isinstance(o, Solid):
+                    if self.xvelocity < 0:
+                        self.rect.left = o.rect.right
+                    if self.xvelocity > 0:
+                        self.rect.right = o.rect.left
+
+        self.rect.y += self.yvelocity
+        for o in objects:
+            if pygame.sprite.collide_rect(self, o):
+                if isinstance(o, Solid):
+                    if self.yvelocity < 0:
+                        self.rect.top = o.rect.bottom
+                    if self.yvelocity > 0:
+                        self.rect.bottom = o.rect.top
+
+    def update(self):
+        tp = self.target.get_position()
+        sp = self.get_position()
+        dx = tp[0] - sp[0]
+        dy = tp[1] - sp[1]
+        self.path_finding(self.target, self.barriers)
+        if self.xvelocity < 0:
+            self.direction = 'left'
+        elif self.xvelocity > 0:
+            self.direction = 'right'
+        if self.yvelocity < 0:
+            self.direction = 'up'
+        elif self.yvelocity > 0:
+            self.direction = 'down'
+
+        if self.direction == 'left':
+            frame = (self.rect.x//20) % len(self.walking_frames_left)
+            self.image = self.walking_frames_left[frame]
+        elif self.direction == 'right':
+            frame = (self.rect.x//20) % len(self.walking_frames_right)
+            self.image = self.walking_frames_right[frame]
+        elif self.direction == 'up':
+            frame = (self.rect.y//20) % len(self.walking_frames_up)
+            self.image = self.walking_frames_up[frame]
+        elif self.direction == 'down':
+            frame = (self.rect.y//20) % len(self.walking_frames_down)
+            self.image = self.walking_frames_down[frame]
+
+        if dx < 0:
+            self.move_x(-2)
+        elif dx > 0:
+            self.move_x(2)
+        if dy < 0:
+            self.move_y(-2)
+        elif dy > 0:
+            self.move_y(2)
+        if dx == 0:
+            self.move_x(0)
+        if dy == 0:
+            self.move_y(0)
+       # print dx, dy
+
+

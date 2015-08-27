@@ -6,6 +6,13 @@
 #
 import pygame
 
+def get_image(img):
+    return pygame.image.load(img).convert()
+def color(r,g,b,a):
+    return pygame.Color((r,g,b,a))
+
+def rect(x,y,w,h):
+    return pygame.Rect(x,y,w,h)
 
 class Timer(object):
     def __init__(self, interval):
@@ -97,6 +104,7 @@ class Bar(Widget):
         #pygame.draw.line(self, (100,130,100), (0, 2), (self.length*perc,2),10)
         self.redraw()
 # line of text widget
+
 class Line_of_text(Widget):
     def __init__(self, text, bgc, size=16, font="8bit.ttf"):
         self.font = pygame.font.Font(font, size)

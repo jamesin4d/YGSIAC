@@ -7,6 +7,7 @@
 #--------------------------------------------------------------------
 from entities import *
 from items import *
+from enemies import *
 
 class Player(Base):
     health = 100
@@ -42,6 +43,9 @@ class Player(Base):
         self.rect.x += self.xvelocity
         for obj in objects:
             if pygame.sprite.collide_rect(self, obj):
+                if isinstance(obj, Walker):
+                    self.take_damage(1)
+                    print self.health
                 if isinstance(obj, Sign):
                     if self.action:
                         print "hella"
@@ -52,6 +56,9 @@ class Player(Base):
         self.rect.y += self.yvelocity
         for obj in objects:
             if pygame.sprite.collide_rect(self, obj):
+                if isinstance(obj, Walker):
+                    self.take_damage(1)
+                    print self.health
                 if isinstance(obj, Sign):
                     if self.action:
                         print "hella"
@@ -61,6 +68,15 @@ class Player(Base):
                     self.rect.bottom = obj.rect.top
 
     def update(self):
+        if self.xvelocity < 0:
+            self.direction = 'left'
+        if self.xvelocity > 0:
+            self.direction = 'right'
+        if self.yvelocity < 0:
+            self.direction = 'up'
+        if self.yvelocity > 0:
+            self.direction = 'down'
+
         if self.direction == 'left':
             frame = (self.rect.x//20) % len(self.walking_frames_left)
             self.image = self.walking_frames_left[frame]
