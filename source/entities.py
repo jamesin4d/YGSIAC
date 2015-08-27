@@ -127,6 +127,7 @@ class Base(pygame.sprite.Sprite):
     def move_x(self, x):
         self.xvelocity = x
 
+
     def move_y(self, y):
         self.yvelocity = y
 

@@ -233,16 +233,12 @@ class Game(State):
     # and puts them into groups for ease of access here
     def reset_groups(self):
         level = self.level
-        self.enemies = None
         self.exitRight = None
         self.exitLeft = None
         self.background = None
         self.solids = None
-        self.foreground = None
+        self.enemies = None
 
-        self.enemies = pygame.sprite.Group()
-        for e in level.enemyList:
-            self.enemies.add(e)
 
         self.exitLeft = pygame.sprite.Group()
         for ex in level.exitL:
@@ -260,9 +256,9 @@ class Game(State):
         for so in level.collisionList:
             self.solids.add(so)
 
-        self.foreground = pygame.sprite.Group()
-        for i in level.foreground:
-            self.foreground.add(i)
+        self.enemies = pygame.sprite.Group()
+        for e in level.enemyList:
+            self.enemies.add(e)
 
         return
 
@@ -304,16 +300,8 @@ class Game(State):
                     p.move_y(0)
                 if e.key == pygame.K_e:
                     p.action = False
-            if p.xvelocity < 0:
-                p.direction = 'left'
-            if p.xvelocity > 0:
-                p.direction = 'right'
-            if p.yvelocity < 0:
-                p.direction = 'up'
-            if p.yvelocity > 0:
-                p.direction = 'down'
+
 # the collision detection has been cleaned up quite a bit, it's no longer
-# a jumbled ass giant mess, also WHY HAVEN'T I BEEN USING LOCAL VARIABLES?!
     def check_collisions(self):
         # set up some local variables
         L = self.level
@@ -322,29 +310,21 @@ class Game(State):
         projectiles = self.projectiles
         EL = L.exitL
         ER = L.exitR
-        items = L.foreground
-        enemy = L.enemyList
-
-        # sets the enemy target to player
-        for e in enemy:
-            e.target = player
-           # e.path_finding(player, solids)
-            e_p = pygame.sprite.spritecollide(e, projectiles, True)
-            if e_p: # if the enemy is shot
-                e.take_damage(player.damage)
-                print e.health
-                if e.health<0: #if the enemy is out of health:
-                    enemy.remove(e) #remove it from the level's list
-            e.update()
+        enemies = L.enemyList
 
         player.check_collisions(solids)
         player.update()
-        # TODO slow down the rate the player can be hit with a timer
-        playerHitEnemy = pygame.sprite.spritecollide(player, enemy, False)
-        if playerHitEnemy:
-            player.take_damage(1)
-            print player.health
-        # below handles bullet collision with solids
+        for e in enemies:
+            e_h = pygame.sprite.spritecollide(e, projectiles, True)
+            if e_h:
+                e.take_damage(player.damage)
+                if e.health < 0:
+                    e.kill()
+                    enemies.remove(e)
+            e.target = player
+            e.barriers = solids
+            e.check_collisions(solids)
+            e.update()
         projectiles.update()
         for s in solids:
             s_p = pygame.sprite.spritecollide(s, projectiles, True)
@@ -355,6 +335,10 @@ class Game(State):
                 if s.health<0:
                     s.kill()
                     solids.remove(s)
+
+        e_p = pygame.sprite.spritecollide(player, enemies, False)
+        if e_p:
+            player.take_damage(1)
 
 
 # here is the best solution i've found to the 'room change' effect.
@@ -373,6 +357,7 @@ class Game(State):
             L.new_inst(self.i)
             L.re_init()
             self.reset_groups()
+
         if player.dead:
             self.next = GameOver()
             self.quit()
@@ -380,9 +365,8 @@ class Game(State):
     def update_screen(self):
         self.background.draw(self.screen)
         self.mainSprite.draw(self.screen)
-        self.enemies.draw(self.screen)
         self.solids.draw(self.screen)
-        self.foreground.draw(self.screen)
+        self.enemies.draw(self.screen)
         self.projectiles.draw(self.screen)
         pygame.display.update()
 

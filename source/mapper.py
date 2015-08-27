@@ -150,18 +150,16 @@ class Mapper(object):
                             R.image = self.all_tiles[id_key]
                             self.exitR.append(R)
                         if enemy:
-                            print id_key
                             img = self.all_tiles[id_key]
                             en = sorter.gather_data(x*tw, y*th, id_key, img)
                             enem = sorter.sort_type(en)
-                            #self.collisionList.append(enem)
+                            self.collisionList.append(enem)
                             self.enemyList.append(enem)
                         if item:
                             img = self.all_tiles[id_key]
                             it = sorter.gather_data(x*tw, y*th, id_key, img)
                             item = sorter.sort_type(it)
                             self.collisionList.append(item)
-                            #self.foreground.append(item)
                         tile = Tile()
                         tile.rect = pygame.Rect(x*tw, y*th, tw, th)
                         tile.image = self.all_tiles[id_key]
