@@ -323,6 +323,7 @@ class Game(State):
                     enemies.remove(e)
             e.target = player
             e.barriers = solids
+
             e.check_collisions(solids)
             e.update()
         projectiles.update()

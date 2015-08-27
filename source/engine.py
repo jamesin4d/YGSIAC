@@ -16,7 +16,6 @@ class Engine(object):
 
     def run(self):
         self.states = [self.current_state]
-
         while self.states:
             self.current_state = self.states.pop()
             if self.current_state.paused:
@@ -25,10 +24,8 @@ class Engine(object):
             next, paused = self.current_state.mainloop()
             if self.current_state.kill_prev and self.states:
                 self.states.pop()
-
             if paused:  #paused states are kept
                 self.states.append(self.current_state)
-
             if next:
                 self.states.append(next)
 
