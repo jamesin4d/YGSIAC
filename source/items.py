@@ -19,6 +19,8 @@ class Sign(Item):
 
 
 class Peashooter(Item):
-    damage = random.randint(5,10)
+    damage = 1
+    clip_size = 6
+    burst = 1
     def __init__(self):
         Item.__init__(self)

@@ -27,9 +27,14 @@ class Bullet(pygame.sprite.Sprite):
         self.speed_mod = 10
         self.speed = (self.speed_mod*math.cos(self.angle),
                       self.speed_mod*math.sin(self.angle))
-        self.done = False
 
-    def update(self):
+    def check_collisions(self, objects):
+        for o in objects:
+            if pygame.sprite.collide_rect(self, o):
+                self.kill()
+
+    def update(self, objects):
+        self.check_collisions(objects)
         self.move[0] += self.speed[0]
         self.move[1] += self.speed[1]
         self.rect.topleft = self.move
@@ -54,6 +59,7 @@ class Base(pygame.sprite.Sprite):
     xvelocity = 0
     yvelocity = 0
     angle = None
+    movement_rate = 0 # every entity should get a movement_rate to determine how fast they're allowed to move
 
     walking_frames_left = [] # lists to hold walking frames
     walking_frames_right = [] # pulled from a spritesheet
@@ -61,6 +67,16 @@ class Base(pygame.sprite.Sprite):
     walking_frames_up = []
     def __init__(self):
         pygame.sprite.Sprite.__init__(self)
+        self.move_dictionary = {
+            'north' : self.up(),
+            'south' : self.down(),
+            'east' : self.left(),
+            'west' : self.right(),
+            'northwest' : self.NW(),
+            'northeast' : self.NE(),
+            'southwest' : self.SW(),
+            'southeast' : self.SE(),
+        }
 
     def get_frames(self, spritesheet):
         self.walking_frames_down = []
@@ -124,15 +140,56 @@ class Base(pygame.sprite.Sprite):
         damage = self.damage
         what.health -= damage
 
+# below are the various movement methods used to manuever entities around
     def move_x(self, x):
         self.xvelocity = x
-
-
     def move_y(self, y):
         self.yvelocity = y
+    def move(self, x,y):
+        return self.move_x(x), self.move_y(y)
+
+    def left(self):
+        return self.move(-self.movement_rate, 0)
+    def right(self):
+        return self.move(self.movement_rate, 0)
+    def up(self):
+        return self.move(0, -self.movement_rate)
+    def down(self):
+        return self.move(0,self.movement_rate)
+    def NW(self):
+        return self.move(-self.movement_rate, -self.movement_rate)
+    def NE(self):
+        return self.move(self.movement_rate, -self.movement_rate)
+    def SW(self):
+        return self.move(-self.movement_rate, self.movement_rate)
+    def SE(self):
+        return self.move(self.movement_rate, self.movement_rate)
+
 
     def check_collisions(self, objects):
         pass
+
+    def animate(self):
+        if self.xvelocity < 0:
+            self.direction = 'left'
+        if self.xvelocity > 0:
+            self.direction = 'right'
+        if self.yvelocity < 0:
+            self.direction = 'up'
+        if self.yvelocity > 0:
+            self.direction = 'down'
+        if self.direction == 'left':
+            frame = (self.rect.x//30) % len(self.walking_frames_left)
+            self.image = self.walking_frames_left[frame]
+        if self.direction == 'right':
+            frame = (self.rect.x//30) % len(self.walking_frames_right)
+            self.image = self.walking_frames_right[frame]
+        if self.direction == 'up':
+            frame = (self.rect.y//30) % len(self.walking_frames_up)
+            self.image = self.walking_frames_up[frame]
+        if self.direction == 'down':
+            frame = (self.rect.y//30) % len(self.walking_frames_down)
+            self.image = self.walking_frames_down[frame]
 
     def update(self):
         pass

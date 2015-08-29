@@ -266,6 +266,7 @@ class Game(State):
 # animation, also handles the player jump and walk speed
     def check_events(self):
         p = self.player
+
         for e in pygame.event.get():
             if e.type == pygame.QUIT:
                 self.close_game()
@@ -273,35 +274,26 @@ class Game(State):
             elif e.type == pygame.MOUSEBUTTONDOWN and e.button == 1:
                 if p.canShoot:
                     self.projectiles.add(Bullet(p.rect.center, p.angle))
+                    p.munitions -= 1
             elif e.type == pygame.MOUSEMOTION:
                 p.mouse_angle(e.pos)
             elif e.type == pygame.KEYDOWN:
                 if e.key == pygame.K_ESCAPE:
                     self.close_game()
                     sys.exit()
+                if e.key == pygame.K_r:
+                    p.reload()
                 if e.key == pygame.K_a:
-                    p.move_x(-5)
-                elif e.key == pygame.K_d:
-                    p.move_x(5)
-                elif e.key == pygame.K_w:
-                    p.move_y(-5)
-                elif e.key == pygame.K_s:
-                    p.move_y(5)
-                elif e.key == pygame.K_e:
-                    p.action = True
-            elif e.type == pygame.KEYUP:
-                if e.key == pygame.K_a:
-                    p.move_x(0)
+                    p.left()
                 if e.key == pygame.K_d:
-                    p.move_x(0)
+                    p.right()
                 if e.key == pygame.K_w:
-                    p.move_y(0)
+                    p.up()
                 if e.key == pygame.K_s:
-                    p.move_y(0)
+                    p.down()
                 if e.key == pygame.K_e:
-                    p.action = False
+                    p.action = True
 
-# the collision detection has been cleaned up quite a bit, it's no longer
     def check_collisions(self):
         # set up some local variables
         L = self.level
@@ -326,9 +318,9 @@ class Game(State):
 
             e.check_collisions(solids)
             e.update()
-        projectiles.update()
+        projectiles.update(solids)
         for s in solids:
-            s_p = pygame.sprite.spritecollide(s, projectiles, True)
+            s_p = pygame.sprite.spritecollide(s, projectiles, False)
          # the True here removes the bullet if it hits a wall ^^^^
             if s_p:
                 s.take_damage(player.damage)
@@ -340,7 +332,6 @@ class Game(State):
         e_p = pygame.sprite.spritecollide(player, enemies, False)
         if e_p:
             player.take_damage(1)
-
 
 # here is the best solution i've found to the 'room change' effect.
 # it works well, and it's only 14 lines
