@@ -6,6 +6,43 @@
 #
 import pygame
 
+class Event_coordinator(object):
+    pg = pygame
+    L = False
+    R = False
+    U = False
+    D = False
+    close = False
+
+
+    def __init__(self, pl):
+        self.player = pl
+
+    def check(self):
+        p = self.player
+        pg = self.pg
+        k_d = pg.KEYDOWN
+        k_u = pg.KEYUP
+        up = pg.K_w and pg.K_UP
+        down = pg.K_s and pg.K_DOWN
+        left = pg.K_a and pg.K_LEFT
+        right = pg.K_d and pg.K_RIGHT
+        left_click = pygame.MOUSEBUTTONDOWN
+        q = pg.QUIT
+
+        for e in pg.event.get():
+            if e.type == q:
+                self.close = True
+            if e.type == k_d and e.key == up:
+                p.up()
+            if e.type == k_d and e.key == left:
+                p.left()
+            if e.type == k_d and e.key == right:
+                p.right()
+            if e.type == k_d and e.key == down:
+                p.down()
+
+
 
 
 try:
@@ -25,7 +62,6 @@ class DataGod(object):
         self.game_images = None
         self.game_sounds = None
 
-
     def load_game_images(self):
         names = [
             "img/logo.png",
@@ -39,17 +75,33 @@ class DataGod(object):
             "img/health.png",
             "maps/set.png",  ]
         self.game_images = self.load_graphics(names)
-
         return self.game_images
-    def load_sound(self, sound_file):
+
+    @staticmethod
+    def color(r,g,b,a):
+        return pygame.Color((r,g,b,a))
+
+    @staticmethod
+    def rect(x,y,w,h):
+        return pygame.Rect(x,y,w,h)
+
+    @staticmethod
+    def load_sound(sound_file):
         try:
             return pygame.mixer.Sound(sound_file)
         except:
             print "could not load sound:", sound_file
         return NoSound()
 
-    def set_music(self, filename):
+    @staticmethod
+    def set_music(filename):
         pygame.mixer.music.load(filename)
+
+    @staticmethod
+    def get_image(image):
+        img =  pygame.image.load(image).convert()
+        img.set_colorkey((255,255,255))
+        return img
 
     def load_graphics(self, names):
         gfx = {}
@@ -62,18 +114,6 @@ class DataGod(object):
         for n in names:
             sounds[n] = self.load_sound(n)
         return sounds
-
-
-    def get_image(self, image):
-        img =  pygame.image.load(image).convert()
-        img.set_colorkey((255,255,255))
-        return img
-
-def color(r,g,b,a):
-    return pygame.Color((r,g,b,a))
-
-def rect(x,y,w,h):
-    return pygame.Rect(x,y,w,h)
 
 class Timer(object):
     def __init__(self, interval):

@@ -10,34 +10,7 @@ from items import *
 from enemies import *
 
 
-class Sorter(object):
-    def __init__(self):
-        self.type_dict = {}
 
-    @staticmethod
-    def gather_data(x, y, idkey, image):
-        return x, y, idkey, image
-    # the staticmethod allows the use of this method without a 'self' argument,
-    @staticmethod
-    def sort_type(what):
-        x = what[0]
-        y = what[1]
-        idkey = what[2]
-        image = what[3]
-        if idkey == 89:
-            item = Sign()
-            item.image = image
-            item.rect = item.image.get_rect()
-            item.rect.x = x
-            item.rect.y = y
-            item.idkey = idkey
-            return item
-        if idkey == 28:
-            enemy = Walker()
-            enemy.rect.x = x
-            enemy.rect.y = y
-            enemy.idkey = idkey
-            return enemy
 
 
 # Mapper class *NOW WITH COMMENTS*
@@ -92,7 +65,6 @@ class Mapper(object):
 
 # -populates the layers lists and produces collide sprites
     def build_it(self):
-        sorter = Sorter()
         # these lists hold all the sprites in the currently rendered room
         self.exitL = []
         self.exitR = []
@@ -136,7 +108,7 @@ class Mapper(object):
                         if collide:
                     # the solids get a 26x26 rect so the player sinks into them a bit
                             tile = Solid()
-                            tile.rect = pygame.Rect(x*tw, y*th, 26, 26)
+                            tile.rect = pygame.Rect(x*tw, y*th, 25, 25)
                             tile.image = self.all_tiles[id_key]
                             self.collisionList.append(tile)
                         if left:
@@ -151,14 +123,14 @@ class Mapper(object):
                             self.exitR.append(R)
                         if enemy:
                             img = self.all_tiles[id_key]
-                            en = sorter.gather_data(x*tw, y*th, id_key, img)
-                            enem = sorter.sort_type(en)
+                            en = self.gather_data(x*tw, y*th, id_key, img)
+                            enem = self.sort_type(en)
                             self.collisionList.append(enem)
                             self.enemyList.append(enem)
                         if item:
                             img = self.all_tiles[id_key]
-                            it = sorter.gather_data(x*tw, y*th, id_key, img)
-                            item = sorter.sort_type(it)
+                            it = self.gather_data(x*tw, y*th, id_key, img)
+                            item = self.sort_type(it)
                             self.collisionList.append(item)
                         tile = Tile()
                         tile.rect = pygame.Rect(x*tw, y*th, tw, th)
@@ -168,4 +140,27 @@ class Mapper(object):
         return self.exitL, self.exitR, self.collisionList, self.enemyList, self.background, self.foreground
 
 
-
+    @staticmethod
+    def gather_data(x, y, idkey, image):
+        return x, y, idkey, image
+    # the staticmethod allows the use of this method without a 'self' argument,
+    @staticmethod
+    def sort_type(what):
+        x = what[0]
+        y = what[1]
+        idkey = what[2]
+        image = what[3]
+        if idkey == 89:
+            item = Sign()
+            item.image = image
+            item.rect = item.image.get_rect()
+            item.rect.x = x
+            item.rect.y = y
+            item.idkey = idkey
+            return item
+        if idkey == 28:
+            enemy = Security()
+            enemy.rect.x = x
+            enemy.rect.y = y
+            enemy.idkey = idkey
+            return enemy
