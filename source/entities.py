@@ -17,8 +17,43 @@ random.seed()
 class Bullet(pygame.sprite.Sprite):
     def __init__(self, loc, angle):
         pygame.sprite.Sprite.__init__(self)
-        image = pygame.image.load("img/bullet2.png")
-        self.original_image = image
+
+        self.original_image = pygame.image.load("img/badbullet.png")
+        self.angle = -math.radians(angle-136)
+        self.image = pygame.transform.rotate(self.original_image, angle)
+        self.image.set_colorkey((255,255,255))
+        self.rect = self.image.get_rect(center=loc)
+        self.move = [self.rect.x, self.rect.y]
+        self.speed_mod = 10
+        self.speed = (self.speed_mod*math.cos(self.angle),
+                      self.speed_mod*math.sin(self.angle))
+        self.frames = SpriteSheet.strip_sheet('img/b_sheet.png',96,16,16,16)
+    def check_collisions(self, objects):
+        for o in objects:
+            if pygame.sprite.collide_rect(self, o):
+                self.kill()
+    def anim(self):
+        if self.speed[0] != 0:
+            frame = (self.rect.x//40) % len(self.frames)
+            self.image = pygame.transform.rotate(self.frames[frame], self.angle)
+        elif self.speed[1] != 0:
+            frame = (self.rect.y//40) % len(self.frames)
+            self.image = pygame.transform.rotate(self.frames[frame], self.angle)
+
+    def update(self, objects):
+        self.check_collisions(objects)
+        self.move[0] += self.speed[0]
+        self.move[1] += self.speed[1]
+        self.rect.topleft = self.move
+        self.anim()
+    def remove(self, screen_rect):
+        if not self.rect.colliderect(screen_rect):
+            self.kill()
+
+class EnemyBullet(pygame.sprite.Sprite):
+    def __init__(self, loc, angle):
+        pygame.sprite.Sprite.__init__(self)
+        self.original_image = pygame.image.load("img/badbullet.png")
         self.angle = -math.radians(angle-136)
         self.image = pygame.transform.rotate(self.original_image, angle)
         self.image.set_colorkey((255,255,255))
@@ -67,16 +102,14 @@ class Base(pygame.sprite.Sprite):
     walking_frames_up = []
     def __init__(self):
         pygame.sprite.Sprite.__init__(self)
-        self.move_dictionary = {
-            'north' : self.up(),
-            'south' : self.down(),
-            'east' : self.left(),
-            'west' : self.right(),
-            'northwest' : self.NW(),
-            'northeast' : self.NE(),
-            'southwest' : self.SW(),
-            'southeast' : self.SE(),
-        }
+        self.move_list = [
+                    self.up(),
+                    self.down(),
+                    self.left(),
+                    self.NW(),
+                    self.NE(),
+                    self.SW(),
+                    self.SE()]
 
     def get_frames(self, spritesheet):
         self.walking_frames_down = []
@@ -119,12 +152,33 @@ class Base(pygame.sprite.Sprite):
         self.walking_frames_up.append(i)
 
         self.image = self.walking_frames_down[0]
-        self.rect = self.image.get_rect()
+        self.rect = pygame.Rect((0,0,32,20))
 
     def set_position(self, x, y):
         # position setter method
         self.rect.x = x
         self.rect.y = y
+
+    def acquire_location(self):
+        r = self.rect
+        left = r.left
+        right = r.right
+        top = r.top
+        bottom = r.bottom
+        midleft = r.midleft
+        midright = r.midright
+        midtop = r.midtop
+        midbottom = r.midbottom
+        rectangle = (left, right, top, bottom)
+        rectangle_two = (midleft,midright,midtop,midbottom)
+        #print rectangle
+        #print rectangle_two
+        return rectangle
+
+    def aim(self, target):
+        offset = (target.rect.centery - self.rect.centery, target.rect.centerx - self.rect.centerx)
+        self.angle = 135 - math.degrees(math.atan2(*offset))
+        return self.angle
 
     def get_position(self):
         #position get method, returns (x,y)
@@ -179,16 +233,16 @@ class Base(pygame.sprite.Sprite):
         if self.yvelocity > 0:
             self.direction = 'down'
         if self.direction == 'left':
-            frame = (self.rect.x//30) % len(self.walking_frames_left)
+            frame = (self.rect.x//25) % len(self.walking_frames_left)
             self.image = self.walking_frames_left[frame]
         if self.direction == 'right':
-            frame = (self.rect.x//30) % len(self.walking_frames_right)
+            frame = (self.rect.x//25) % len(self.walking_frames_right)
             self.image = self.walking_frames_right[frame]
         if self.direction == 'up':
-            frame = (self.rect.y//30) % len(self.walking_frames_up)
+            frame = (self.rect.y//20) % len(self.walking_frames_up)
             self.image = self.walking_frames_up[frame]
         if self.direction == 'down':
-            frame = (self.rect.y//30) % len(self.walking_frames_down)
+            frame = (self.rect.y//20) % len(self.walking_frames_down)
             self.image = self.walking_frames_down[frame]
 
     def update(self):

@@ -6,44 +6,40 @@
 #
 import pygame
 
-class Event_coordinator(object):
-    pg = pygame
-    L = False
-    R = False
-    U = False
-    D = False
+class Coordinator(object):
+    Left = False
+    Right = False
+    Up = False
+    Down = False
+    Action = False
     close = False
+    def __init__(self, puppet):
+        self.keys = pygame.key.get_pressed()
+        self.event = pygame.event.get()
+        self.puppet = puppet
+        if self.keys[pygame.K_w]:
+            self.Up = True
+        if self.keys[pygame.K_s]:
+            self.Down = True
+        if self.keys[pygame.K_w]:
+            self.Left = True
+        if self.keys[pygame.K_w]:
+            self.Right = True
+        if self.keys[pygame.K_w]:
+            self.Action = True
+        if self.keys[pygame.K_w]:
+            self.close = True
 
-
-    def __init__(self, pl):
-        self.player = pl
-
-    def check(self):
-        p = self.player
-        pg = self.pg
-        k_d = pg.KEYDOWN
-        k_u = pg.KEYUP
-        up = pg.K_w and pg.K_UP
-        down = pg.K_s and pg.K_DOWN
-        left = pg.K_a and pg.K_LEFT
-        right = pg.K_d and pg.K_RIGHT
-        left_click = pygame.MOUSEBUTTONDOWN
-        q = pg.QUIT
-
-        for e in pg.event.get():
-            if e.type == q:
-                self.close = True
-            if e.type == k_d and e.key == up:
-                p.up()
-            if e.type == k_d and e.key == left:
-                p.left()
-            if e.type == k_d and e.key == right:
-                p.right()
-            if e.type == k_d and e.key == down:
-                p.down()
-
-
-
+    def does_as_its_told(self):
+        puppet = self.puppet
+        if self.Up:
+            puppet.up()
+        if self.Down:
+            puppet.down()
+        if self.Left:
+            puppet.left()
+        if self.Right:
+            puppet.right()
 
 try:
     pygame.mixer.init()
@@ -141,7 +137,6 @@ class Timer(object):
         self.count = 0
         self.active = True
 
-
 #centers one image in another->(surface)
 def center(img_size, surf_size):
     img_x, img_y = img_size
@@ -150,26 +145,36 @@ def center(img_size, surf_size):
     cen_y = sur_y/2 - img_y/2
     return [cen_x, cen_y]
 
-
 #--------------------------------------------------------------------
 class SpriteSheet(object):
-#-------------------------------------------------------------------------
-#pulls an image from a sheet, works well
-# directions:
-#   sheet = 'img/spritesheetpicture.png'
-#   s = SpriteSheet(sheet)
-#   s.get_image(x, y, w, h)
-#           x: x location on sheet, y: y location
-#           w: width of subimage, h: height
-#-------------------------------------------------------------------------
+#-
     sprite_sheet = None
     def __init__(self, file_name):
         self.sprite_sheet = pygame.image.load(file_name).convert()
+
     def get_image(self, x, y, width, height):
         image = pygame.Surface([width, height]).convert()
         image.blit(self.sprite_sheet, (0, 0), (x, y, width, height))
         image.set_colorkey((255,255,255))
         return image
+
+    @staticmethod
+    def strip_sheet(f,sx,sy,ix,iy):
+        frames = []
+        sprite_sheet = pygame.image.load(f).convert()
+        sprite_sheet.set_colorkey((255,255,255))
+        sheet_width = sx
+        sheet_height = sy
+        img_width = ix
+        img_height = iy
+        for y in range(0, sheet_height, img_height):
+            for x in range(0, sheet_width, img_width):
+                r = pygame.Rect(x,y,img_width, img_height)
+                t = sprite_sheet.subsurface(r)
+                frames.append(t)
+        return frames
+
+
 
 #-----------------------------------------------------------------------------------
 #Generic parent class for GUIs

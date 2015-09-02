@@ -15,7 +15,6 @@ from utilities import Timer
 # for the child class to inherit from, deciding what to do based on state
 # ------------------------------------------------------------------------
 class Enemy(Base):
-
     def __init__(self):
         Base.__init__(self)
         self.target = None
@@ -24,23 +23,28 @@ class Enemy(Base):
         self.dy = ()
         self.target_in_range = False
 
-    def distance_to_target(self):
+    def target_distance(self):
         target_position = self.target.get_position()
         position = self.get_position()
         tp = target_position
         sp = position
-        # dx = target.x - self.x
         dx = tp[0] - sp[0]
-        # dy = target.y - self.y
         dy = tp[1] - sp[1]
+        diff = (dx, dy)
         self.dx = dx
         self.dy = dy
-        if dx > 150 or dx < -150:
-            self.target_in_range = False
-        if dy > 150 or dy < -150:
-            self.target_in_range = False
-        else:
+        range_x = False
+        range_y = False
+        if 150 > diff[0] > -150:
+            range_x = True
+        if 150 > diff[1] > -150:
+            range_y = True
+
+        if range_x and range_y:
             self.target_in_range = True
+        else: self.target_in_range = False
+        return diff
+
 
     def check_collisions(self, objects):
         self.rect.x += self.xvelocity
@@ -61,61 +65,43 @@ class Enemy(Base):
                         self.rect.bottom = o.rect.top
 
     def pursue_target(self):
-# oooh. thats good. I love when you figure something out
-# and it just looks so simple and elegant
-# the if - or - statement here is the key!!
-# if only you knew how long I struggled to figure out
-# just the right way to word this script to fix the
-# issue I was having! but it seems to follow the target well.
-# call this method when player is in radius
-# or after the enemy has been provoked. or really any time
-# I don't give a shit, it checks if EITHER vector is not equal to 0
-# so if dx = 0 and dy isnt, only the dy instructions pass, and vice-versa
-# so the enemy no longer walks like an asshole. note it checks the x-axis first
-# you can kind of see how this effects behavior in game.
-        self.distance_to_target()
-        if self.target_in_range:
-            dx = self.dx
-            dy = self.dy
-            if dx != 0 or dy != 0:
-                if dx < -1:
-                    self.move(-2,0)
-                if dx > 1:
-                    self.move(2,0)
-                if dy < -1:
-                    self.move(0,-2)
-                if dy > 1:
-                    self.move(0,2)
+        dx = self.dx
+        dy = self.dy
+        if dx != 0 or dy != 0:
+            if dx < -1:
+                self.move(-2,0)
+            if dx > 1:
+                self.move(2,0)
+            if dy < -1:
+                self.move(0,-2)
+            if dy > 1:
+                self.move(0,2)
 
 
     def flee_target(self):
-        self.distance_to_target()
-        if self.target_in_range:
-            dx = self.dx
-            dy = self.dy
-            if dx != 0 or dy != 0:
-                if dx < -1:
-                    self.move(2,0)
-                if dx > 1:
-                    self.move(-2,0)
-                if dy < -1:
-                    self.move(0,2)
-                if dy > 1:
-                    self.move(0,-2)
+        dx = self.dx
+        dy = self.dy
+        if dx != 0 or dy != 0:
+            if dx < -1:
+                self.move(2,0)
+            if dx > 1:
+                self.move(-2,0)
+            if dy < -1:
+                self.move(0,2)
+            if dy > 1:
+                self.move(0,-2)
 
     def flee_directly(self):
-        self.distance_to_target()
-        if self.target_in_range:
-            if self.dx != 0:
-                if self.dx < -10:
-                    self.move_x(2)
-                elif self.dx > 10:
-                    self.move_x(-2)
-            if self.dy != 0:
-                if self.dy < -10:
-                    self.move_y(2)
-                elif self.dy > 10:
-                    self.move_y(-2)
+        if self.dx != 0:
+            if self.dx < -10:
+                self.move_x(2)
+            elif self.dx > 10:
+                self.move_x(-2)
+        if self.dy != 0:
+            if self.dy < -10:
+                self.move_y(2)
+            elif self.dy > 10:
+                self.move_y(-2)
 
 class Security(Enemy):
     def __init__(self):
@@ -123,13 +109,28 @@ class Security(Enemy):
         Enemy.__init__(self)
         self.health = random.randint(5,10)
         self.max_health = 12.0
+        self.bullets = []
+        self.shot_timer = random.randint(10,20)
+        self.movement_rate = 2
 
     def update(self):
-        if self.health > 5:
-            self.pursue_target()
-        else:
-            random.choice((self.flee_target(),self.flee_directly()))
         self.animate()
+        self.target_distance()
+        self.aim(self.target)
+
+        if self.target_in_range:
+            self.shot_timer -= 1
+            if self.shot_timer < 0:
+                self.shot_timer = random.randint(10,20)
+                self.bullets.append(EnemyBullet(self.rect.center, self.angle))
+            if self.health > 5:
+                self.pursue_target()
+            else:
+                random.choice((self.flee_target(),self.flee_directly()))
+
+        else:
+            m = random.choice(self.move_list)
+            print self.movement_rate
 
 class Blob(Enemy):
     def __init__(self):

@@ -7,7 +7,9 @@
 # --------------------------------------------------------------------
 from mapper import *
 from engine import State
-from utilities import *
+
+
+
 from player import Player
 # GAME STATES *NOW WITH COMMENTS!!*
 import sys
@@ -222,14 +224,20 @@ class Game(State):
         self.level = Mapper()
         self.level.new_inst(self.i)
         self.level.re_init()
-        self.player = Player()
-        self.player.set_position(40, 300)
+        self.player = Player(40,300)
+        self.player.move(0,0)
         self.mainSprite = pygame.sprite.Group()
-        self.mainSprite.add(self.player)
         self.projectiles = pygame.sprite.Group()
+        self.exitLeft = pygame.sprite.Group()
+        self.exitRight = pygame.sprite.Group()
+        self.enemies = pygame.sprite.Group()
+        self.solids = pygame.sprite.Group()
+        self.background = pygame.sprite.Group()
+        self.enemy_projectiles = pygame.sprite.Group()
+        self.mainSprite.add(self.player)
         self.reset_groups()
 
-#this function takes any sprite the Mapper put into a list
+    # this function takes any sprite the Mapper put into a list
     # and puts them into groups for ease of access here
     def reset_groups(self):
         level = self.level
@@ -238,35 +246,32 @@ class Game(State):
         self.background = None
         self.solids = None
         self.enemies = None
+        self.projectiles = None
+        self.enemy_projectiles = None
 
-
+        self.projectiles = pygame.sprite.Group()
+        self.enemy_projectiles = pygame.sprite.Group()
         self.exitLeft = pygame.sprite.Group()
         for ex in level.exitL:
             self.exitLeft.add(ex)
-
         self.exitRight = pygame.sprite.Group()
         for ex in level.exitR:
             self.exitRight.add(ex)
-
         self.background = pygame.sprite.Group()
         for b in level.background:
             self.background.add(b)
-
         self.solids = pygame.sprite.Group()
         for so in level.collisionList:
             self.solids.add(so)
-
         self.enemies = pygame.sprite.Group()
         for e in level.enemyList:
             self.enemies.add(e)
-
         return
 
 # events loop, feeds the player.dir values to handle player
 # animation, also handles the player jump and walk speed
     def check_events(self):
         p = self.player
-
         for e in pygame.event.get():
             if e.type == pygame.QUIT:
                 self.close_game()
@@ -281,19 +286,31 @@ class Game(State):
                 if e.key == pygame.K_ESCAPE:
                     self.close_game()
                     sys.exit()
-                if e.key == pygame.K_r:
-                    p.reload()
                 if e.key == pygame.K_a:
-                    p.left()
-                if e.key == pygame.K_d:
-                    p.right()
-                if e.key == pygame.K_w:
-                    p.up()
-                if e.key == pygame.K_s:
-                    p.down()
-                if e.key == pygame.K_e:
+                    p.move(-5,0)
+                elif e.key == pygame.K_d:
+                    p.move(5,0)
+                elif e.key == pygame.K_w:
+                    p.move(0,-5)
+                elif e.key == pygame.K_s:
+                    p.move(0,5)
+                elif e.key == pygame.K_e:
                     p.action = True
+            elif e.type == pygame.KEYUP:
+                if e.key == pygame.K_a and p.xvelocity < 0:
+                    p.move_x(0)
+                elif e.key == pygame.K_d and p.xvelocity > 0:
+                    p.move_x(0)
+                elif e.key == pygame.K_w and p.yvelocity < 0:
+                    p.move_y(0)
+                elif e.key == pygame.K_s and p.yvelocity > 0:
+                    p.move_y(0)
+                elif e.key == pygame.K_e:
+                    p.action = False
+                elif e.key == pygame.K_r:
+                    p.reload()
 
+# the collision detection has been cleaned up quite a bit, it's no longer
     def check_collisions(self):
         # set up some local variables
         L = self.level
@@ -307,31 +324,26 @@ class Game(State):
         player.check_collisions(solids)
         player.update()
         for e in enemies:
+            e.target = player
             e_h = pygame.sprite.spritecollide(e, projectiles, True)
             if e_h:
                 e.take_damage(player.damage)
                 if e.health < 0:
                     e.kill()
                     enemies.remove(e)
-            e.target = player
             e.barriers = solids
-
             e.check_collisions(solids)
             e.update()
+            bullets = e.bullets
+            for b in bullets:
+                self.enemy_projectiles.add(b)
         projectiles.update(solids)
-        for s in solids:
-            s_p = pygame.sprite.spritecollide(s, projectiles, False)
-         # the True here removes the bullet if it hits a wall ^^^^
-            if s_p:
-                s.take_damage(player.damage)
-                print s.health
-                if s.health<0:
-                    s.kill()
-                    solids.remove(s)
+        self.enemy_projectiles.update(solids)
 
         e_p = pygame.sprite.spritecollide(player, enemies, False)
         if e_p:
             player.take_damage(1)
+
 
 # here is the best solution i've found to the 'room change' effect.
 # it works well, and it's only 14 lines
@@ -360,6 +372,7 @@ class Game(State):
         self.solids.draw(self.screen)
         self.enemies.draw(self.screen)
         self.projectiles.draw(self.screen)
+        self.enemy_projectiles.draw(self.screen)
         pygame.display.update()
 
 
