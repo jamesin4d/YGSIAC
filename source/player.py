@@ -27,17 +27,18 @@ class Player(Base):
     action = False
     movement_rate = 4
 
-    def __init__(self):
+    def __init__(self, x,y):
         Base.__init__(self)
         self.get_frames('img/hero.png')
         self.angle = self.mouse_angle(pygame.mouse.get_pos())
         if self.weapon is not None:
             self.canShoot = True
             self.damage = self.weapon.damage
+        self.rect = pygame.Rect(x,y, 24,24)
 
 
     def mouse_angle(self, mouse):
-        off = (mouse[1] - self.rect.centery, mouse[0] - self. rect.centerx)
+        off = (mouse[1] - self.rect.centery, mouse[0] - self.rect.centerx)
         self.angle = 135 - math.degrees(math.atan2(*off))
         return self.angle
 
@@ -45,6 +46,9 @@ class Player(Base):
         self.rect.x += self.xvelocity
         for obj in objects:
             if pygame.sprite.collide_rect(self, obj):
+                if isinstance(obj, EnemyBullet):
+                    self.take_damage(2)
+                    print self.health
                 if isinstance(obj, Enemy):
                     self.take_damage(1)
                     print self.health
@@ -58,6 +62,9 @@ class Player(Base):
         self.rect.y += self.yvelocity
         for obj in objects:
             if pygame.sprite.collide_rect(self, obj):
+                if isinstance(obj, EnemyBullet):
+                    self.take_damage(2)
+                    print self.health
                 if isinstance(obj, Enemy):
                     self.take_damage(1)
                     print self.health
@@ -75,7 +82,6 @@ class Player(Base):
         self.canShoot = True
 
     def update(self):
-
         if self.munitions > 0:
             self.canShoot = True
         elif self.munitions <= 0:

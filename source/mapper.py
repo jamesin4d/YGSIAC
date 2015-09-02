@@ -20,6 +20,7 @@ class Mapper(object):
         self.tilewidth = 0
         self.tileheight = 0
         self.map_list = [
+        'maps/temp.json',
         'maps/start.json',
         'maps/startsecond.json',
         'maps/startthird.json',
@@ -108,7 +109,7 @@ class Mapper(object):
                         if collide:
                     # the solids get a 26x26 rect so the player sinks into them a bit
                             tile = Solid()
-                            tile.rect = pygame.Rect(x*tw, y*th, 25, 25)
+                            tile.rect = pygame.Rect(x*tw, y*th, 32, 24)
                             tile.image = self.all_tiles[id_key]
                             self.collisionList.append(tile)
                         if left:
@@ -164,3 +165,10 @@ class Mapper(object):
             enemy.rect.y = y
             enemy.idkey = idkey
             return enemy
+        else:
+            i = Tile()
+            i.image = image
+            i.rect = i.image.get_rect()
+            i.set_position(x,y)
+            i.idkey = idkey
+            return i
