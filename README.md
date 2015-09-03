@@ -1,8 +1,16 @@
 # -YGSIAC-
 You Got Stuck In A Cave
+
 # This is the game project so far 
 
 # DONE:
+ I suppose I should put some information up about how to actually play the demo.
+ currently requires pygame 1.9.1, and python 2.7. 
+ why not python 3? 
+ cause i'm livin' in the stoneage like a caveman, back off!
+ space bar selects title menu options, which are navigated with the arrow keys, options does nothing. then once you've started the game W,A,S,D to walk. shoot and aim with the mouse, reload with R
+
+
    * splash screen, title screen, game state machine working well
    * map loading and parsing is a bit messy, but does what it needs to (may implement something better in future)
    * entities base class set up, with common functionality inherited to all children.
