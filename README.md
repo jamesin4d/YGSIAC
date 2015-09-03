@@ -1,74 +1,15 @@
-# YGSIAC-
+# -YGSIAC-
+You Got Stuck In A Cave
+# This is the game project so far 
 
-
-
-#This is the game project so far 
-#img
-    * contains all the images used, and then some, still working on the artwork
-#maps
-    * contains the .json files for the test levels made up so far
-#source
-    * contains the .py source files
-        *Modules:
-            *init.py
-            *badguys.py
-      *functions: 
-        *sortenemydata: takes location (x,y), id_key, and image data
-        *sortbytype: probably redundant, takes the return from sortenemydata and 
-                        makes an instance of an Enemy()
-      classes:
-      TurretBullet()
-        * non working bullet prototype sprite
-      Turret()
-        * non working turret prototype
-      Walker()
-        * the only functional enemy in the game so far
-      
-    #engine.py
-    --------  
-      *classes:
-      Engine()
-         a finite state machine
-      State()
-         state parent class
-    
-   # entities.py:
-    contains the same sort methods as badguys.py
-    this is more a module to contain inanimate objects
-    
-
-    
-    # game_states.py
-    classes:
-    Logo():
-    *splash screen state
-    StartScreen():
-    *start menu, it's not made clear yet, but press space over
-    *the selection you want, <quit> and <start> both work
-    Game(): 
-    *the main game controller
-    Gameover():
-    * you have been killed to death screen
-    RealitySimulator():
-     *now just close your eyes...
-    
-    #main_game.py
-    * initializes the display/caption
-    * initializes the Engine()
-    
-    #mapper.py:
-    classes:
-      Mapper()
-      (the parser formally known as Parapa)
-      handles the parsing of .json data 
-      creating all game 'objects'
-    
-   # player.py
-    classes:
-    player()
-    
-    #utilities.py
-    this module is mostly used as a "testing grounds" currently
-    though a few of the functions there are used.
-    
+# DONE:
+   * splash screen, title screen, game state machine working well
+   * map loading and parsing is a bit messy, but does what it needs to (may implement something better in future)
+   * entities base class set up, with common functionality inherited to all children.
+   * items base class started, can "interact" with player, it's one of those should work in theory situations, been only slightyly         tested, so it probably needs some adjustment.
+   * enemies base class started, some simple AI is being tested. Currently the enemy detects when player is in range, tracks players
+     position, following and shooting at the player if they are close enough. Enemies will also flee if their health drops below a       certain point. The collision detection is set up, though collision response still needs implemented.   
+   * a few test levels have been made up, though none of the that's set in stone.
+   * a utilities module is made up with various scripts that help out around the house from time to time, good people, real good         people. 
+   * geometrics.py was written to handle all the vector math involved with the " 'line of sight', 'field of view', and 'pathfinding'    type of things. theres also a quadtree implementation taken from rouguebasin, which should help with collision detection.
     
