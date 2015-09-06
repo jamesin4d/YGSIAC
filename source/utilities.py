@@ -158,21 +158,23 @@ class SpriteSheet(object):
         image.set_colorkey((255,255,255))
         return image
 
-    @staticmethod
-    def strip_sheet(f,sx,sy,ix,iy):
-        frames = []
-        sprite_sheet = pygame.image.load(f).convert()
-        sprite_sheet.set_colorkey((255,255,255))
-        sheet_width = sx
-        sheet_height = sy
-        img_width = ix
-        img_height = iy
-        for y in range(0, sheet_height, img_height):
-            for x in range(0, sheet_width, img_width):
-                r = pygame.Rect(x,y,img_width, img_height)
-                t = sprite_sheet.subsurface(r)
-                frames.append(t)
-        return frames
+## this is for animated projectiles. circa sept 1 2015
+#
+#    @staticmethod   what's this?
+#    def strip_sheet(f,sx,sy,ix,iy):
+#        frames = []
+#        sprite_sheet = pygame.image.load(f).convert()
+#        sprite_sheet.set_colorkey((255,255,255))
+#        sheet_width = sx
+#        sheet_height = sy
+#        img_width = ix
+#        img_height = iy
+#        for y in range(0, sheet_height, img_height):
+#            for x in range(0, sheet_width, img_width):
+#                r = pygame.Rect(x,y,img_width, img_height)
+#                t = sprite_sheet.subsurface(r)
+#                frames.append(t)
+#        return frames
 
 
 

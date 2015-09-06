@@ -18,7 +18,7 @@ class Bullet(pygame.sprite.Sprite):
     def __init__(self, loc, angle):
         pygame.sprite.Sprite.__init__(self)
 
-        self.original_image = pygame.image.load("img/badbullet.png")
+        self.original_image = pygame.image.load("img/bullet2.png")
         self.angle = -math.radians(angle-136)
         self.image = pygame.transform.rotate(self.original_image, angle)
         self.image.set_colorkey((255,255,255))
@@ -27,14 +27,16 @@ class Bullet(pygame.sprite.Sprite):
         self.speed_mod = 10
         self.speed = (self.speed_mod*math.cos(self.angle),
                       self.speed_mod*math.sin(self.angle))
-        self.frames = SpriteSheet.strip_sheet('img/b_sheet.png',96,16,16,16)
+        # this code is for animated projectiles.
+        #self.frames = SpriteSheet.strip_sheet('img/b_sheet.png',96,16,16,16)
     def check_collisions(self, objects):
         for o in objects:
             if pygame.sprite.collide_rect(self, o):
                 self.kill()
     def anim(self):
         if self.speed[0] != 0:
-            frame = (self.rect.x//40) % len(self.frames)
+# this line for animated projectiles.
+#            frame = (self.rect.x//40) % len(self.frames)
             self.image = pygame.transform.rotate(self.frames[frame], self.angle)
         elif self.speed[1] != 0:
             frame = (self.rect.y//40) % len(self.frames)
@@ -263,7 +265,3 @@ class Solid(Base):
 class Exit(Base):
     def __init__(self):
         Base.__init__(self)
-
-
-
-
