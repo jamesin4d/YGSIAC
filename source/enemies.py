@@ -6,7 +6,6 @@
 #
 #--------------------------------------------------------------------
 from entities import *
-from utilities import Timer
 
 # ---------------------------------------------------------------------------------------------------
 # so the idea here is: subclass the Base class so that we have an
@@ -19,6 +18,7 @@ class Enemy(Base):
         Base.__init__(self)
         self.target = None
         self.barriers = None
+        self.state = None
         self.dx = ()
         self.dy = ()
         self.target_in_range = False
@@ -63,6 +63,13 @@ class Enemy(Base):
                         self.rect.top = o.rect.bottom
                     if self.yvelocity > 0:
                         self.rect.bottom = o.rect.top
+
+    def roam(self):
+        pass
+
+
+
+
 
     def pursue_target(self):
         dx = self.dx
@@ -128,9 +135,6 @@ class Security(Enemy):
             else:
                 random.choice((self.flee_target(),self.flee_directly()))
 
-        else:
-            m = random.choice(self.move_list)
-            print self.movement_rate
 
 class Blob(Enemy):
     def __init__(self):
