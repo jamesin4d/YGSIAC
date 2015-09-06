@@ -133,15 +133,16 @@ class StartScreen(State):
             self.screen.blit(self.image, self.image_pos)
             self.cursor.display(self.screen)
             pygame.display.flip()
-
+# MOTHERFUCKING OR STATEMENTS!??!?
+        # GTFO
     def check_events(self):
         for e in pygame.event.get():
             if e.type == pygame.QUIT:
                 self.close_game()
             if e.type == pygame.KEYDOWN:
-                if e.key == pygame.K_DOWN:
+                if e.key == pygame.K_DOWN or e.key == pygame.K_s:
                     self.cursor.cycle_down()
-                if e.key == pygame.K_UP:
+                if e.key == pygame.K_UP or e.key == pygame.K_w:
                     self.cursor.cycle_up()
                 if e.key == pygame.K_SPACE:
                     self.next = self.cursor.select()

@@ -9,6 +9,7 @@ import math
 import itertools
 from pygame import Rect
 
+# The Bresenham Line-Drawing Algorithm
 def get_line(start, end):
     # Setup initial conditions
     x1, y1 = start
@@ -16,12 +17,10 @@ def get_line(start, end):
     dx = x2 - x1
     dy = y2 - y1
     is_steep = abs(dy) > abs(dx)
-
     # Rotate line
     if is_steep:
         x1, y1 = y1, x1
         x2, y2 = y2, x2
-
     # Swap start and end points if necessary and store swap state
     swapped = False
     if x1 > x2:
@@ -49,6 +48,7 @@ def get_line(start, end):
         points.reverse()
     return points
 
+# vector class to handle some geometric math
 class Vector:
     def __init__(self, x, y):
         self.x, self.y = x, y
@@ -78,10 +78,8 @@ class Vector:
     def __div__(self, scaler):
         return 1.0/scaler*self
 
-
     def angle(self):
         return math.degrees(math.atan2(self.y, self.x))
-
     def rotate(self, ang):
         ang = self.angle()+ang
         mag = self.magnitude()
@@ -99,8 +97,10 @@ class Vector:
     def perpendicular(self):
         return Vector(-self.y, self.x)
 
-class Projection:
 
+
+# a line projection object
+class Projection:
     def __init__(self, min, max):
         self.min, self.max = min, max
 
@@ -109,7 +109,7 @@ class Projection:
             return self.max-other.min
         return 0
 
-
+# a quadtree prototype to better handle collision detection
 class Quad(object):
     __slots__ = ['items', 'cx', 'cy', 'nw', 'sw', 'ne','se']
     def __init__(self, items, depth = 4, bounds = None):
