@@ -9,10 +9,6 @@ import json
 from items import *
 from enemies import *
 
-
-
-
-
 # Mapper class *NOW WITH COMMENTS*
 #-------------------------------------------------------------------------
 class Mapper(object):
@@ -20,7 +16,6 @@ class Mapper(object):
         self.tilewidth = 0
         self.tileheight = 0
         self.map_list = [
-        'maps/temp.json',
         'maps/start.json',
         'maps/startsecond.json',
         'maps/startthird.json',

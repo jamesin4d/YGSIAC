@@ -111,6 +111,7 @@ class DataGod(object):
             sounds[n] = self.load_sound(n)
         return sounds
 
+#---------------------------------------------------------------------
 class Timer(object):
     def __init__(self, interval):
         self.count = 0
@@ -147,7 +148,6 @@ def center(img_size, surf_size):
 
 #--------------------------------------------------------------------
 class SpriteSheet(object):
-#-
     sprite_sheet = None
     def __init__(self, file_name):
         self.sprite_sheet = pygame.image.load(file_name).convert()

@@ -11,13 +11,16 @@ import math
 import random
 random.seed()
 
+class Entity(pygame.sprite.Sprite):
+    def __init__(self):
+        pygame.sprite.Sprite.__init__(self)
+
 #-----------------------------------------------------------------
 # the special bullet class that doesn't inherit from the Base sprite
 #-----------------------------------------------------------------
-class Bullet(pygame.sprite.Sprite):
+class Bullet(Entity):
     def __init__(self, loc, angle):
-        pygame.sprite.Sprite.__init__(self)
-
+        Entity.__init__(self)
         self.original_image = pygame.image.load("img/badbullet.png")
         self.angle = -math.radians(angle-136)
         self.image = pygame.transform.rotate(self.original_image, angle)
@@ -27,14 +30,24 @@ class Bullet(pygame.sprite.Sprite):
         self.speed_mod = 10
         self.speed = (self.speed_mod*math.cos(self.angle),
                       self.speed_mod*math.sin(self.angle))
+        #this line here takes a (
         self.frames = SpriteSheet.strip_sheet('img/b_sheet.png',96,16,16,16)
+
     def check_collisions(self, objects):
         for o in objects:
             if pygame.sprite.collide_rect(self, o):
                 self.kill()
+
+# a brief explainer on the animation method here
     def anim(self):
+        # if the x-axis has speed applied to it
         if self.speed[0] != 0:
+            # frame = the currently displayed frame
+            # which changes as the x-axis moves over 40pixels on the screen
+            # the ' % ' is called a modulus in python, it works by magic.
+            # so what this line does is as the x-axis moves, itterate over the length(self.frames)
             frame = (self.rect.x//40) % len(self.frames)
+            #this is just one of those things that wasn't clearly explained wherever I learned it from, but works so I don't ask any questions.
             self.image = pygame.transform.rotate(self.frames[frame], self.angle)
         elif self.speed[1] != 0:
             frame = (self.rect.y//40) % len(self.frames)
@@ -50,9 +63,9 @@ class Bullet(pygame.sprite.Sprite):
         if not self.rect.colliderect(screen_rect):
             self.kill()
 
-class EnemyBullet(pygame.sprite.Sprite):
+class EnemyBullet(Entity):
     def __init__(self, loc, angle):
-        pygame.sprite.Sprite.__init__(self)
+        Entity.__init__(self)
         self.original_image = pygame.image.load("img/badbullet.png")
         self.angle = -math.radians(angle-136)
         self.image = pygame.transform.rotate(self.original_image, angle)
@@ -82,7 +95,7 @@ class EnemyBullet(pygame.sprite.Sprite):
 # Base sprite parent class, holds attributes to inherit
 # as well as some commonly used methods
 #-------------------------------------------------------------
-class Base(pygame.sprite.Sprite):
+class Base(Entity):
     direction = None # used for determining which frame is shown
     dead = False     # self
     canShoot = False # explanatory
@@ -100,16 +113,9 @@ class Base(pygame.sprite.Sprite):
     walking_frames_right = [] # pulled from a spritesheet
     walking_frames_down = []
     walking_frames_up = []
+
     def __init__(self):
-        pygame.sprite.Sprite.__init__(self)
-        self.move_list = [
-                    self.up(),
-                    self.down(),
-                    self.left(),
-                    self.NW(),
-                    self.NE(),
-                    self.SW(),
-                    self.SE()]
+        Entity.__init__(self)
 
     def get_frames(self, spritesheet):
         self.walking_frames_down = []
@@ -201,24 +207,6 @@ class Base(pygame.sprite.Sprite):
         self.yvelocity = y
     def move(self, x,y):
         return self.move_x(x), self.move_y(y)
-
-    def left(self):
-        return self.move(-self.movement_rate, 0)
-    def right(self):
-        return self.move(self.movement_rate, 0)
-    def up(self):
-        return self.move(0, -self.movement_rate)
-    def down(self):
-        return self.move(0,self.movement_rate)
-    def NW(self):
-        return self.move(-self.movement_rate, -self.movement_rate)
-    def NE(self):
-        return self.move(self.movement_rate, -self.movement_rate)
-    def SW(self):
-        return self.move(-self.movement_rate, self.movement_rate)
-    def SE(self):
-        return self.move(self.movement_rate, self.movement_rate)
-
 
     def check_collisions(self, objects):
         pass
