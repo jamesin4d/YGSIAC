@@ -9,7 +9,7 @@ import pygame
 import sys
 
 class Engine(object):
-    #a generic state mach
+    # a generic state machine
     def __init__(self):
         self.current_state = State()
         self.states = []
@@ -29,7 +29,7 @@ class Engine(object):
             if next:
                 self.states.append(next)
 
-#generic parent class for a state
+# generic parent class for a state
 class State(object):
     def __init__(self):
         self.done = False
@@ -84,7 +84,3 @@ class State(object):
 
     def close_game(self):
         sys.exit(0)
-
-
-
-

@@ -141,7 +141,13 @@ class StartScreen(State):
             if e.type == pygame.KEYDOWN:
                 if e.key == pygame.K_DOWN:
                     self.cursor.cycle_down()
+    # i wish this was an 'or' statement
+    # like if(down-arrow OR s is pressed)
+                if e.key == pygame.K_s:     # press s for down
+                    self.cursor.cycle_down()
                 if e.key == pygame.K_UP:
+                    self.cursor.cycle_up()
+                if e.key == pygame.K_w:     # or w for up!
                     self.cursor.cycle_up()
                 if e.key == pygame.K_SPACE:
                     self.next = self.cursor.select()
@@ -374,7 +380,3 @@ class Game(State):
         self.projectiles.draw(self.screen)
         self.enemy_projectiles.draw(self.screen)
         pygame.display.update()
-
-
-
-
