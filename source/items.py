@@ -7,8 +7,6 @@
 #--------------------------------------------------------------------
 
 from entities import *
-
-
 class Item(Base):
     def __init__(self):
         Base.__init__(self)

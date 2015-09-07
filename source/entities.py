@@ -30,7 +30,9 @@ class Bullet(Entity):
         self.speed_mod = 10
         self.speed = (self.speed_mod*math.cos(self.angle),
                       self.speed_mod*math.sin(self.angle))
-        #this line here takes a (
+
+        # remember when you were like, 'wtf does @staticmethod mean' well see this shit below, it means you don't need to
+        # create an active instance of SpriteSheet() to use that method, it just works like so:
         self.frames = SpriteSheet.strip_sheet('img/b_sheet.png',96,16,16,16)
 
     def check_collisions(self, objects):
@@ -42,12 +44,14 @@ class Bullet(Entity):
     def anim(self):
         # if the x-axis has speed applied to it
         if self.speed[0] != 0:
+            # essentially:
             # frame = the currently displayed frame
-            # which changes as the x-axis moves over 40pixels on the screen
-            # the ' % ' is called a modulus in python, it works by magic.
-            # so what this line does is as the x-axis moves, itterate over the length(self.frames)
-            frame = (self.rect.x//40) % len(self.frames)
+            #  (x // y)- returns (floored) quotient of x and y
+            # the ' % ' is called a modulus in python, it returns the remainder of something.
+            # so what this line does is as the x-axis moves, itterate over the length(self.frames) I think
+            frame = (self.rect.x//40) % len(self.frames) # how this equation actually works is something of a black box for me.
             #this is just one of those things that wasn't clearly explained wherever I learned it from, but works so I don't ask any questions.
+            # https://docs.python.org/2/library/stdtypes.html <-- head there for *some* further help.
             self.image = pygame.transform.rotate(self.frames[frame], self.angle)
         elif self.speed[1] != 0:
             frame = (self.rect.y//40) % len(self.frames)

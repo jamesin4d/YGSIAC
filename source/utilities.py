@@ -2,44 +2,9 @@
 # when:
 #8/22/2015
 #4:55 AM
-#
-#
+# modified:
+# 9/6 7:58 pm
 import pygame
-
-class Coordinator(object):
-    Left = False
-    Right = False
-    Up = False
-    Down = False
-    Action = False
-    close = False
-    def __init__(self, puppet):
-        self.keys = pygame.key.get_pressed()
-        self.event = pygame.event.get()
-        self.puppet = puppet
-        if self.keys[pygame.K_w]:
-            self.Up = True
-        if self.keys[pygame.K_s]:
-            self.Down = True
-        if self.keys[pygame.K_w]:
-            self.Left = True
-        if self.keys[pygame.K_w]:
-            self.Right = True
-        if self.keys[pygame.K_w]:
-            self.Action = True
-        if self.keys[pygame.K_w]:
-            self.close = True
-
-    def does_as_its_told(self):
-        puppet = self.puppet
-        if self.Up:
-            puppet.up()
-        if self.Down:
-            puppet.down()
-        if self.Left:
-            puppet.left()
-        if self.Right:
-            puppet.right()
 
 try:
     pygame.mixer.init()
@@ -50,66 +15,54 @@ except:
 class NoSound:
     def play(self): pass
 
-# ----------------------------------------------------------------------------------------------------
-# DataGod prototype object for a data caching script to load all graphics and sounds once on start up.
-# ----------------------------------------------------------------------------------------------------
-class DataGod(object):
-    def __init__(self):
-        self.game_images = None
-        self.game_sounds = None
+def load_game_images():
+    names = [
+        "img/logo.png",
+        "img/startscreen.png",
+        "img/quitscreen.png",
+        "img/security.png",
+        "img/hero.png",
+        "img/bullet2.png",
+        "img/cursor.png",
+        "img/dialog.png",
+        "img/health.png",
+        "maps/set.png",  ]
+    game_images = load_graphics(names)
+    return game_images
 
-    def load_game_images(self):
-        names = [
-            "img/logo.png",
-            "img/startscreen.png",
-            "img/quitscreen.png",
-            "img/security.png",
-            "img/hero.png",
-            "img/bullet2.png",
-            "img/cursor.png",
-            "img/dialog.png",
-            "img/health.png",
-            "maps/set.png",  ]
-        self.game_images = self.load_graphics(names)
-        return self.game_images
+def color(r,g,b,a):
+    return pygame.Color((r,g,b,a))
 
-    @staticmethod
-    def color(r,g,b,a):
-        return pygame.Color((r,g,b,a))
+def rect(x,y,w,h):
+    return pygame.Rect(x,y,w,h)
 
-    @staticmethod
-    def rect(x,y,w,h):
-        return pygame.Rect(x,y,w,h)
 
-    @staticmethod
-    def load_sound(sound_file):
-        try:
-            return pygame.mixer.Sound(sound_file)
-        except:
-            print "could not load sound:", sound_file
-        return NoSound()
+def load_sound(sound_file):
+    try:
+        return pygame.mixer.Sound(sound_file)
+    except:
+        print "could not load sound:", sound_file
+    return NoSound()
 
-    @staticmethod
-    def set_music(filename):
-        pygame.mixer.music.load(filename)
+def set_music(filename):
+    pygame.mixer.music.load(filename)
 
-    @staticmethod
-    def get_image(image):
-        img =  pygame.image.load(image).convert()
-        img.set_colorkey((255,255,255))
-        return img
+def get_image(image):
+    img =  pygame.image.load(image).convert()
+    img.set_colorkey((255,255,255))
+    return img
 
-    def load_graphics(self, names):
-        gfx = {}
-        for n in names:
-            gfx[n] = self.get_image(n)
-        return gfx
+def load_graphics(names):
+    gfx = {}
+    for n in names:
+        gfx[n] = get_image(n)
+    return gfx
 
-    def load_sounds(self, names):
-        sounds = {}
-        for n in names:
-            sounds[n] = self.load_sound(n)
-        return sounds
+def load_sounds(names):
+    sounds = {}
+    for n in names:
+        sounds[n] = load_sound(n)
+    return sounds
 
 #---------------------------------------------------------------------
 class Timer(object):
@@ -212,7 +165,7 @@ class Bar(Widget):
 # line of text widget
 
 class Line_of_text(Widget):
-    def __init__(self, text, bgc, size=16, font="8bit.ttf"):
+    def __init__(self, text, bgc, size=10, font="8bit.ttf"):
         self.font = pygame.font.Font(font, size)
         image = self.font.render(text, 0, (0,0,0), bgc)
         Widget.__init__(self, image.get_size())

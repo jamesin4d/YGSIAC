@@ -4,6 +4,9 @@
 #10:37 PM
 # this module will house some vector maths, as well as a quadtree
 # for collision detection
+# If I were you, I'd steer clear of this module, as currently none of it is used, and only serves to
+# give me a big ass head ache. doing math is one thing, writing out the rules in a modular fashion to be reused in an abstract way later, elsewhere.
+# fuck.
 #--------------------------------------------------------------------
 import math
 import itertools
@@ -118,12 +121,10 @@ class Quad(object):
         if depth == 0 or not items:
             self.items = items
             return
-
         if bounds:
             bounds = Rect(bounds)
         else:
             bounds = Rect(items[0]).unionall(items[1:])
-
         cx = self.cx = bounds.centerx
         cy = self.cy = bounds.centery
         self.items = []
