@@ -21,7 +21,8 @@ class Entity(pygame.sprite.Sprite):
 class Bullet(Entity):
     def __init__(self, loc, angle):
         Entity.__init__(self)
-        self.original_image = pygame.image.load("img/badbullet.png")
+        self.frames = SpriteSheet.strip_sheet('img/b_sheet.png',96,16,16,16)
+        self.original_image = self.frames[0]
         self.angle = -math.radians(angle-136)
         self.image = pygame.transform.rotate(self.original_image, angle)
         self.image.set_colorkey((255,255,255))
@@ -33,7 +34,6 @@ class Bullet(Entity):
 
         # remember when you were like, 'wtf does @staticmethod mean' well see this shit below, it means you don't need to
         # create an active instance of SpriteSheet() to use that method, it just works like so:
-        self.frames = SpriteSheet.strip_sheet('img/b_sheet.png',96,16,16,16)
 
     def check_collisions(self, objects):
         for o in objects:
