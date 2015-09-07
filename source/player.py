@@ -35,7 +35,7 @@ class Player(Base):
             self.canShoot = True
             self.damage = self.weapon.damage
         self.rect = pygame.Rect(x,y, 24,24)
-
+        self.reload_line = Line_of_text('reload',(255,255,255))
 
     def mouse_angle(self, mouse):
         off = (mouse[1] - self.rect.centery, mouse[0] - self.rect.centerx)
@@ -48,10 +48,8 @@ class Player(Base):
             if pygame.sprite.collide_rect(self, obj):
                 if isinstance(obj, EnemyBullet):
                     self.take_damage(2)
-                    print self.health
                 if isinstance(obj, Enemy):
                     self.take_damage(1)
-                    print self.health
                 if isinstance(obj, Sign):
                     if self.action:
                         pass
@@ -64,10 +62,8 @@ class Player(Base):
             if pygame.sprite.collide_rect(self, obj):
                 if isinstance(obj, EnemyBullet):
                     self.take_damage(2)
-                    print self.health
                 if isinstance(obj, Enemy):
                     self.take_damage(1)
-                    print self.health
                 if isinstance(obj, Sign):
                     if self.action:
                         pass
@@ -76,15 +72,19 @@ class Player(Base):
                 if self.yvelocity > 0:
                     self.rect.bottom = obj.rect.top
 
+    def check_ammo(self):
+        if self.munitions > 0:
+            self.canShoot = True
+        elif self.munitions <= 0:
+            self.canShoot = False
+            self.reload_line.set_pos(self.rect.midright)
+            self.reload_line.update('reload',(255,255,255))
+
 
     def reload(self):
         self.munitions = self.weapon.clip_size
         self.canShoot = True
 
     def update(self):
-        if self.munitions > 0:
-            self.canShoot = True
-        elif self.munitions <= 0:
-            self.canShoot = False
-            print "press R to reload"
         self.animate()
+        self.check_ammo()

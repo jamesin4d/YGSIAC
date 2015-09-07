@@ -6,23 +6,49 @@
 #
 # --------------------------------------------------------------------
 import json
-from items import *
-from enemies import *
+import pygame
+from entities import Tile, Solid
+
+class Level:
+    map_file = None
+    enemy_list = None
+    item_list = None
+    def __init__(self):
+        self.enemy_list = []
+        self.item_list = []
+
+class RoomOne(Level):
+    def __init__(self):
+        Level.__init__(self)
+        self.map_file = 'maps/roomone.json'
+
+class RoomTwo(Level):
+    def __init__(self):
+        Level.__init__(self)
+        self.map_file = "maps/roomtwo.json"
+
 
 # Mapper class *NOW WITH COMMENTS*
 #-------------------------------------------------------------------------
 class Mapper(object):
+    mapdict = None
+    layers = None
+    tilesets = None
+    mapheight = 0
+    mapwidth = 0
+    tile_id = 1
+    collisionList = None
+    background = None
+    all_tiles = None
     def __init__(self):
+        self.done = False
+        self.next = None
+        self.paused = False
         self.tilewidth = 0
         self.tileheight = 0
-        self.map_list = [
-        'maps/start.json',
-        'maps/startsecond.json',
-        'maps/startthird.json',
-        'maps/startteleporter.json']
 
-    def new_inst(self, x):
-        open_map = open(self.map_list[x]).read()
+    def open_map(self, x):
+        open_map = open(x).read()
         self.mapdict = json.loads(open_map)
         self.layers = self.mapdict["layers"]
         self.tilesets = self.mapdict["tilesets"]
@@ -30,14 +56,10 @@ class Mapper(object):
         self.mapwidth = self.layers[0]["width"]
         self.tile_id = 1
 # this makes everything usable again for when another new_inst is used
-    def re_init(self):
+    def reinit(self):
         self.all_tiles = None
-        self.exitL = None
-        self.exitR = None
-        self.enemyList = None
         self.collisionList = None
         self.background = None
-        self.foreground = None
         # fills the all_tiles dictionary
         self.tile_sets()
         # populates the lists with sprites
@@ -61,37 +83,16 @@ class Mapper(object):
 
 # -populates the layers lists and produces collide sprites
     def build_it(self):
-        # these lists hold all the sprites in the currently rendered room
-        self.exitL = []
-        self.exitR = []
-        self.enemyList = []
         self.collisionList = []
         self.background = []
-        self.foreground = []
         tw = self.tilewidth
         th = self.tileheight
-
         for layer in self.layers:
             collide = False # flag for a collidable sprite
-            left = False # flag for the left side room exit tiles
-            right = False # flag for the right side exit
-            enemy = False # flag for the enemy
-            item = False # flag for item in foreground
-
-# every flag produces a different type of sprite and puts that sprite into
-# the above empty lists using the layer data gathered below.
             if "properties" in layer:
                 properties = layer["properties"]
                 if "collision" in properties:
                     collide = True
-                elif "exitL" in properties:
-                    left = True
-                elif "exitR" in properties:
-                    right = True
-                elif "enemy" in properties:
-                    enemy = True
-                elif "item" in properties:
-                    item = True
             # the data is the layers tile data, such as
             # which tile was used, where it goes in the level
             data = layer["data"]
@@ -107,63 +108,11 @@ class Mapper(object):
                             tile.rect = pygame.Rect(x*tw, y*th, 32, 24)
                             tile.image = self.all_tiles[id_key]
                             self.collisionList.append(tile)
-                        if left:
-                            L = Exit()
-                            L.rect = pygame.Rect(x*tw, y*th, tw, th)
-                            L.image = self.all_tiles[id_key]
-                            self.exitL.append(L)
-                        if right:
-                            R = Exit()
-                            R.rect = pygame.Rect(x*tw, y*th, tw, th)
-                            R.image = self.all_tiles[id_key]
-                            self.exitR.append(R)
-                        if enemy:
-                            img = self.all_tiles[id_key]
-                            en = self.gather_data(x*tw, y*th, id_key, img)
-                            enem = self.sort_type(en)
-                            self.collisionList.append(enem)
-                            self.enemyList.append(enem)
-                        if item:
-                            img = self.all_tiles[id_key]
-                            it = self.gather_data(x*tw, y*th, id_key, img)
-                            item = self.sort_type(it)
-                            self.collisionList.append(item)
                         tile = Tile()
                         tile.rect = pygame.Rect(x*tw, y*th, tw, th)
                         tile.image = self.all_tiles[id_key]
                         self.background.append(tile)
                     index += 1
-        return self.exitL, self.exitR, self.collisionList, self.enemyList, self.background, self.foreground
+        return self.collisionList, self.background
 
 
-    @staticmethod
-    def gather_data(x, y, idkey, image):
-        return x, y, idkey, image
-    # the staticmethod allows the use of this method without a 'self' argument,
-    @staticmethod
-    def sort_type(what):
-        x = what[0]
-        y = what[1]
-        idkey = what[2]
-        image = what[3]
-        if idkey == 89:
-            item = Sign()
-            item.image = image
-            item.rect = item.image.get_rect()
-            item.rect.x = x
-            item.rect.y = y
-            item.idkey = idkey
-            return item
-        if idkey == 28:
-            enemy = Security()
-            enemy.rect.x = x
-            enemy.rect.y = y
-            enemy.idkey = idkey
-            return enemy
-        else:
-            i = Tile()
-            i.image = image
-            i.rect = i.image.get_rect()
-            i.set_position(x,y)
-            i.idkey = idkey
-            return i

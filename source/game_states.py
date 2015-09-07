@@ -5,8 +5,11 @@
 #
 #
 # --------------------------------------------------------------------
-from mapper import *
+from mapper import Mapper
 from engine import State
+from entities import *
+from rooms import *
+
 
 
 
@@ -220,17 +223,25 @@ class Game(State):
         State.__init__(self)
         self.kill_prev = True
         self.screen.fill((0,0,0))
-        #this is how maps get changed
-        self.i = 0
-        self.level = Mapper()
-        self.level.new_inst(self.i)
-        self.level.re_init()
+
+        self.room_list = [
+            RoomOne(),
+            RoomTwo(),
+            RoomThree(),
+            RoomFour(),
+            RoomFive()
+        ]
+        self.current_room_number = 0
+        self.current_room = self.room_list[self.current_room_number]
+        self.map_parser = Mapper()
+        self.map_parser.open_map(self.current_room.map_file)
+        self.map_parser.reinit()
+
         self.player = Player(40,300)
         self.player.move(0,0)
+
         self.mainSprite = pygame.sprite.Group()
         self.projectiles = pygame.sprite.Group()
-        self.exitLeft = pygame.sprite.Group()
-        self.exitRight = pygame.sprite.Group()
         self.enemies = pygame.sprite.Group()
         self.solids = pygame.sprite.Group()
         self.background = pygame.sprite.Group()
@@ -238,12 +249,9 @@ class Game(State):
         self.mainSprite.add(self.player)
         self.reset_groups()
 
-    # this function takes any sprite the Mapper put into a list
-    # and puts them into groups for ease of access here
+
     def reset_groups(self):
-        level = self.level
-        self.exitRight = None
-        self.exitLeft = None
+        level = self.map_parser
         self.background = None
         self.solids = None
         self.enemies = None
@@ -252,12 +260,6 @@ class Game(State):
 
         self.projectiles = pygame.sprite.Group()
         self.enemy_projectiles = pygame.sprite.Group()
-        self.exitLeft = pygame.sprite.Group()
-        for ex in level.exitL:
-            self.exitLeft.add(ex)
-        self.exitRight = pygame.sprite.Group()
-        for ex in level.exitR:
-            self.exitRight.add(ex)
         self.background = pygame.sprite.Group()
         for b in level.background:
             self.background.add(b)
@@ -265,7 +267,8 @@ class Game(State):
         for so in level.collisionList:
             self.solids.add(so)
         self.enemies = pygame.sprite.Group()
-        for e in level.enemyList:
+        for e in self.current_room.enemy_list:
+            e.target = self.player
             self.enemies.add(e)
         return
 
@@ -273,94 +276,86 @@ class Game(State):
 # animation, also handles the player jump and walk speed
     def check_events(self):
         p = self.player
-        for e in pygame.event.get():
-            if e.type == pygame.QUIT:
+        pg = pygame
+        mouse_click = pg.MOUSEBUTTONDOWN
+        mouse_move = pg.MOUSEMOTION
+        keypress = pg.KEYDOWN
+        keyrelease = pg.KEYUP
+        esc = pg.K_ESCAPE
+        w = pg.K_w
+        s = pg.K_s
+        d = pg.K_d
+        a = pg.K_a
+        ekey = pg.K_e
+        r = pg.K_r
+        for e in pg.event.get():
+            if e.type == pg.QUIT:
                 self.close_game()
                 sys.exit()
-            elif e.type == pygame.MOUSEBUTTONDOWN and e.button == 1:
+            elif e.type == mouse_click and e.button == 1:
                 if p.canShoot:
                     self.projectiles.add(Bullet(p.rect.center, p.angle))
                     p.munitions -= 1
-            elif e.type == pygame.MOUSEMOTION:
+            elif e.type == mouse_move:
                 p.mouse_angle(e.pos)
-            elif e.type == pygame.KEYDOWN:
-                if e.key == pygame.K_ESCAPE:
+            elif e.type == keypress:
+                if e.key == esc:
                     self.close_game()
                     sys.exit()
-                if e.key == pygame.K_a:
+                if e.key == a:
                     p.move(-5,0)
-                elif e.key == pygame.K_d:
+                elif e.key == d:
                     p.move(5,0)
-                elif e.key == pygame.K_w:
+                elif e.key == w:
                     p.move(0,-5)
-                elif e.key == pygame.K_s:
+                elif e.key == s:
                     p.move(0,5)
-                elif e.key == pygame.K_e:
+                elif e.key == ekey:
                     p.action = True
-            elif e.type == pygame.KEYUP:
-                if e.key == pygame.K_a and p.xvelocity < 0:
+            elif e.type == keyrelease:
+                if e.key == a and p.xvelocity < 0:
                     p.move_x(0)
-                elif e.key == pygame.K_d and p.xvelocity > 0:
+                elif e.key == d and p.xvelocity > 0:
                     p.move_x(0)
-                elif e.key == pygame.K_w and p.yvelocity < 0:
+                elif e.key == w and p.yvelocity < 0:
                     p.move_y(0)
-                elif e.key == pygame.K_s and p.yvelocity > 0:
+                elif e.key == s and p.yvelocity > 0:
                     p.move_y(0)
-                elif e.key == pygame.K_e:
+                elif e.key == ekey:
                     p.action = False
-                elif e.key == pygame.K_r:
+                elif e.key == r:
                     p.reload()
 
 # the collision detection has been cleaned up quite a bit, it's no longer
     def check_collisions(self):
         # set up some local variables
-        L = self.level
+        L = self.map_parser
         solids = L.collisionList
         player = self.player
         projectiles = self.projectiles
-        EL = L.exitL
-        ER = L.exitR
-        enemies = L.enemyList
-
         player.check_collisions(solids)
         player.update()
-        for e in enemies:
-            e.target = player
-            e_h = pygame.sprite.spritecollide(e, projectiles, True)
-            if e_h:
-                e.take_damage(player.damage)
-                if e.health < 0:
-                    e.kill()
-                    enemies.remove(e)
-            e.barriers = solids
-            e.check_collisions(solids)
-            e.update()
-            bullets = e.bullets
-            for b in bullets:
-                self.enemy_projectiles.add(b)
         projectiles.update(solids)
         self.enemy_projectiles.update(solids)
+        for en in self.enemies:
+            en.check_collisions(solids)
+            en.update()
 
-        e_p = pygame.sprite.spritecollide(player, enemies, False)
-        if e_p:
-            player.take_damage(1)
-
-
-# here is the best solution i've found to the 'room change' effect.
-# it works well, and it's only 14 lines
-        playerExitStageRight = pygame.sprite.spritecollide(player, ER, False)
-        playerExitStageLeft = pygame.sprite.spritecollide(player, EL, False)
-        if playerExitStageRight: # player collides with exit block
+        playerExitStageRight = player.rect.x > 800
+        playerExitStageLeft = player.rect.x < 0
+        if playerExitStageRight: # if the player is off the screen
             player.rect.x = 40   # move x-axis to start of next room
-            self.i += 1          # cycle the map up
-            L.new_inst(self.i)   # call new instance method to load new room
-            L.re_init()          # the reinitialize method to build new room
+            self.current_room_number += 1         # cycle the map up
+            self.current_room = self.room_list[self.current_room_number]
+            L.open_map(self.current_room.map_file)   # call new instance method to load new room
+            L.reinit()          # the reinitialize method to build new room
             self.reset_groups()  # finally reset the Game state's sprite groups
         elif playerExitStageLeft:
             player.rect.x = 700
-            self.i -= 1
-            L.new_inst(self.i)
-            L.re_init()
+            self.current_room_number -= 1
+            self.current_room = self.room_list[self.current_room_number]
+            L.open_map(self.current_room.map_file)
+            L.reinit()
             self.reset_groups()
 
         if player.dead:
