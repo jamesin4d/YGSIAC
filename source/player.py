@@ -16,25 +16,31 @@ class Player(Base):
     equipment = {
         'head' : None,
         'body' : None,
-        'weapon' : Peashooter,
+        'weapon' : None,
         'feet' : None
     }
     head = equipment['head']
     body = equipment['body']
     weapon = equipment['weapon']
     feet = equipment['feet']
-    munitions = weapon.clip_size
+    if weapon is not None:
+        munitions = weapon.clip_size
+    if weapon is None:
+        munitions = 0
     action = False
-    movement_rate = 4
-
-    def __init__(self, x,y):
+    onGround = False
+    canJump = False
+    walk_speed = 6
+    jump_speed = 7.5
+    gravity = 0.7
+    def __init__(self):
         Base.__init__(self)
-        self.get_frames('img/hero.png')
+        self.get_frames('img/heroguy.png')
         self.angle = self.mouse_angle(pygame.mouse.get_pos())
         if self.weapon is not None:
             self.canShoot = True
             self.damage = self.weapon.damage
-        self.rect = pygame.Rect(x,y, 24,24)
+        self.rect = pygame.Rect(0,0,16,20)
         self.reload_line = Line_of_text('reload',(255,255,255))
 
     def mouse_angle(self, mouse):
@@ -43,48 +49,42 @@ class Player(Base):
         return self.angle
 
     def check_collisions(self, objects):
+        self.onGround = False
         self.rect.x += self.xvelocity
         for obj in objects:
             if pygame.sprite.collide_rect(self, obj):
-                if isinstance(obj, EnemyBullet):
-                    self.take_damage(2)
-                if isinstance(obj, Enemy):
-                    self.take_damage(1)
-                if isinstance(obj, Sign):
-                    if self.action:
-                        pass
-                if self.xvelocity < 0:
+                if self.direction == "left" or self.xvelocity < 0:
                     self.rect.left = obj.rect.right
-                if self.xvelocity > 0:
+                if self.direction == "right" or self.xvelocity > 0:
                     self.rect.right = obj.rect.left
         self.rect.y += self.yvelocity
         for obj in objects:
             if pygame.sprite.collide_rect(self, obj):
-                if isinstance(obj, EnemyBullet):
-                    self.take_damage(2)
-                if isinstance(obj, Enemy):
-                    self.take_damage(1)
-                if isinstance(obj, Sign):
-                    if self.action:
-                        pass
                 if self.yvelocity < 0:
                     self.rect.top = obj.rect.bottom
                 if self.yvelocity > 0:
                     self.rect.bottom = obj.rect.top
+                    self.onGround = True
+
+
 
     def check_ammo(self):
-        if self.munitions > 0:
-            self.canShoot = True
-        elif self.munitions <= 0:
-            self.canShoot = False
-            self.reload_line.set_pos(self.rect.midright)
-            self.reload_line.update('reload',(255,255,255))
+        if self.weapon is not None:
+            if self.munitions > 0:
+                self.canShoot = True
+            elif self.munitions <= 0:
+                self.canShoot = False
+                self.reload_line.set_pos(self.rect.midright)
+                self.reload_line.update()
 
 
     def reload(self):
-        self.munitions = self.weapon.clip_size
-        self.canShoot = True
+        if self.weapon is not None:
+            self.munitions = self.weapon.clip_size
+            self.canShoot = True
 
-    def update(self):
+    def update(self, objects):
         self.animate()
+        self.check_collisions(objects)
+        self.check_self()
         self.check_ammo()

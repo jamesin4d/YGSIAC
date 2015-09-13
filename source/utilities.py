@@ -12,6 +12,13 @@ except:
     print "could not initialize sound"
     sound = False
 
+def print_debug_info(surface, msg, x, row=0):
+    font = pygame.font.Font(None, 12)
+    text = font.render(msg, 1, (254,254,254))
+    pos = [x,10+16*row]
+    surface.blit(text, pos)
+
+
 class NoSound:
     def play(self): pass
 
@@ -112,14 +119,14 @@ class SpriteSheet(object):
         return image
 
     @staticmethod
-    def strip_sheet(f,sx,sy,ix,iy):
+    def strip_sheet(filename,sheet_x,sheet_y,image_x,image_y):
         frames = []
-        sprite_sheet = pygame.image.load(f).convert()
+        sprite_sheet = pygame.image.load(filename).convert()
         sprite_sheet.set_colorkey((255,255,255))
-        sheet_width = sx
-        sheet_height = sy
-        img_width = ix
-        img_height = iy
+        sheet_width = sheet_x
+        sheet_height = sheet_y
+        img_width = image_x
+        img_height = image_y
         for y in range(0, sheet_height, img_height):
             for x in range(0, sheet_width, img_width):
                 r = pygame.Rect(x,y,img_width, img_height)
@@ -171,7 +178,5 @@ class Line_of_text(Widget):
         Widget.__init__(self, image.get_size())
         self.blit(image, (0,0))
 
-    def update(self, text, bgc):
-        image = self.font.render(text, 0, (0,0,0), bgc)
-        self.blit(image, (0,0))
+    def update(self):
         self.redraw()

@@ -14,55 +14,41 @@ class Room:
     map_file = None # has a map_file attribute
     enemy_list = None # enemy_list attribute
     item_list = None # item_list attribute
+    player_pos_left = None
+    player_pos_right = None
     def __init__(self):
         self.enemy_list = []
         self.item_list = []
+        self.player_pos_left = ()
+        self.player_pos_right = ()
 
 # Name each specific room something unique, these generic names are
 # for testing purposes
-class RoomOne(Room):
+class StartRoom(Room):
     def __init__(self):
         Room.__init__(self) # call parent class
-        self.map_file = 'maps/roomone.json' # give this room a map_file
+        self.player_pos_left = (50,400)
+        self.player_pos_right = (740, 400)
+        self.map_file = 'maps/caste.json' # give this room a map_file
         # then array out Enemies and Items
         # [0] = type of enemy/item
         # [1] = rect.x position
         # [2] = rect.y position
         enemies = [
-            [Security(), 500, 100]
         ]
-        # for each arrayed item:
-        for e in enemies:
-            enemy = e[0]
-            enemy.set_position(e[1],e[2])
-            self.enemy_list.append(enemy) # add it to the list
 
-class RoomTwo(Room):
+
+class RoomTwoTheCave(Room):
     def __init__(self):
         Room.__init__(self)
-        self.map_file = "maps/roomtwo.json"
-
+        self.map_file = "maps/cave.json"
+        self.player_pos_left = (15, 60)
         enemies = [
             [Security(), 300, 200],
-            [Blob(), 500, 300]
         ]
         # for each arrayed item:
         for e in enemies:
             enemy = e[0]
-            enemy.set_position(e[1],e[2])
+            enemy.set_position((e[1],e[2]))
             self.enemy_list.append(enemy)
 
-class RoomThree(Room):
-    def __init__(self):
-        Room.__init__(self)
-        self.map_file = "maps/roomthree.json"
-
-class RoomFour(Room):
-    def __init__(self):
-        Room.__init__(self)
-        self.map_file = "maps/roomfour.json"
-
-class RoomFive(Room):
-    def __init__(self):
-        Room.__init__(self)
-        self.map_file = "maps/roomfive.json"
