@@ -15,10 +15,16 @@ from entities import *
 # ------------------------------------------------------------------------
 class Enemy(Base):
     aggressive = False
-    alert = False
-    scared = False
-    idle = False
+    aggression = 0
 
+    alerted = False
+    alerts = 0
+
+    scared = False
+    fear = 0
+
+    idle = False
+    boredom = 0
     equipment = {
         'head' : None,
         'body' : None,
@@ -32,8 +38,6 @@ class Enemy(Base):
     feet = equipment['feet']
     drop = equipment['drop']
 
-
-
     def __init__(self):
         Base.__init__(self)
         self.target = None
@@ -42,12 +46,14 @@ class Enemy(Base):
         self.dx = ()
         self.dy = ()
         self.target_in_range = False
+        self.target_x_range = False
+        self.target_y_range = False
         self.collide_right = False
         self.collide_left = False
         self.collide_top = False
         self.collide_bottom = False
 
-    def target_distance(self):
+    def check_target(self):
         target_position = self.target.get_position()
         position = self.get_position()
         tp = target_position
@@ -57,13 +63,11 @@ class Enemy(Base):
         diff = (dx, dy)
         self.dx = dx
         self.dy = dy
-        range_x = False
-        range_y = False
         if 150 > diff[0] > -150:
-            range_x = True
+            self.target_x_range = True
         if 150 > diff[1] > -150:
-            range_y = True
-        if range_x and range_y:
+            self.target_y_range = True
+        if self.target_x_range and self.target_y_range:
             self.target_in_range = True
         else: self.target_in_range = False
         return diff
@@ -103,13 +107,27 @@ class Enemy(Base):
         if self.collide_top:
             self.move_y(3)
         elif self.collide_bottom:
-            self.move_y(-3)
+            self.onGround = True
+            self.move_y(0)
+
+
 
     def roam(self):
-        self.move(-3,2)
+        self.move(-3,0)
+
+    def pursue_directly(self):
+        if self.dx != 0:
+            if self.dx < -10:
+                self.move_x(-2)
+            elif self.dx > 10:
+                self.move_x(2)
+        if self.dy != 0:
+            if self.dy < -10:
+                self.move_y(-2)
+            elif self.dy > 10:
+                self.move_y(2)
 
     def pursue_target(self):
-
         dx = self.dx
         dy = self.dy
         if dx != 0 or dy != 0:
@@ -121,7 +139,6 @@ class Enemy(Base):
                 self.move(0,-2)
             if dy > 1:
                 self.move(0,2)
-
 
     def flee_target(self):
         dx = self.dx
@@ -150,7 +167,7 @@ class Enemy(Base):
 
 class Security(Enemy):
     def __init__(self):
-        self.get_frames('img/security.png')
+        self.get_frames('img/guy.png')
         Enemy.__init__(self)
         self.health = random.randint(15,20)
         self.max_health = 20.0
@@ -160,45 +177,42 @@ class Security(Enemy):
 
     def check_state(self):
         self.check_collide_state()
-        if self.target_in_range:
-            self.aggressive = True
-            self.alert = True
-        else:
-            self.aggressive = False
-            self.alert = False
-
-        if self.health < (self.max_health/3):
-            self.scared = True
-        else:
-            self.scared = False
-
-        if not self.scared or self.alert or self.aggressive:
-            self.idle = True
-
+        if self.target_in_range and not (self.aggressive and self.alerted):
+            self.aggression += .5
+            self.alerts += 2
+            if self.alerts > 100:
+                self.alerted = True
+                self.alerts = 100
+            if self.aggression > 50 and self.alerted:
+                self.aggression += 1
+            if self.aggression > 100:
+                self.aggressive = True
+                self.aggression = 100
 
 
 
     def update(self):
         self.animate()
-        self.target_distance()
+        self.roam()
+        self.check_self()
+        self.check_target()
         self.aim(self.target)
         self.check_state()
-        if self.aggressive and self.alert and not self.scared:
-            print 'pissed off'
-            self.pursue_target()
-        if self.scared:
-            print 'being a pussy'
-            self.flee_target()
 
-class Blob(Enemy):
+
+class Turret(Enemy):
     def __init__(self):
-        self.get_frames('img/finnyblub.png')
+        self.get_frames('img/turret.png')
         Enemy.__init__(self)
         self.health = 10
         self.max_health = 10
+        self.bullets = []
 
     def update(self):
         self.animate()
+        self.check_target()
+        self.aim(self.target)
+
 
 
 

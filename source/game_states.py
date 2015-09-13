@@ -216,6 +216,8 @@ class GameOver(State):
                 self.close_game()
             if e.type == pygame.KEYDOWN:
                 self.quit()
+
+
 #------------------------ Game state!--------------------------------------------------------------
 class Game(State):
     def __init__(self):
@@ -223,13 +225,11 @@ class Game(State):
         State.__init__(self)
         self.kill_prev = True
         self.screen.fill((0,0,0))
+        self.show_debug = False
 
         self.room_list = [
-            RoomOne(),
-            RoomTwo(),
-            RoomThree(),
-            RoomFour(),
-            RoomFive()
+            StartRoom(),
+            RoomTwoTheCave(),
         ]
         self.current_room_number = 0
         self.current_room = self.room_list[self.current_room_number]
@@ -237,8 +237,8 @@ class Game(State):
         self.map_parser.open_map(self.current_room.map_file)
         self.map_parser.reinit()
 
-        self.player = Player(40,300)
-        self.player.move(0,0)
+        self.player = Player()
+        self.player.set_position(self.current_room.player_pos_left)
 
         self.mainSprite = pygame.sprite.Group()
         self.projectiles = pygame.sprite.Group()
@@ -248,7 +248,6 @@ class Game(State):
         self.enemy_projectiles = pygame.sprite.Group()
         self.mainSprite.add(self.player)
         self.reset_groups()
-
 
     def reset_groups(self):
         level = self.map_parser
@@ -287,7 +286,12 @@ class Game(State):
         d = pg.K_d
         a = pg.K_a
         ekey = pg.K_e
+        up = pg.K_UP
+        down = pg.K_DOWN
+        left = pg.K_LEFT
+        right = pg.K_RIGHT
         r = pg.K_r
+        tab = pg.K_TAB
         for e in pg.event.get():
             if e.type == pg.QUIT:
                 self.close_game()
@@ -303,15 +307,34 @@ class Game(State):
                     self.close_game()
                     sys.exit()
                 if e.key == a:
-                    p.move(-5,0)
+                    p.walk_right(-p.walk_speed)
                 elif e.key == d:
-                    p.move(5,0)
+                    p.walk_left(p.walk_speed)
                 elif e.key == w:
-                    p.move(0,-5)
-                elif e.key == s:
-                    p.move(0,5)
+                    p.jump(-p.jump_speed)
                 elif e.key == ekey:
                     p.action = True
+                elif e.key == tab:
+                    self.show_debug = not self.show_debug
+                elif e.key == up:
+                    if self.show_debug:
+                        p.jump_speed += 0.25
+                elif e.key == down:
+                    if self.show_debug:
+                        p.jump_speed -= 0.25
+                elif e.key == left:
+                    if self.show_debug:
+                        p.walk_speed -= 0.25
+                elif e.key == right:
+                    if self.show_debug:
+                        p.walk_speed += 0.25
+                elif e.key == pg.K_g:
+                    if self.show_debug:
+                        p.gravity += 0.1
+                elif e.key == pg.K_f:
+                    if self.show_debug:
+                        p.gravity -= 0.1
+
             elif e.type == keyrelease:
                 if e.key == a and p.xvelocity < 0:
                     p.move_x(0)
@@ -326,6 +349,8 @@ class Game(State):
                 elif e.key == r:
                     p.reload()
 
+
+
 # the collision detection has been cleaned up quite a bit, it's no longer
     def check_collisions(self):
         # set up some local variables
@@ -333,9 +358,8 @@ class Game(State):
         solids = L.collisionList
         player = self.player
         projectiles = self.projectiles
-        player.check_collisions(solids)
-        player.update()
-        projectiles.update(solids)
+        player.update(solids)
+        projectiles.update(solids, self.enemies)
         self.enemy_projectiles.update(solids)
         for en in self.enemies:
             en.check_collisions(solids)
@@ -344,18 +368,19 @@ class Game(State):
         playerExitStageRight = player.rect.x > 800
         playerExitStageLeft = player.rect.x < 0
         if playerExitStageRight: # if the player is off the screen
-            player.rect.x = 40   # move x-axis to start of next room
+
             self.current_room_number += 1         # cycle the map up
             self.current_room = self.room_list[self.current_room_number]
             L.open_map(self.current_room.map_file)   # call new instance method to load new room
             L.reinit()          # the reinitialize method to build new room
+            player.set_position(self.current_room.player_pos_left)
             self.reset_groups()  # finally reset the Game state's sprite groups
         elif playerExitStageLeft:
-            player.rect.x = 700
             self.current_room_number -= 1
             self.current_room = self.room_list[self.current_room_number]
             L.open_map(self.current_room.map_file)
             L.reinit()
+            player.set_position(self.current_room.player_pos_right)
             self.reset_groups()
 
         if player.dead:
@@ -369,6 +394,21 @@ class Game(State):
         self.enemies.draw(self.screen)
         self.projectiles.draw(self.screen)
         self.enemy_projectiles.draw(self.screen)
+        p = self.player
+        if self.show_debug:
+            print_debug_info(self.screen, "-Left & Right arrows adjust walk speed, Up & down adjust jump-",10, 0)
+            print_debug_info(self.screen,"Player y-velocity: " + str(p.yvelocity),10,1)
+            print_debug_info(self.screen,"Player x-velocity: " + str(p.xvelocity),10,2)
+            print_debug_info(self.screen,"Player Moving: " + str(p.moving),10,3)
+            print_debug_info(self.screen,"Player can shoot: " + str(p.canShoot),10,4)
+            print_debug_info(self.screen,"Player on the ground: " + str(p.onGround),10,5)
+            print_debug_info(self.screen,"Player direction: " + str(p.direction),10,6)
+            print_debug_info(self.screen,"Player walk speed: " + str(p.walk_speed),10,7)
+            print_debug_info(self.screen,"Player jump speed: " + str(p.jump_speed),10,8)
+            print_debug_info(self.screen,"Gravity: " + str(p.gravity),10,9)
+            print_debug_info(self.screen,"'G' raises gravity, 'F' lowers it",10,10)
+
+
         pygame.display.update()
 
 

@@ -103,9 +103,8 @@ class Mapper(object):
                     if id_key != 0:
                         #print id_key
                         if collide:
-                    # the solids get a 26x26 rect so the player sinks into them a bit
                             tile = Solid()
-                            tile.rect = pygame.Rect(x*tw, y*th, 32, 24)
+                            tile.rect = pygame.Rect(x*tw, y*th, tw, th)
                             tile.image = self.all_tiles[id_key]
                             self.collisionList.append(tile)
                         tile = Tile()
