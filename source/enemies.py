@@ -25,18 +25,12 @@ class Enemy(Base):
 
     idle = False
     boredom = 0
-    equipment = {
-        'head' : None,
-        'body' : None,
-        'weapon' : None,
-        'feet' : None,
-        'drop' : None
-    }
-    head = equipment['head']
-    body = equipment['body']
-    weapon = equipment['weapon']
-    feet = equipment['feet']
-    drop = equipment['drop']
+
+    target_in_range = False
+    target_x_range = False
+    target_y_range = False
+    horizontal_speed = 0
+    vertical_speed = 0
 
     def __init__(self):
         Base.__init__(self)
@@ -45,13 +39,7 @@ class Enemy(Base):
         self.state = None
         self.dx = ()
         self.dy = ()
-        self.target_in_range = False
-        self.target_x_range = False
-        self.target_y_range = False
-        self.collide_right = False
-        self.collide_left = False
-        self.collide_top = False
-        self.collide_bottom = False
+
 
     def check_target(self):
         target_position = self.target.get_position()
@@ -72,49 +60,18 @@ class Enemy(Base):
         else: self.target_in_range = False
         return diff
 
+    def walk_left(self):
+        return self.move_x(-self.horizontal_speed)
 
-    def check_collisions(self, objects):
-        self.collide_right = False
-        self.collide_left = False
-        self.rect.x += self.xvelocity
-        for o in objects:
-            if pygame.sprite.collide_rect(self, o):
-                if isinstance(o, Solid):
-                    if self.xvelocity < 0:
-                        self.rect.left = o.rect.right
-                        self.collide_left = True
-                    if self.xvelocity > 0:
-                        self.rect.right = o.rect.left
-                        self.collide_right = True
-        self.collide_top = False
-        self.collide_bottom = False
-        self.rect.y += self.yvelocity
-        for o in objects:
-            if pygame.sprite.collide_rect(self, o):
-                if isinstance(o, Solid):
-                    if self.yvelocity < 0:
-                        self.rect.top = o.rect.bottom
-                        self.collide_top = True
-                    if self.yvelocity > 0:
-                        self.rect.bottom = o.rect.top
-                        self.collide_bottom = True
-
-    def check_collide_state(self):
-        if self.collide_right:
-            self.move_x(-3)
-        elif self.collide_left:
-            self.move_x(3)
-        if self.collide_top:
-            self.move_y(3)
-        elif self.collide_bottom:
-            self.onGround = True
-            self.move_y(0)
-
-
+    def walk_right(self):
+        return self.move_x(self.horizontal_speed)
 
     def roam(self):
-        self.move(-3,0)
-
+        self.walk_right()
+        if self.collide_left:
+            self.walk_right()
+        if self.collide_right:
+            self.walk_left()
     def pursue_directly(self):
         if self.dx != 0:
             if self.dx < -10:
@@ -173,45 +130,16 @@ class Security(Enemy):
         self.max_health = 20.0
         self.bullets = []
         self.shot_timer = random.randint(10,20)
+        self.horizontal_speed = 2
 
-
-    def check_state(self):
-        self.check_collide_state()
-        if self.target_in_range and not (self.aggressive and self.alerted):
-            self.aggression += .5
-            self.alerts += 2
-            if self.alerts > 100:
-                self.alerted = True
-                self.alerts = 100
-            if self.aggression > 50 and self.alerted:
-                self.aggression += 1
-            if self.aggression > 100:
-                self.aggressive = True
-                self.aggression = 100
-
-
-
-    def update(self):
+    def update(self, objects):
         self.animate()
+        self.check_target()
         self.roam()
-        self.check_self()
-        self.check_target()
+        self.move_and_check(objects)
         self.aim(self.target)
-        self.check_state()
 
 
-class Turret(Enemy):
-    def __init__(self):
-        self.get_frames('img/turret.png')
-        Enemy.__init__(self)
-        self.health = 10
-        self.max_health = 10
-        self.bullets = []
-
-    def update(self):
-        self.animate()
-        self.check_target()
-        self.aim(self.target)
 
 
 

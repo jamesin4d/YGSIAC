@@ -7,7 +7,7 @@
 # --------------------------------------------------------------------
 import json
 import pygame
-from entities import Tile, Solid
+from entities import BackgroundTile, SolidBlock
 
 class Level:
     map_file = None
@@ -103,11 +103,11 @@ class Mapper(object):
                     if id_key != 0:
                         #print id_key
                         if collide:
-                            tile = Solid()
+                            tile = SolidBlock()
                             tile.rect = pygame.Rect(x*tw, y*th, tw, th)
                             tile.image = self.all_tiles[id_key]
                             self.collisionList.append(tile)
-                        tile = Tile()
+                        tile = BackgroundTile()
                         tile.rect = pygame.Rect(x*tw, y*th, tw, th)
                         tile.image = self.all_tiles[id_key]
                         self.background.append(tile)

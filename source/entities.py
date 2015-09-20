@@ -16,55 +16,22 @@ random.seed()
 class Entity(pygame.sprite.Sprite):
     def __init__(self):
         pygame.sprite.Sprite.__init__(self)
-#-----------------------------------------------------------------
-# Bullet
-#-----------------------------------------------------------------
-class Bullet(Entity):
-    def __init__(self, loc, angle):
+
+# these are the basic map tiles that the map parsing module creates from
+# json data, background tiles and solid tiles are put into seperate lists
+# to differentiate between the two for collisions
+class BackgroundTile(Entity):
+    def __init__(self):
         Entity.__init__(self)
-        self.frames = SpriteSheet.strip_sheet('img/bullet.png',24,4,4,4)
-        self.original_image = self.frames[0]
-        self.angle = -math.radians(angle-136)
-        self.image = pygame.transform.rotate(self.original_image, angle-136)
-        self.image.set_colorkey((255,255,255))
-        self.rect = self.image.get_rect(center=loc)
-        self.move = [self.rect.x, self.rect.y]
-        self.speed_mod = 10
-        self.speed = (self.speed_mod*math.cos(self.angle),
-                      self.speed_mod*math.sin(self.angle))
 
-    def check_collisions(self, solids, entities):
-        for s in solids:
-            if pygame.sprite.collide_rect(self, s):
-                self.kill()
-        for e in entities:
-            if pygame.sprite.collide_rect(self, e):
-                self.kill()
+class SolidBlock(Entity):
+    def __init__(self):
+        Entity.__init__(self)
 
-# a brief explainer on the animation method here
-    def animate(self):
-        # if the x-axis has speed applied to it
-        if self.speed[0] != 0 or self.speed[1] != 0:
-            # essentially:
-            # frame = the currently displayed frame
-            #  (x // y)- returns (floored) quotient of x and y
-            # the ' % ' is called a modulus in python, it returns the remainder of something.
-            # so what this line does is as the x-axis moves, itterate over the length(self.frames) I think
-            frame = (self.rect.centerx//40) % len(self.frames) # how this equation actually works is something of a black box for me.
-            #this is just one of those things that wasn't clearly explained wherever I learned it from, but works so I don't ask any questions.
-            # https://docs.python.org/2/library/stdtypes.html <-- head there for *some* further help.
-            self.image = pygame.transform.rotate(self.frames[frame], self.angle)
+class ExitBlock(Entity):
+    def __init__(self):
+        Entity.__init__(self)
 
-    def update(self, solids, entities):
-        self.check_collisions(solids, entities)
-        self.move[0] += self.speed[0]
-        self.move[1] += self.speed[1]
-        self.rect.topleft = self.move
-        self.animate()
-
-    def remove(self, screen_rect):
-        if not self.rect.colliderect(screen_rect):
-            self.kill()
 
 # ------------------------------------------------------------
 # Base sprite parent class, holds attributes to inherit
@@ -76,6 +43,7 @@ class Base(Entity):
     max_health = 0.0 # the maximum allowed to the entity
     xvelocity = 0 # velocity applied to the x-axis
     yvelocity = 0 # velocity applied to the y-axis
+
     angle = None # angle is used to determine the angle the bullets shoot at
     dead = False # true if dead
     canShoot = False # true if entity has a weapon that can shoot
@@ -87,6 +55,7 @@ class Base(Entity):
     onGround = False # true if entity has bottom collision
     canJump = False # true if on ground is true
     direction = None # a string of either 'left'/'right'/'up'
+
     walking_frames_left = [] # lists to hold walking frames
     walking_frames_right = [] # pulled from a spritesheet
     jump_frames_right = []  #jump frames
@@ -97,9 +66,15 @@ class Base(Entity):
     idle_frames_right = []
     image = None # which image is being shown
     rect = None # the collision rectangle
+
     walk_speed = 0
     jump_speed = 0
     gravity = 0.4
+
+    collide_right = False
+    collide_left = False
+    collide_top = False
+    collide_bottom = False
 
     def __init__(self):
         Entity.__init__(self)
@@ -214,8 +189,10 @@ class Base(Entity):
         midbottom = r.midbottom
         rectangle = (left, right, top, bottom)
         rectangle_two = (midleft,midright,midtop,midbottom)
-        #print rectangle
-        #print rectangle_two
+        print "left, right, top, bottom"
+        print rectangle
+        print 'midleft, midright, midtop, midbottom'
+        print rectangle_two
         return rectangle
 
     def aim(self, target):
@@ -229,7 +206,7 @@ class Base(Entity):
             self.kill()
             self.dead = True
 
-    def give_pain(self, what):
+    def give_damage(self, what):
         damage = self.damage
         what.health -= damage
 
@@ -241,11 +218,9 @@ class Base(Entity):
     def move(self, x,y):
         return self.move_x(x), self.move_y(y)
 
-    def walk_right(self, speed):
+    def walk(self, speed):
         return self.move_x(speed)
 
-    def walk_left(self, speed):
-        return self.move_x(speed)
 
     def jump(self, speed):
         if self.canJump:
@@ -253,7 +228,16 @@ class Base(Entity):
             self.onGround = False
             self.move_y(speed)
 
-    def check_self(self):
+    def move_and_check(self, objs):
+        self.rect.x += self.xvelocity
+        self.collide_left = False
+        self.collide_right = False
+        self.check_for_collision(self.xvelocity, 0, objs)
+        self.rect.y += self.yvelocity
+        self.collide_top = False
+        self.collide_bottom = False
+        self.check_for_collision(0, self.yvelocity, objs)
+
         if self.xvelocity < 0:
             self.moving_left = True
             self.direction = 'left'
@@ -272,8 +256,9 @@ class Base(Entity):
         if not self.onGround:
             self.canJump = False
             self.yvelocity += self.gravity
-            if self.yvelocity > 100:
-                self.yvelocity = 100
+            if self.yvelocity > 20:
+                self.yvelocity = 20
+
         if self.onGround:
             self.canJump = True
             self.jumping = False
@@ -286,34 +271,32 @@ class Base(Entity):
             self.moving = True
         else: self.moving = False
 
-    def check_collisions(self, objects):
+
+    def check_for_collision(self, xvel, yvel, objects):
         self.onGround = False
-        self.rect.x += self.xvelocity
         for obj in objects:
             if pygame.sprite.collide_rect(self, obj):
-                if self.direction == "left" or self.xvelocity < 0:
+                if xvel < 0:
                     self.rect.left = obj.rect.right
-                if self.direction == "right" or self.xvelocity > 0:
+                    self.collide_left = True
+                if xvel > 0:
                     self.rect.right = obj.rect.left
-        self.rect.y += self.yvelocity
-        for obj in objects:
-            if pygame.sprite.collide_rect(self, obj):
-                if self.yvelocity < 0:
+                    self.collide_right = True
+                if yvel < 0:
                     self.rect.top = obj.rect.bottom
-                if self.yvelocity > 0:
+                    self.collide_top = True
+                if yvel > 0:
                     self.rect.bottom = obj.rect.top
                     self.onGround = True
-
+                    self.collide_bottom = True
 
     def animate(self):
         if self.moving_left:
             frame = (self.rect.x//15) % len(self.walking_frames_left)
             self.image = self.walking_frames_left[frame]
-            print frame
         if self.moving_right:
             frame = (self.rect.x//15) % len(self.walking_frames_right)
             self.image = self.walking_frames_right[frame]
-            print frame
         if self.jumping:
             if self.direction == "left":
                 self.image = self.jump_frames_left[2]
@@ -334,21 +317,10 @@ class Base(Entity):
             if self.direction == "left":
                 self.image = self.idle_frames_left[2]
 
-    def update(self):
+    def update(self, objects):
         pass
 
-class Tile(Base):
-    def __init__(self):
-        Base.__init__(self)
 
-
-class Solid(Base):
-    def __init__(self):
-        Base.__init__(self)
-
-class Exit(Base):
-    def __init__(self):
-        Base.__init__(self)
 
 
 
