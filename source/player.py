@@ -30,9 +30,10 @@ class Player(Base):
     action = False
     onGround = False
     canJump = False
-    walk_speed = 6
-    jump_speed = 7.5
-    gravity = 0.7
+    walk_speed = 5
+    jump_speed = 11
+    gravity = 1.5
+    direction = 'right'
     def __init__(self):
         Base.__init__(self)
         self.get_frames('img/heroguy.png')
@@ -43,29 +44,11 @@ class Player(Base):
         self.rect = pygame.Rect(0,0,16,20)
         self.reload_line = Line_of_text('reload',(255,255,255))
 
+
     def mouse_angle(self, mouse):
         off = (mouse[1] - self.rect.centery, mouse[0] - self.rect.centerx)
         self.angle = 135 - math.degrees(math.atan2(*off))
         return self.angle
-
-    def check_collisions(self, objects):
-        self.onGround = False
-        self.rect.x += self.xvelocity
-        for obj in objects:
-            if pygame.sprite.collide_rect(self, obj):
-                if self.direction == "left" or self.xvelocity < 0:
-                    self.rect.left = obj.rect.right
-                if self.direction == "right" or self.xvelocity > 0:
-                    self.rect.right = obj.rect.left
-        self.rect.y += self.yvelocity
-        for obj in objects:
-            if pygame.sprite.collide_rect(self, obj):
-                if self.yvelocity < 0:
-                    self.rect.top = obj.rect.bottom
-                if self.yvelocity > 0:
-                    self.rect.bottom = obj.rect.top
-                    self.onGround = True
-
 
 
     def check_ammo(self):
@@ -85,6 +68,5 @@ class Player(Base):
 
     def update(self, objects):
         self.animate()
-        self.check_collisions(objects)
-        self.check_self()
+        self.move_and_check(objects)
         self.check_ammo()

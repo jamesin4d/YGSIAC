@@ -7,13 +7,9 @@
 # --------------------------------------------------------------------
 from mapper import Mapper
 from engine import State
-from entities import *
 from rooms import *
-
-
-
-
 from player import Player
+from projectiles import Shot
 # GAME STATES *NOW WITH COMMENTS!!*
 import sys
 pygame.init()
@@ -216,8 +212,6 @@ class GameOver(State):
                 self.close_game()
             if e.type == pygame.KEYDOWN:
                 self.quit()
-
-
 #------------------------ Game state!--------------------------------------------------------------
 class Game(State):
     def __init__(self):
@@ -285,7 +279,7 @@ class Game(State):
         s = pg.K_s
         d = pg.K_d
         a = pg.K_a
-        ekey = pg.K_e
+        j = pg.K_j
         up = pg.K_UP
         down = pg.K_DOWN
         left = pg.K_LEFT
@@ -296,24 +290,18 @@ class Game(State):
             if e.type == pg.QUIT:
                 self.close_game()
                 sys.exit()
-            elif e.type == mouse_click and e.button == 1:
-                if p.canShoot:
-                    self.projectiles.add(Bullet(p.rect.center, p.angle))
-                    p.munitions -= 1
-            elif e.type == mouse_move:
-                p.mouse_angle(e.pos)
             elif e.type == keypress:
                 if e.key == esc:
                     self.close_game()
                     sys.exit()
                 if e.key == a:
-                    p.walk_right(-p.walk_speed)
+                    p.walk(-p.walk_speed)
                 elif e.key == d:
-                    p.walk_left(p.walk_speed)
+                    p.walk(p.walk_speed)
                 elif e.key == w:
                     p.jump(-p.jump_speed)
-                elif e.key == ekey:
-                    p.action = True
+                elif e.key == j:
+                    self.projectiles.add(Shot(p.rect.center, p))
                 elif e.key == tab:
                     self.show_debug = not self.show_debug
                 elif e.key == up:
@@ -344,14 +332,9 @@ class Game(State):
                     p.move_y(0)
                 elif e.key == s and p.yvelocity > 0:
                     p.move_y(0)
-                elif e.key == ekey:
-                    p.action = False
                 elif e.key == r:
                     p.reload()
 
-
-
-# the collision detection has been cleaned up quite a bit, it's no longer
     def check_collisions(self):
         # set up some local variables
         L = self.map_parser
@@ -362,8 +345,7 @@ class Game(State):
         projectiles.update(solids, self.enemies)
         self.enemy_projectiles.update(solids)
         for en in self.enemies:
-            en.check_collisions(solids)
-            en.update()
+            en.update(solids)
 
         playerExitStageRight = player.rect.x > 800
         playerExitStageLeft = player.rect.x < 0
@@ -399,14 +381,16 @@ class Game(State):
             print_debug_info(self.screen, "-Left & Right arrows adjust walk speed, Up & down adjust jump-",10, 0)
             print_debug_info(self.screen,"Player y-velocity: " + str(p.yvelocity),10,1)
             print_debug_info(self.screen,"Player x-velocity: " + str(p.xvelocity),10,2)
-            print_debug_info(self.screen,"Player Moving: " + str(p.moving),10,3)
-            print_debug_info(self.screen,"Player can shoot: " + str(p.canShoot),10,4)
-            print_debug_info(self.screen,"Player on the ground: " + str(p.onGround),10,5)
-            print_debug_info(self.screen,"Player direction: " + str(p.direction),10,6)
-            print_debug_info(self.screen,"Player walk speed: " + str(p.walk_speed),10,7)
-            print_debug_info(self.screen,"Player jump speed: " + str(p.jump_speed),10,8)
-            print_debug_info(self.screen,"Gravity: " + str(p.gravity),10,9)
-            print_debug_info(self.screen,"'G' raises gravity, 'F' lowers it",10,10)
+            print_debug_info(self.screen,"Player on the ground: " + str(p.onGround),10,3)
+            print_debug_info(self.screen,"Player walk speed: " + str(p.walk_speed),10,4)
+            print_debug_info(self.screen,"Player jump speed: " + str(p.jump_speed),10,5)
+            print_debug_info(self.screen,"Gravity: " + str(p.gravity),10,6)
+            print_debug_info(self.screen,"'G' raises gravity, 'F' lowers it",10,7)
+            print_debug_info(self.screen,"Collide Left: " + str(p.collide_left),10,8)
+            print_debug_info(self.screen,"Collide Right: " + str(p.collide_right),10,9)
+            print_debug_info(self.screen,"Collide Top: " + str(p.collide_top),10,10)
+            print_debug_info(self.screen,"Collide bottom: " + str(p.collide_bottom),10,11)
+
 
 
         pygame.display.update()

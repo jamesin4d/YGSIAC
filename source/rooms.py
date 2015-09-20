@@ -27,15 +27,10 @@ class Room:
 class StartRoom(Room):
     def __init__(self):
         Room.__init__(self) # call parent class
-        self.player_pos_left = (50,400)
-        self.player_pos_right = (740, 400)
-        self.map_file = 'maps/caste.json' # give this room a map_file
-        # then array out Enemies and Items
-        # [0] = type of enemy/item
-        # [1] = rect.x position
-        # [2] = rect.y position
-        enemies = [
-        ]
+        self.player_pos_left = (50,50)
+        self.player_pos_right = (740, 550)
+        self.map_file = 'maps/cae.json'
+
 
 
 class RoomTwoTheCave(Room):
