@@ -79,93 +79,24 @@ class Base(Entity):
     def __init__(self):
         Entity.__init__(self)
 
-    def get_frames(self, spritesheet):
-        self.walking_frames_left = []
-        self.walking_frames_right = []
-        self.jump_frames_right = []
-        self.jump_frames_left = []
-        self.punch_frames_left = []
-        self.punch_frames_right = []
-        self.idle_frames_left = []
-        self.idle_frames_right = []
-        sheet = spritesheet
-        s = SpriteSheet(sheet)
+    def get_frames(self, walkL, walkR, jumpL, jumpR, punchL, punchR, idleL, idleR):
+        # JESUS FUCK ROBIN! LOOK HOW SHORT THIS FRAME GETTING METHOD GOT!
+        strip = SpriteSheet.strip_sheet
+        # refer to utilities.SpriteSheet.strip_sheet() for argument explainations
 
-        # right walking frames
-        i = s.get_image(0,0,16,20)
-        self.walking_frames_right.append(i)
-        i = s.get_image(16,0,16,20)
-        self.walking_frames_right.append(i)
-        i = s.get_image(32,0,16,20)
-        self.walking_frames_right.append(i)
-        i = s.get_image(48,0,16,20)
-        self.walking_frames_right.append(i)
-        i = s.get_image(64,0,16,20)
-        self.walking_frames_right.append(i)
-        i = s.get_image(80,0,16,20)
-        self.walking_frames_right.append(i)
+        self.walking_frames_left = strip(walkL,96,20,16,20)
+        self.walking_frames_right = strip(walkR,96,20,16,20)
 
-        #left walking
-        i = s.get_image(0,20,16,20)
-        self.walking_frames_left.append(i)
-        i = s.get_image(16,20,16,20)
-        self.walking_frames_left.append(i)
-        i = s.get_image(32,20,16,20)
-        self.walking_frames_left.append(i)
-        i = s.get_image(48,20,16,20)
-        self.walking_frames_left.append(i)
-        i = s.get_image(64,20,16,20)
-        self.walking_frames_left.append(i)
-        i = s.get_image(80,20,16,20)
-        self.walking_frames_left.append(i)
+        self.jump_frames_right = strip(jumpR,48,20,16,20)
+        self.jump_frames_left = strip(jumpL,48,20,16,20)
 
-        #jump right
-        i = s.get_image(0,40,16,20)
-        self.jump_frames_right.append(i)
-        i = s.get_image(16,40,16,20)
-        self.jump_frames_right.append(i)
-        i = s.get_image(32,40,16,20)
-        self.jump_frames_right.append(i)
-        #jump left
-        i = s.get_image(48,40,16,20)
-        self.jump_frames_left.append(i)
-        i = s.get_image(64,40,16,20)
-        self.jump_frames_left.append(i)
-        i = s.get_image(80,40,16,20)
-        self.jump_frames_left.append(i)
+        self.punch_frames_left = strip(punchL,48,20,16,20)
+        self.punch_frames_right = strip(punchR,48,20,16,20)
 
-        #punch right
-        i = s.get_image(0,60,16,20)
-        self.punch_frames_right.append(i)
-        i = s.get_image(16,60,16,20)
-        self.punch_frames_right.append(i)
-        i = s.get_image(32,60,16,20)
-        self.punch_frames_right.append(i)
-        #punch left
-        i = s.get_image(48,60,16,20)
-        self.punch_frames_left.append(i)
-        i = s.get_image(64,60,16,20)
-        self.punch_frames_left.append(i)
-        i = s.get_image(80,60,16,20)
-        self.punch_frames_left.append(i)
+        self.idle_frames_left = strip(idleL,48,20,16,20)
+        self.idle_frames_right = strip(idleR,48,20,16,20)
 
-        # idle frames, for when standing still.
-        # right facing
-        i = s.get_image(0,80,16,20)
-        self.idle_frames_right.append(i)
-        i = s.get_image(16,80,16,20)
-        self.idle_frames_right.append(i)
-        i = s.get_image(32,80,16,20)
-        self.idle_frames_right.append(i)
-        #left facing
-        i = s.get_image(48,80,16,20)
-        self.idle_frames_left.append(i)
-        i = s.get_image(64,80,16,20)
-        self.idle_frames_left.append(i)
-        i = s.get_image(80,80,16,20)
-        self.idle_frames_left.append(i)
-
-        self.image = self.idle_frames_right[0]
+        self.image = self.idle_frames_right[2]
         self.rect = pygame.Rect((0,0,16,20))
 
     def set_position(self, (x, y)):

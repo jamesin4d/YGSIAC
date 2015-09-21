@@ -301,7 +301,9 @@ class Game(State):
                 elif e.key == w:
                     p.jump(-p.jump_speed)
                 elif e.key == j:
-                    self.projectiles.add(Shot(p.rect.center, p))
+                    if p.canShoot:
+                        self.projectiles.add(Shot(p.rect.center, p))
+                        p.munitions -= 1
                 elif e.key == tab:
                     self.show_debug = not self.show_debug
                 elif e.key == up:

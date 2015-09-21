@@ -16,7 +16,7 @@ class Player(Base):
     equipment = {
         'head' : None,
         'body' : None,
-        'weapon' : None,
+        'weapon' : Peashooter,
         'feet' : None
     }
     head = equipment['head']
@@ -36,8 +36,8 @@ class Player(Base):
     direction = 'right'
     def __init__(self):
         Base.__init__(self)
-        self.get_frames('img/heroguy.png')
-        self.angle = self.mouse_angle(pygame.mouse.get_pos())
+        self.get_frames('img/player/heroLeft.png', 'img/player/heroRight.png','img/player/jumpLeft.png','img/player/jumpRight.png',
+                        'img/player/punchLeft.png','img/player/punchRight.png','img/player/idleLeft.png','img/player/idleRight.png')
         if self.weapon is not None:
             self.canShoot = True
             self.damage = self.weapon.damage
