@@ -48,7 +48,6 @@ class Shot(Entity):
             self.speed = -10
 
     def update(self, solids, entities):
-
         self.gravity += .1
         self.check_collisions(solids, entities)
 

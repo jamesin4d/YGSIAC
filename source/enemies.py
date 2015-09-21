@@ -124,7 +124,8 @@ class Enemy(Base):
 
 class Security(Enemy):
     def __init__(self):
-        self.get_frames('img/guy.png')
+        self.get_frames('img/player/heroLeft.png', 'img/player/heroRight.png', 'img/player/jumpLeft.png', 'img/player/jumpRight.png',
+                        'img/player/punchLeft.png', 'img/player/punchRight.png', 'img/player/idleLeft.png', 'img/player/idleRight.png')
         Enemy.__init__(self)
         self.health = random.randint(15,20)
         self.max_health = 20.0
