@@ -194,6 +194,8 @@ class Base(Entity):
             self.canJump = True
             self.jumping = False
             self.falling = False
+            if self.yvelocity > 3:
+                self.yvelocity = 3
 
         if self.falling or self.jumping:
             self.onGround = False
