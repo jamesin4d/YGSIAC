@@ -12,12 +12,18 @@ except:
     print "could not initialize sound"
     sound = False
 
-def print_debug_info(surface, msg, x, row=0):
+def print_info(surface, msg, x, row=0):
     font = pygame.font.Font(None, 12)
     text = font.render(msg, 1, (254,254,254))
     pos = [x,10+16*row]
     surface.blit(text, pos)
 
+def display_info(surface, message, font_size,  x, y):
+    near_white = (254,254,254)
+    font = pygame.font.Font(None, font_size)
+    text = font.render(message, 1, near_white)
+    pos = [x,y]
+    surface.blit(text, pos)
 
 class NoSound:
     def play(self): pass
