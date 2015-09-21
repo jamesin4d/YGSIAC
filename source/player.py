@@ -10,9 +10,9 @@ from items import *
 from enemies import *
 
 class Player(Base):
-    health = 100
-    max_health = 100.0
-    med = 20
+    health = 9
+    max_health = 9.0
+    med = 2
     equipment = {
         'head' : None,
         'body' : None,
@@ -42,14 +42,6 @@ class Player(Base):
             self.canShoot = True
             self.damage = self.weapon.damage
         self.rect = pygame.Rect(0,0,16,20)
-        self.reload_line = Line_of_text('reload',(255,255,255))
-
-
-    def mouse_angle(self, mouse):
-        off = (mouse[1] - self.rect.centery, mouse[0] - self.rect.centerx)
-        self.angle = 135 - math.degrees(math.atan2(*off))
-        return self.angle
-
 
     def check_ammo(self):
         if self.weapon is not None:
@@ -57,9 +49,6 @@ class Player(Base):
                 self.canShoot = True
             elif self.munitions <= 0:
                 self.canShoot = False
-                self.reload_line.set_pos(self.rect.midright)
-                self.reload_line.update()
-
 
     def reload(self):
         if self.weapon is not None:

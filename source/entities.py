@@ -69,12 +69,14 @@ class Base(Entity):
 
     walk_speed = 0
     jump_speed = 0
-    gravity = 0.4
+    gravity = 0
 
     collide_right = False
     collide_left = False
     collide_top = False
     collide_bottom = False
+
+    idle_timer = 0
 
     def __init__(self):
         Entity.__init__(self)
@@ -224,6 +226,8 @@ class Base(Entity):
                     self.collide_bottom = True
 
     def animate(self):
+
+
         if self.moving_left:
             frame = (self.rect.x//15) % len(self.walking_frames_left)
             self.image = self.walking_frames_left[frame]
@@ -244,11 +248,23 @@ class Base(Entity):
                 self.image = self.jump_frames_right[frame]
 
         if not self.moving:
+            self.idle_timer += .5
+            if self.idle_timer == 12:
+                self.idle_timer = 0
             if self.direction == "right":
-                self.image = self.idle_frames_right[0]
-
+                if self.idle_timer > 0:
+                    self.image = self.idle_frames_right[0]
+                if self.idle_timer > 4:
+                    self.image = self.idle_frames_right[1]
+                if self.idle_timer > 8:
+                    self.image = self.idle_frames_right[2]
             if self.direction == "left":
-                self.image = self.idle_frames_left[2]
+                if self.idle_timer > 0:
+                    self.image = self.idle_frames_left[0]
+                if self.idle_timer > 4:
+                    self.image = self.idle_frames_left[1]
+                if self.idle_timer > 8:
+                    self.image = self.idle_frames_left[2]
 
     def update(self, objects):
         pass

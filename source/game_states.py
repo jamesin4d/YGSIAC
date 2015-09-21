@@ -10,6 +10,7 @@ from engine import State
 from rooms import *
 from player import Player
 from projectiles import Shot
+from hud import display_info, HUD
 # GAME STATES *NOW WITH COMMENTS!!*
 import sys
 pygame.init()
@@ -214,6 +215,7 @@ class GameOver(State):
                 self.quit()
 #------------------------ Game state!--------------------------------------------------------------
 class Game(State):
+
     def __init__(self):
         #blam, initiate that parent class
         State.__init__(self)
@@ -231,9 +233,11 @@ class Game(State):
         self.map_parser.open_map(self.current_room.map_file)
         self.map_parser.reinit()
 
+
+
         self.player = Player()
         self.player.set_position(self.current_room.player_pos_left)
-
+        self.heads_up_display = HUD(self.player)
         self.mainSprite = pygame.sprite.Group()
         self.projectiles = pygame.sprite.Group()
         self.enemies = pygame.sprite.Group()
@@ -270,8 +274,6 @@ class Game(State):
     def check_events(self):
         p = self.player
         pg = pygame
-        mouse_click = pg.MOUSEBUTTONDOWN
-        mouse_move = pg.MOUSEMOTION
         keypress = pg.KEYDOWN
         keyrelease = pg.KEYUP
         esc = pg.K_ESCAPE
@@ -378,23 +380,9 @@ class Game(State):
         self.enemies.draw(self.screen)
         self.projectiles.draw(self.screen)
         self.enemy_projectiles.draw(self.screen)
-        p = self.player
         if self.show_debug:
-            print_debug_info(self.screen, "-Left & Right arrows adjust walk speed, Up & down adjust jump-",10, 0)
-            print_debug_info(self.screen,"Player y-velocity: " + str(p.yvelocity),10,1)
-            print_debug_info(self.screen,"Player x-velocity: " + str(p.xvelocity),10,2)
-            print_debug_info(self.screen,"Player on the ground: " + str(p.onGround),10,3)
-            print_debug_info(self.screen,"Player walk speed: " + str(p.walk_speed),10,4)
-            print_debug_info(self.screen,"Player jump speed: " + str(p.jump_speed),10,5)
-            print_debug_info(self.screen,"Gravity: " + str(p.gravity),10,6)
-            print_debug_info(self.screen,"'G' raises gravity, 'F' lowers it",10,7)
-            print_debug_info(self.screen,"Collide Left: " + str(p.collide_left),10,8)
-            print_debug_info(self.screen,"Collide Right: " + str(p.collide_right),10,9)
-            print_debug_info(self.screen,"Collide Top: " + str(p.collide_top),10,10)
-            print_debug_info(self.screen,"Collide bottom: " + str(p.collide_bottom),10,11)
-
-
-
+            self.heads_up_display.show_debug()
+        self.heads_up_display.update()
         pygame.display.update()
 
 
