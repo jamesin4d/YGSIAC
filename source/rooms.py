@@ -27,9 +27,17 @@ class Room:
 class StartRoom(Room):
     def __init__(self):
         Room.__init__(self) # call parent class
-        self.player_pos_left = (50,50)
+        self.player_pos_left = (75,75)
         self.player_pos_right = (740, 550)
         self.map_file = 'maps/cae.json'
+        enemies = [
+            [Security(300, 200, 250, 350)],
+        ]
+        # for each arrayed item:
+        for e in enemies:
+            enemy = e[0]
+
+            self.enemy_list.append(enemy)
 
 
 
@@ -39,11 +47,11 @@ class RoomTwoTheCave(Room):
         self.map_file = "maps/cave.json"
         self.player_pos_left = (15, 60)
         enemies = [
-            [Security(), 300, 200],
+            [Security(300, 200, 250, 350)],
         ]
         # for each arrayed item:
         for e in enemies:
             enemy = e[0]
-            enemy.set_position((e[1],e[2]))
+
             self.enemy_list.append(enemy)
 

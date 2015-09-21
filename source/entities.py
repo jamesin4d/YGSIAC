@@ -226,14 +226,13 @@ class Base(Entity):
                     self.collide_bottom = True
 
     def animate(self):
-
-
-        if self.moving_left:
-            frame = (self.rect.x//15) % len(self.walking_frames_left)
-            self.image = self.walking_frames_left[frame]
-        if self.moving_right:
-            frame = (self.rect.x//15) % len(self.walking_frames_right)
-            self.image = self.walking_frames_right[frame]
+        if self.moving:
+            if self.direction == "left":
+                frame = (self.rect.x//15) % len(self.walking_frames_left)
+                self.image = self.walking_frames_left[frame]
+            if self.direction == "right":
+                frame = (self.rect.x//15) % len(self.walking_frames_right)
+                self.image = self.walking_frames_right[frame]
         if self.jumping:
             if self.direction == "left":
                 self.image = self.jump_frames_left[2]

@@ -32,16 +32,23 @@ class Enemy(Base):
     horizontal_speed = 0
     vertical_speed = 0
 
-    def __init__(self):
+    def __init__(self, x, y , left, right):
         Base.__init__(self)
         self.target = None
         self.barriers = None
+        self.start_x = None
         self.state = None
         self.dx = ()
         self.dy = ()
+        self.boundsL = left
+        self.boundsR = right
+        self.set_position((x,y))
+        self.horizontal_speed = 3
 
 
     def check_target(self):
+        self.aim(self.target)
+
         target_position = self.target.get_position()
         position = self.get_position()
         tp = target_position
@@ -66,12 +73,20 @@ class Enemy(Base):
     def walk_right(self):
         return self.move_x(self.horizontal_speed)
 
+    def get_started(self):
+        if self.xvelocity == 0:
+            self.xvelocity += 2
+            if self.xvelocity > self.horizontal_speed:
+                self.xvelocity = self.horizontal_speed
+
     def roam(self):
-        self.walk_right()
-        if self.collide_left:
-            self.walk_right()
-        if self.collide_right:
+        self.get_started()
+        if self.rect.x >= self.boundsR:
             self.walk_left()
+        if self.rect.x <= self.boundsL:
+            self.walk_right()
+
+
     def pursue_directly(self):
         if self.dx != 0:
             if self.dx < -10:
@@ -123,22 +138,23 @@ class Enemy(Base):
                 self.move_y(-2)
 
 class Security(Enemy):
-    def __init__(self):
+    def __init__(self, x, y , left, right):
         self.get_frames('img/player/heroLeft.png', 'img/player/heroRight.png', 'img/player/jumpLeft.png', 'img/player/jumpRight.png',
                         'img/player/punchLeft.png', 'img/player/punchRight.png', 'img/player/idleLeft.png', 'img/player/idleRight.png')
-        Enemy.__init__(self)
-        self.health = random.randint(15,20)
-        self.max_health = 20.0
+        Enemy.__init__(self, x, y , left, right)
+        self.health = random.randint(4,6)
+        self.max_health = 6.0
         self.bullets = []
         self.shot_timer = random.randint(10,20)
         self.horizontal_speed = 2
+        self.gravity = 1
 
     def update(self, objects):
         self.animate()
+        self.move_and_check(objects)
         self.check_target()
         self.roam()
-        self.move_and_check(objects)
-        self.aim(self.target)
+
 
 
 

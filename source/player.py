@@ -5,8 +5,8 @@
 #
 #
 #--------------------------------------------------------------------
-from entities import *
 from items import *
+from weapons import *
 from enemies import *
 
 class Player(Base):
@@ -16,7 +16,7 @@ class Player(Base):
     equipment = {
         'head' : None,
         'body' : None,
-        'weapon' : Peashooter,
+        'weapon' : Rock,
         'feet' : None
     }
     head = equipment['head']
@@ -41,6 +41,7 @@ class Player(Base):
         if self.weapon is not None:
             self.canShoot = True
             self.damage = self.weapon.damage
+            print self.damage
         self.rect = pygame.Rect(0,0,16,20)
 
     def check_ammo(self):

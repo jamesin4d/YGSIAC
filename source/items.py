@@ -5,11 +5,8 @@
 #
 #
 #--------------------------------------------------------------------
-
-
-
-
 from entities import *
+
 class Item(Base):
     def __init__(self):
         Base.__init__(self)
@@ -19,9 +16,4 @@ class Sign(Item):
         Item.__init__(self)
 
 
-class Peashooter(Item):
-    damage = 1
-    clip_size = 6
-    burst = 1
-    def __init__(self):
-        Item.__init__(self)
+

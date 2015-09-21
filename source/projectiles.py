@@ -18,7 +18,7 @@ class Shot(Entity):
     gravity = 0
     def __init__(self, position, shooter):
         Entity.__init__(self)
-        self.frames = SpriteSheet.strip_sheet('img/bullet.png',24,4,4,4)
+        self.frames = SpriteSheet.strip_sheet('img/player/shot.png',16,4,4,4)
         self.image = self.frames[0]
         self.image.set_colorkey((255,255,255))
         self.rect = self.image.get_rect(center=position)
@@ -39,6 +39,7 @@ class Shot(Entity):
                 self.kill()
         for e in entities:
             if pygame.sprite.collide_rect(self, e):
+                e.take_damage(self.owner.damage)
                 self.kill()
 
     def check_direction(self):
