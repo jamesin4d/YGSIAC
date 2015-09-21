@@ -30,7 +30,7 @@ class HUD(object):
         y = self.player.rect.y-10
         display_info(self.screen, "Ammunition: " + str(ammo),20,144,6)
         if ammo <= 0:
-            display_info(self.screen, "press 'R' to reload", 14, x,y)
+            display_info(self.screen, "press 'R' ", 12, x,y)
 
     def display_viewer(self):
         pos = [110,0]

@@ -9,8 +9,8 @@ from mapper import Mapper
 from engine import State
 from rooms import *
 from player import Player
-from projectiles import Shot
 from hud import display_info, HUD
+from weapons import *
 # GAME STATES *NOW WITH COMMENTS!!*
 import sys
 pygame.init()
@@ -304,7 +304,7 @@ class Game(State):
                     p.jump(-p.jump_speed)
                 elif e.key == j:
                     if p.canShoot:
-                        self.projectiles.add(Shot(p.rect.center, p))
+                        self.projectiles.add(Rock(p.rect.center, p))
                         p.munitions -= 1
                 elif e.key == tab:
                     self.show_debug = not self.show_debug
