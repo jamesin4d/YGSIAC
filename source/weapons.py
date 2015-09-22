@@ -59,9 +59,10 @@ class Rock(Weapon):
 
     def check_direction(self):
         if self.direction == 'right':
-            self.speed = 10
+            self.speed = 8
         elif self.direction == 'left':
-            self.speed = -10
+            self.speed = -8
+
 # --------------- LOOK --------------------------------
     def update(self, solids, entities):
         self.count += 1 # Count Rockula counts at 30 beats/sec

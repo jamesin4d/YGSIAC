@@ -50,6 +50,14 @@ class HUD(object):
             self.screen.blit(barRight[0], RightPosition)
 
 
+    def enemy_debug(self, enemy):
+        display_info(self.screen, 'Enemy Alert Value: ' + str(enemy.alerts),16,500,100)
+        display_info(self.screen, 'Enemy Alerted: ' + str(enemy.alerted),16,500,110)
+        display_info(self.screen, 'Enemy Aggression Value: ' + str(enemy.aggression),16,500,120)
+        display_info(self.screen, 'Enemy Aggressive: ' + str(enemy.aggressive),16,500,130)
+
+
+
 
     def show_debug(self):
         p = self.player

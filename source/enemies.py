@@ -36,6 +36,7 @@ class Enemy(Base):
         Base.__init__(self)
         self.target = None
         self.barriers = None
+
         self.start_x = None
         self.state = None
         self.dx = ()
@@ -43,12 +44,17 @@ class Enemy(Base):
         self.boundsL = left
         self.boundsR = right
         self.set_position((x,y))
-        self.horizontal_speed = 3
-
+        self.horizontal_speed = 0
+        self.alertFrames = SpriteSheet.strip_sheet('img/enemies/alert.png',15,16,5,16)
+        self.calm = self.alertFrames[2]
+        self.warned = self.alertFrames[1]
+        self.aware = False # just in case....
+        self.danger = self.alertFrames[0]
 
     def check_target(self):
+        self.target_x_range = False
+        self.target_y_range = False
         self.aim(self.target)
-
         target_position = self.target.get_position()
         position = self.get_position()
         tp = target_position
@@ -60,12 +66,44 @@ class Enemy(Base):
         self.dy = dy
         if 150 > diff[0] > -150:
             self.target_x_range = True
-        if 150 > diff[1] > -150:
+        if 48 > diff[1] > -48:
             self.target_y_range = True
         if self.target_x_range and self.target_y_range:
             self.target_in_range = True
         else: self.target_in_range = False
         return diff
+
+    def watch_surroundings(self):
+        if self.target_y_range:
+            self.idle = False
+            self.alerts += 0.3
+            if self.alerts >= 60:
+                self.alerts = 60
+                self.alerted = True
+                #print 'alerted!!'
+        elif not self.target_y_range:
+            self.alerts-=0.1
+            if self.alerts <= 20:
+                self.alerts = 20
+                self.alerted = False
+                #print 'not alerted!'
+        if self.target_in_range:
+            self.alerts += 1
+            self.aggression += 0.5
+            if self.aggression >= 60:
+                self.aggression = 60
+                self.aggressive = True
+
+        if self.aggressive and self.alerted:
+            pass
+        #print 'alerts:', self.alerts
+        #print 'agression', self.aggression
+
+
+
+    def display_alert(self):
+        screen = pygame.display.get_surface()
+        screen.blit(self.calm, (self.rect.right+40, self.rect.top+40))
 
     def walk_left(self):
         return self.move_x(-self.horizontal_speed)
@@ -142,17 +180,18 @@ class Security(Enemy):
         self.get_frames('img/player/heroLeft.png', 'img/player/heroRight.png', 'img/player/jumpLeft.png', 'img/player/jumpRight.png',
                         'img/player/punchLeft.png', 'img/player/punchRight.png', 'img/player/idleLeft.png', 'img/player/idleRight.png')
         Enemy.__init__(self, x, y , left, right)
-        self.health = random.randint(4,6)
-        self.max_health = 6.0
+        self.health = random.randint(6,8)
+        self.max_health = 8.0
         self.bullets = []
         self.shot_timer = random.randint(10,20)
-        self.horizontal_speed = 2
+        self.horizontal_speed = 3.5
         self.gravity = 1
 
     def update(self, objects):
         self.animate()
         self.move_and_check(objects)
         self.check_target()
+        self.watch_surroundings()
         self.roam()
 
 
