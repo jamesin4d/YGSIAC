@@ -281,7 +281,8 @@ class Game(State):
         s = pg.K_s
         d = pg.K_d
         a = pg.K_a
-        j = pg.K_j
+        h_key = pg.K_h
+        k_key = pg.K_k
         up = pg.K_UP
         down = pg.K_DOWN
         left = pg.K_LEFT
@@ -298,16 +299,20 @@ class Game(State):
                     sys.exit()
                 if e.key == a:
                     p.walk(-p.walk_speed)
-                elif e.key == d:
+                if e.key == d:
                     p.walk(p.walk_speed)
-                elif e.key == w:
+                if e.key == w:
                     p.jump(-p.jump_speed)
-                elif e.key == j:
+                if e.key == h_key:
                     if p.canShoot:
                         self.projectiles.add(Rock(p.rect.center, p))
                         p.munitions -= 1
-                elif e.key == tab:
+                if e.key == k_key:
+                    p.punch(False)
+                if e.key == tab:
                     self.show_debug = not self.show_debug
+                    for en in self.enemies:
+                        self.heads_up_display.enemy_debug(en)
                 elif e.key == up:
                     if self.show_debug:
                         p.jump_speed += 0.25
@@ -338,6 +343,8 @@ class Game(State):
                     p.move_y(0)
                 elif e.key == r:
                     p.reload()
+                elif e.key == k_key:
+                    p.punch(True)
 
     def check_collisions(self):
         # set up some local variables

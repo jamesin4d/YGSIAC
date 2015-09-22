@@ -12,7 +12,7 @@ import math
 # --------------------------------------------------------------------
 # A simple unidirectional bullet class, the 'owner' is whoever shot the bullet
 # ---------------------------------------------------------------------
-class Shot(Entity):
+class Bullets(Entity):
     direction = None
     speed = 0
     gravity = 0
@@ -55,7 +55,7 @@ class Shot(Entity):
 #-----------------------------------------------------------------
 # A more complex Bullet class with an angle, used for shooting with the mouse
 #-----------------------------------------------------------------
-class Bullet(Entity):
+class ComplexBullet(Entity):
     def __init__(self, loc, angle):
         Entity.__init__(self)
         self.frames = SpriteSheet.strip_sheet('img/bullet.png',24,4,4,4)

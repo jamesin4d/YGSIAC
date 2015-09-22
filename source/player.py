@@ -56,6 +56,19 @@ class Player(Base):
             self.munitions = self.weapon.clip_size
             self.canShoot = True
 
+    def punch(self, key_released):
+        if not key_released:
+            self.attack_released = False
+            self.attacking = True
+            self.idle = False
+        if key_released:
+            self.attack_released = True
+            self.attacking = True
+            self.idle = False
+
+
+
+
     def update(self, objects):
         self.animate()
         self.move_and_check(objects)

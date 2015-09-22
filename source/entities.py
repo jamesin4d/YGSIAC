@@ -55,6 +55,8 @@ class Base(Entity):
     onGround = False # true if entity has bottom collision
     canJump = False # true if on ground is true
     direction = None # a string of either 'left'/'right'/'up'
+    attacking = False
+    attack_released = False
 
     walking_frames_left = [] # lists to hold walking frames
     walking_frames_right = [] # pulled from a spritesheet
@@ -76,7 +78,9 @@ class Base(Entity):
     collide_top = False
     collide_bottom = False
 
-    idle_timer = 0
+
+    action_timer = 0
+    idle = False
 
     def __init__(self):
         Entity.__init__(self)
@@ -206,6 +210,10 @@ class Base(Entity):
             self.moving = True
         else: self.moving = False
 
+        if self.moving:
+            self.idle = False
+        if not self.moving:
+            self.idle = True
 
     def check_for_collision(self, xvel, yvel, objects):
         self.onGround = False
@@ -226,6 +234,33 @@ class Base(Entity):
                     self.collide_bottom = True
 
     def animate(self):
+        if self.attacking:
+            if not self.attack_released:
+                self.action_timer = 0
+                if self.direction == 'left':
+                    self.image = self.punch_frames_left[2]
+                if self.direction == 'right':
+                    self.image = self.punch_frames_right[0]
+            if self.attack_released:
+                self.action_timer += 1
+                if self.action_timer == 2:
+                    if self.direction == 'left':
+                        self.rect.x -= 2
+                        self.image = self.punch_frames_left[0]
+                    if self.direction == 'right':
+                        self.rect.x += 2
+                        self.image = self.punch_frames_right[1]
+                if self.action_timer == 3:
+                    if self.direction == 'left':
+                        self.rect.x -= 4
+                        self.image = self.punch_frames_left[1]
+                    if self.direction == 'right':
+                        self.rect.x += 4
+                        self.image = self.punch_frames_right[2]
+                if self.action_timer == 6:
+                    self.attacking = False
+                    self.idle = True
+
         if self.moving:
             if self.direction == "left":
                 frame = (self.rect.x//15) % len(self.walking_frames_left)
@@ -246,23 +281,23 @@ class Base(Entity):
                 frame = (self.rect.y//10) % len(self.jump_frames_right)
                 self.image = self.jump_frames_right[frame]
 
-        if not self.moving:
-            self.idle_timer += .5
-            if self.idle_timer == 12:
-                self.idle_timer = 0
+        if self.idle and not self.attacking:
+            self.action_timer += .5
+            if self.action_timer == 12:
+                self.action_timer = 0
             if self.direction == "right":
-                if self.idle_timer > 0:
+                if self.action_timer > 0:
                     self.image = self.idle_frames_right[0]
-                if self.idle_timer > 4:
+                if self.action_timer > 4:
                     self.image = self.idle_frames_right[1]
-                if self.idle_timer > 8:
+                if self.action_timer > 8:
                     self.image = self.idle_frames_right[2]
             if self.direction == "left":
-                if self.idle_timer > 0:
+                if self.action_timer > 0:
                     self.image = self.idle_frames_left[0]
-                if self.idle_timer > 4:
+                if self.action_timer > 4:
                     self.image = self.idle_frames_left[1]
-                if self.idle_timer > 8:
+                if self.action_timer > 8:
                     self.image = self.idle_frames_left[2]
 
     def update(self, objects):
