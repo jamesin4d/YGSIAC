@@ -31,12 +31,16 @@ class StartRoom(Room):
         self.player_pos_right = (740, 550)
         self.map_file = 'maps/cae.json'
         enemies = [
-            [Security(300, 200, 250, 350)],
+            [Rat(300, 200, 150, 450)],
+            [Bat(500,60,250,600)],
+            [Rat(300, 450, 300, 700)],
+            [Rat(600, 50, 225, 620)],
+
+
         ]
         # for each arrayed item:
         for e in enemies:
             enemy = e[0]
-
             self.enemy_list.append(enemy)
 
 

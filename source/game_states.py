@@ -232,9 +232,6 @@ class Game(State):
         self.map_parser = Mapper()
         self.map_parser.open_map(self.current_room.map_file)
         self.map_parser.reinit()
-
-
-
         self.player = Player()
         self.player.set_position(self.current_room.player_pos_left)
         self.heads_up_display = HUD(self.player)
@@ -298,15 +295,13 @@ class Game(State):
                     self.close_game()
                     sys.exit()
                 if e.key == a:
-                    p.walk(-p.walk_speed)
+                    p.walk_left()
                 if e.key == d:
-                    p.walk(p.walk_speed)
+                    p.walk_right()
                 if e.key == w:
                     p.jump(-p.jump_speed)
                 if e.key == h_key:
-                    if p.canShoot:
-                        self.projectiles.add(Rock(p.rect.center, p))
-                        p.munitions -= 1
+                    p.punch(False)
                 if e.key == k_key:
                     p.punch(False)
                 if e.key == tab:
@@ -331,7 +326,6 @@ class Game(State):
                 elif e.key == pg.K_f:
                     if self.show_debug:
                         p.gravity -= 0.1
-
             elif e.type == keyrelease:
                 if e.key == a and p.xvelocity < 0:
                     p.move_x(0)
@@ -344,6 +338,11 @@ class Game(State):
                 elif e.key == r:
                     p.reload()
                 elif e.key == k_key:
+                    p.punch(True)
+                elif e.key == h_key:
+                    if p.canShoot:
+                        self.projectiles.add(Rock(p.rect.center,p))
+                        p.munitions -= 1
                     p.punch(True)
 
     def check_collisions(self):
@@ -361,7 +360,6 @@ class Game(State):
         playerExitStageRight = player.rect.x > 800
         playerExitStageLeft = player.rect.x < 0
         if playerExitStageRight: # if the player is off the screen
-
             self.current_room_number += 1         # cycle the map up
             self.current_room = self.room_list[self.current_room_number]
             L.open_map(self.current_room.map_file)   # call new instance method to load new room

@@ -31,12 +31,14 @@ class Enemy(Base):
     target_y_range = False
     horizontal_speed = 0
     vertical_speed = 0
+    damage = 0
+    has_hit_player = False
+    hit_timer = 0
 
     def __init__(self, x, y , left, right):
         Base.__init__(self)
         self.target = None
         self.barriers = None
-
         self.start_x = None
         self.state = None
         self.dx = ()
@@ -44,7 +46,7 @@ class Enemy(Base):
         self.boundsL = left
         self.boundsR = right
         self.set_position((x,y))
-        self.horizontal_speed = 0
+        self.walk_speed = 0
         self.alertFrames = SpriteSheet.strip_sheet('img/enemies/alert.png',15,16,5,16)
         self.calm = self.alertFrames[2]
         self.warned = self.alertFrames[1]
@@ -71,6 +73,16 @@ class Enemy(Base):
         if self.target_x_range and self.target_y_range:
             self.target_in_range = True
         else: self.target_in_range = False
+        contact = pygame.sprite.collide_rect(self, self.target)
+        if contact:
+            if self.hit_timer == 0:
+                self.has_hit_player = True
+                self.target.take_damage(self.damage)
+        if self.has_hit_player:
+            self.hit_timer += 1
+            if self.hit_timer >= 20:
+                self.has_hit_player = False
+                self.hit_timer = 0
         return diff
 
     def watch_surroundings(self):
@@ -80,49 +92,53 @@ class Enemy(Base):
             if self.alerts >= 60:
                 self.alerts = 60
                 self.alerted = True
-                #print 'alerted!!'
         elif not self.target_y_range:
             self.alerts-=0.1
-            if self.alerts <= 20:
-                self.alerts = 20
+            if self.alerts <= 0:
+                self.alerts = 0
                 self.alerted = False
-                #print 'not alerted!'
         if self.target_in_range:
             self.alerts += 1
             self.aggression += 0.5
             if self.aggression >= 60:
                 self.aggression = 60
                 self.aggressive = True
-
+        elif not self.target_in_range:
+            self.aggression -= 1
+            self.alerts -= .5
+            if self.aggression <= 0:
+                self.aggressive = False
+                self.aggression = 0
+            if self.alerts <= 0:
+                self.alerted = False
+                self.alerts = 0
         if self.aggressive and self.alerted:
-            pass
-        #print 'alerts:', self.alerts
-        #print 'agression', self.aggression
-
-
+            self.boundsL = 100
+            self.boundsR = 700
 
     def display_alert(self):
-        screen = pygame.display.get_surface()
-        screen.blit(self.calm, (self.rect.right+40, self.rect.top+40))
+        if not self.aggressive or self.alerted:
+            self.image.blit(self.calm, (0, 0))
+            if self.alerted:
+                self.image.blit(self.warned,(0,0))
+            if self.aggressive:
+                self.image.blit(self.danger,(0,0))
 
-    def walk_left(self):
-        return self.move_x(-self.horizontal_speed)
 
-    def walk_right(self):
-        return self.move_x(self.horizontal_speed)
 
     def get_started(self):
         if self.xvelocity == 0:
             self.xvelocity += 2
-            if self.xvelocity > self.horizontal_speed:
-                self.xvelocity = self.horizontal_speed
+            if self.xvelocity > self.walk_speed:
+                self.xvelocity = self.walk_speed
 
     def roam(self):
-        self.get_started()
         if self.rect.x >= self.boundsR:
             self.walk_left()
         if self.rect.x <= self.boundsL:
             self.walk_right()
+        if self.collide_right or self.collide_left:
+            self.jump(-6)
 
 
     def pursue_directly(self):
@@ -177,15 +193,16 @@ class Enemy(Base):
 
 class Security(Enemy):
     def __init__(self, x, y , left, right):
-        self.get_frames('img/player/heroLeft.png', 'img/player/heroRight.png', 'img/player/jumpLeft.png', 'img/player/jumpRight.png',
-                        'img/player/punchLeft.png', 'img/player/punchRight.png', 'img/player/idleLeft.png', 'img/player/idleRight.png')
+        self.get_frames('img/enemies/basic/basicLeft.png', 'img/enemies/basic/basicRight.png', 'img/enemies/basic/jumpLeft.png', 'img/enemies/basic/jumpRight.png',
+                        'img/enemies/basic/punchLeft.png', 'img/enemies/basic/punchRight.png', 'img/enemies/basic/idleLeft.png', 'img/enemies/basic/idleRight.png')
         Enemy.__init__(self, x, y , left, right)
         self.health = random.randint(6,8)
         self.max_health = 8.0
         self.bullets = []
         self.shot_timer = random.randint(10,20)
-        self.horizontal_speed = 3.5
+        self.walk_speed = 3.5
         self.gravity = 1
+        self.get_started()
 
     def update(self, objects):
         self.animate()
@@ -193,6 +210,79 @@ class Security(Enemy):
         self.check_target()
         self.watch_surroundings()
         self.roam()
+        self.display_alert()
+
+
+class Rat(Enemy):
+    def __init__(self, x, y , left, right):
+        self.rat_frames()
+        Enemy.__init__(self, x, y , left, right)
+        self.health = random.randint(3,6)
+        self.max_health = 6.0
+        self.walk_speed = 2
+        self.damage = 1
+        self.gravity = 1
+        self.get_started()
+
+    def rat_frames(self):
+        rat_left = SpriteSheet.strip_sheet('img/enemies/rat/ratLeft.png',128,32,32,32)
+        rat_right = SpriteSheet.strip_sheet('img/enemies/rat/ratRight.png',128,32,32,32)
+        self.walking_frames_left = rat_left
+        self.walking_frames_right = rat_right
+        self.image = self.walking_frames_right[0]
+        self.rect = pygame.Rect((0,0,32,32))
+
+    def animate(self):
+        if self.direction == "left":
+            frame = (self.rect.x//15) % len(self.walking_frames_left)
+            self.image = self.walking_frames_left[frame]
+        if self.direction == "right":
+            frame = (self.rect.x//15) % len(self.walking_frames_right)
+            self.image = self.walking_frames_right[frame]
+
+
+    def update(self, objects):
+        self.move_and_check(objects)
+        self.animate()
+        self.check_target()
+        self.watch_surroundings()
+        self.roam()
+
+class Bat(Enemy):
+    def __init__(self, x, y , left, right):
+        self.bat_frames()
+        Enemy.__init__(self, x, y , left, right)
+        self.health = random.randint(3,6)
+        self.max_health = 6.0
+        self.walk_speed = 4
+        self.damage = 1
+        self.gravity = 0
+        self.get_started()
+
+    def bat_frames(self):
+        bat_left = SpriteSheet.strip_sheet('img/enemies/bat/bat.png',112,20,28,20)
+        bat_right = SpriteSheet.strip_sheet('img/enemies/bat/bat.png',112,20,28,20)
+        self.walking_frames_left = bat_left
+        self.walking_frames_right = bat_right
+        self.image = self.walking_frames_right[0]
+        self.rect = pygame.Rect((0,0,32,32))
+
+    def animate(self):
+        if self.direction == "left":
+            frame = (self.rect.x//15) % len(self.walking_frames_left)
+            self.image = self.walking_frames_left[frame]
+        if self.direction == "right":
+            frame = (self.rect.x//15) % len(self.walking_frames_right)
+            self.image = self.walking_frames_right[frame]
+
+
+    def update(self, objects):
+        self.move_and_check(objects)
+        self.animate()
+        self.check_target()
+        self.watch_surroundings()
+        self.roam()
+
 
 
 
