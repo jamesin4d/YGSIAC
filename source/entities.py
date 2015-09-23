@@ -155,9 +155,11 @@ class Base(Entity):
     def move(self, x,y):
         return self.move_x(x), self.move_y(y)
 
-    def walk(self, speed):
-        return self.move_x(speed)
+    def walk_left(self):
+        return self.move_x(-self.walk_speed)
 
+    def walk_right(self):
+        return self.move_x(self.walk_speed)
 
     def jump(self, speed):
         if self.canJump:

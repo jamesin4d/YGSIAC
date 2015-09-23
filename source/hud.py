@@ -40,7 +40,7 @@ class HUD(object):
         health = self.player.health
         frames = SpriteSheet.strip_sheet(self.healthBarImage, 320,32,32,32)
         barLeft = [frames[0],frames[7],frames[8], frames[9]]
-        barRight = [frames[1],frames[2],frames[3],frames[4],frames[5]]
+        barRight = [frames[1],frames[2],frames[3],frames[4],frames[5],frames[6]]
         heartPosition = [5,0]
         LeftPosition = [42,0]
         RightPosition = [74,0]
@@ -48,6 +48,31 @@ class HUD(object):
         if health == 9:
             self.screen.blit(barLeft[0], LeftPosition)
             self.screen.blit(barRight[0], RightPosition)
+        if health == 8:
+            self.screen.blit(barLeft[0], LeftPosition)
+            self.screen.blit(barRight[1], RightPosition)
+        if health == 7:
+            self.screen.blit(barLeft[0], LeftPosition)
+            self.screen.blit(barRight[2], RightPosition)
+        if health == 6:
+            self.screen.blit(barLeft[0], LeftPosition)
+            self.screen.blit(barRight[3], RightPosition)
+        if health == 5:
+            self.screen.blit(barLeft[0], LeftPosition)
+            self.screen.blit(barRight[4], RightPosition)
+        if health == 4:
+            self.screen.blit(barLeft[1], LeftPosition)
+            self.screen.blit(barRight[5], RightPosition)
+        if health == 3:
+            self.screen.blit(barLeft[2], LeftPosition)
+            self.screen.blit(barRight[5], RightPosition)
+        if health == 2:
+            self.screen.blit(barLeft[3], LeftPosition)
+            self.screen.blit(barRight[5], RightPosition)
+        if health == 1:
+            self.screen.blit(barLeft[3], LeftPosition)
+            self.screen.blit(barRight[5], RightPosition)
+
 
 
     def enemy_debug(self, enemy):

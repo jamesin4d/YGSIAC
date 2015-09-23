@@ -66,6 +66,23 @@ class Player(Base):
             self.attacking = True
             self.idle = False
 
+    def check_for_collision(self, xvel, yvel, objects):
+        self.onGround = False
+        for obj in objects:
+            if pygame.sprite.collide_rect(self, obj):
+                if xvel < 0:
+                    self.rect.left = obj.rect.right
+                    self.collide_left = True
+                if xvel > 0:
+                    self.rect.right = obj.rect.left
+                    self.collide_right = True
+                if yvel < 0:
+                    self.rect.top = obj.rect.bottom
+                    self.collide_top = True
+                if yvel > 0:
+                    self.rect.bottom = obj.rect.top
+                    self.onGround = True
+                    self.collide_bottom = True
 
 
 
