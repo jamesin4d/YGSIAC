@@ -34,6 +34,8 @@ class Player(Base):
     jump_speed = 11
     gravity = 1.5
     direction = 'right'
+    melee_damage = .5
+    throwing = False
     def __init__(self):
         Base.__init__(self)
         self.get_frames('img/player/heroLeft.png', 'img/player/heroRight.png','img/player/jumpLeft.png','img/player/jumpRight.png',
@@ -41,8 +43,7 @@ class Player(Base):
         if self.weapon is not None:
             self.canShoot = True
             self.damage = self.weapon.damage
-            print self.damage
-        self.rect = pygame.Rect(0,0,16,20)
+        self.rect = pygame.Rect(0,0,16,16)
 
     def check_ammo(self):
         if self.weapon is not None:
@@ -56,33 +57,19 @@ class Player(Base):
             self.munitions = self.weapon.clip_size
             self.canShoot = True
 
-    def punch(self, key_released):
+
+    def attack(self, attack_type, key_released):
         if not key_released:
+            self.action_timer = 0
             self.attack_released = False
             self.attacking = True
             self.idle = False
+            if attack_type == 'melee': self.melee = True
+            if attack_type == 'throwing': self.throwing = True
         if key_released:
             self.attack_released = True
             self.attacking = True
             self.idle = False
-
-    def check_for_collision(self, xvel, yvel, objects):
-        self.onGround = False
-        for obj in objects:
-            if pygame.sprite.collide_rect(self, obj):
-                if xvel < 0:
-                    self.rect.left = obj.rect.right
-                    self.collide_left = True
-                if xvel > 0:
-                    self.rect.right = obj.rect.left
-                    self.collide_right = True
-                if yvel < 0:
-                    self.rect.top = obj.rect.bottom
-                    self.collide_top = True
-                if yvel > 0:
-                    self.rect.bottom = obj.rect.top
-                    self.onGround = True
-                    self.collide_bottom = True
 
 
 

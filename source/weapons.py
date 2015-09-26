@@ -39,7 +39,7 @@ class Rock(Weapon):
         self.check_direction() # this method is called on __init__ cause that's the only time we need to know it
         # -----here's a section of interest ------
         self.weight = random.randint(1,10) # every rock gets a unique random integer between (a, b)
-        self.gravity = -1 # the gravity begins as very slight anti-gravity
+        self.gravity = -2 # the gravity begins as very slight anti-gravity
 
     # uninteresting crap
     def remove(self, screen_rect):
