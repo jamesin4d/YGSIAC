@@ -31,17 +31,27 @@ class StartRoom(Room):
         self.player_pos_right = (740, 550)
         self.map_file = 'maps/cae.json'
         enemies = [
-            [Rat(300, 200, 150, 450)],
-            [Bat(500,60,250,600)],
-            [Rat(300, 450, 300, 700)],
-            [Rat(600, 50, 225, 620)],
 
+        ]
+
+        items = [
+            [Candle(100,100)],
+            [Candle(200,100)],
+            [Candle(300,100)],
+            [Candle(500,100)],
+            [Candle(500,250)],
+            [Candle(600,300)],
+            [Candle(650,600)],
+            [Candle(500,550)],
 
         ]
         # for each arrayed item:
         for e in enemies:
             enemy = e[0]
             self.enemy_list.append(enemy)
+        for i in items:
+            item = i[0]
+            self.item_list.append(item)
 
 
 
@@ -49,13 +59,31 @@ class RoomTwoTheCave(Room):
     def __init__(self):
         Room.__init__(self)
         self.map_file = "maps/cave.json"
-        self.player_pos_left = (15, 60)
+        self.player_pos_left = (15, 580)
         enemies = [
-            [Security(300, 200, 250, 350)],
         ]
+
+        items = [
+            [Candle(80,110)],
+            [Candle(200,100)],
+            [Candle(345,125)],
+            [Candle(500,100)],
+            [Candle(450,250)],
+            [Candle(600,250)],
+            [Candle(650,600)],
+            [Candle(50,550)],
+            [Candle(150,530)],
+            [Candle(200,500)],
+            [Candle(275,550)],
+
+
+        ]
+
         # for each arrayed item:
         for e in enemies:
             enemy = e[0]
-
             self.enemy_list.append(enemy)
 
+        for i in items:
+            item = i[0]
+            self.item_list.append(item)

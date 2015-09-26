@@ -15,5 +15,27 @@ class Sign(Item):
     def __init__(self):
         Item.__init__(self)
 
+class Candle(Item):
+    def __init__(self,x,y):
+        Item.__init__(self)
+        candle_sheet = 'img/entities/candle/candle.png'
+        self.frames = SpriteSheet.strip_sheet(candle_sheet,128,16,16,16)
+        self.image = self.frames[0]
+        self.rect = self.image.get_rect()
+        self.set_position((x,y))
+        self.animation_timer = 0
+
+    def animate(self):
+        random_frame = random.randint(0,7)
+        self.animation_timer += 1
+        if self.animation_timer >= 5:
+            self.image = self.frames[random_frame]
+            self.animation_timer = 0
+
+    def update(self):
+        self.animate()
+
+
+
 
 

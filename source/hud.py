@@ -8,8 +8,6 @@
 
 from utilities import *
 
-
-
 class HUD(object):
     def __init__(self, player):
         self.player = player
@@ -98,6 +96,8 @@ class HUD(object):
         print_info(self.screen,"Collide Right: " + str(p.collide_right),10,9)
         print_info(self.screen,"Collide Top: " + str(p.collide_top),10,10)
         print_info(self.screen,"Collide bottom: " + str(p.collide_bottom),10,11)
+        print_info(self.screen,"Player melee: " + str(p.melee),10,12)
+
 
 
 

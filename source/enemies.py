@@ -6,6 +6,7 @@
 #
 #--------------------------------------------------------------------
 from entities import *
+from projectiles import *
 
 # ---------------------------------------------------------------------------------------------------
 # so the idea here is: subclass the Base class so that we have an
@@ -34,6 +35,7 @@ class Enemy(Base):
     damage = 0
     has_hit_player = False
     hit_timer = 0
+    bullets = []
 
     def __init__(self, x, y , left, right):
         Base.__init__(self)
@@ -73,11 +75,17 @@ class Enemy(Base):
         if self.target_x_range and self.target_y_range:
             self.target_in_range = True
         else: self.target_in_range = False
+
         contact = pygame.sprite.collide_rect(self, self.target)
         if contact:
-            if self.hit_timer == 0:
+            if self.target.attacking:
                 self.has_hit_player = True
-                self.target.take_damage(self.damage)
+                if self.target.melee:
+                    self.take_damage(self.target.melee_damage)
+            elif not self.target.attacking:
+                if self.hit_timer == 0:
+                    self.has_hit_player = True
+                    self.target.take_damage(self.damage)
         if self.has_hit_player:
             self.hit_timer += 1
             if self.hit_timer >= 20:
@@ -113,6 +121,7 @@ class Enemy(Base):
                 self.alerted = False
                 self.alerts = 0
         if self.aggressive and self.alerted:
+
             self.boundsL = 100
             self.boundsR = 700
 
@@ -138,7 +147,7 @@ class Enemy(Base):
         if self.rect.x <= self.boundsL:
             self.walk_right()
         if self.collide_right or self.collide_left:
-            self.jump(-6)
+            self.jump(-7)
 
 
     def pursue_directly(self):
@@ -203,14 +212,19 @@ class Security(Enemy):
         self.walk_speed = 3.5
         self.gravity = 1
         self.get_started()
+        self.bullets = []
+
+    def fire_round(self):
+        self.bullets.append(Bullets(self.rect.center, self))
 
     def update(self, objects):
+        if self.aggressive:
+            self.fire_round()
         self.animate()
         self.move_and_check(objects)
         self.check_target()
         self.watch_surroundings()
         self.roam()
-        self.display_alert()
 
 
 class Rat(Enemy):

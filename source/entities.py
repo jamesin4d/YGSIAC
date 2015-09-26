@@ -81,6 +81,8 @@ class Base(Entity):
 
     action_timer = 0
     idle = False
+    melee = False
+    throwing = False
 
     def __init__(self):
         Entity.__init__(self)
@@ -260,9 +262,10 @@ class Base(Entity):
                         self.rect.x += 4
                         self.image = self.punch_frames_right[2]
                 if self.action_timer == 6:
+                    if self.melee: self.melee = False
+                    if self.throwing: self.throwing = False
                     self.attacking = False
                     self.idle = True
-
         if self.moving:
             if self.direction == "left":
                 frame = (self.rect.x//15) % len(self.walking_frames_left)
@@ -276,12 +279,13 @@ class Base(Entity):
             if self.direction == "right":
                 self.image = self.jump_frames_right[0]
         if self.falling:
-            if self.direction == "left":
-                frame = (self.rect.y//10) % len(self.jump_frames_left)
-                self.image = self.jump_frames_left[frame]
-            if self.direction == "right":
-                frame = (self.rect.y//10) % len(self.jump_frames_right)
-                self.image = self.jump_frames_right[frame]
+            if not self.attacking:
+                if self.direction == "left":
+                    frame = (self.rect.y//10) % len(self.jump_frames_left)
+                    self.image = self.jump_frames_left[frame]
+                if self.direction == "right":
+                    frame = (self.rect.y//10) % len(self.jump_frames_right)
+                    self.image = self.jump_frames_right[frame]
 
         if self.idle and not self.attacking:
             self.action_timer += .5
