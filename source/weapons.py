@@ -76,11 +76,12 @@ class Rock(Weapon):
             if self.gravity > 3:
                 self.gravity = 3
         if self.collide_left:
-            self.speed = 4
+            self.speed = 8
         if self.collide_right:
-            self.speed = -4
+            self.speed = -8
         if self.collide_top:
-            self.gravity = 2
+            self.gravity += 2
+
     def check_direction(self):
         if self.direction == 'right':
             self.speed = 8

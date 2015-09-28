@@ -11,6 +11,7 @@ from rooms import *
 from player import Player
 from hud import HUD
 from weapons import *
+import json
 # GAME STATES *NOW WITH COMMENTS!!*
 import sys
 pygame.init()
@@ -265,6 +266,13 @@ class GameOver(State):
                 self.close_game()
             if e.type == pygame.KEYDOWN:
                 self.quit()
+
+
+def jdefault(obj):
+    return obj.__dict__
+
+
+
 #------------------------ Game state!--------------------------------------------------------------
 class Game(State):
     def __init__(self):
@@ -341,6 +349,7 @@ class Game(State):
         left_arrow = pg.K_LEFT
         right_arrow = pg.K_RIGHT
         r_key = pg.K_r
+        t_key = pg.K_t
         tab_key = pg.K_TAB
         for e in pg.event.get():
             if e.type == pg.VIDEORESIZE:
@@ -364,6 +373,8 @@ class Game(State):
                     p.attack('throwing',False)
                 if e.key == k_key:
                     p.attack('melee',False)
+                if e.key == t_key:
+                    p.load_progress()
                 if e.key == tab_key:
                     self.show_debug = not self.show_debug
                     for en in self.enemies:
@@ -396,8 +407,7 @@ class Game(State):
                 elif e.key == s_key and p.yvelocity > 0:
                     p.move_y(0)
                 elif e.key == r_key:
-                    pass
-                    #p.reload()
+                    p.save_progress()
                 elif e.key == k_key:
                     p.attack('',True)
                 elif e.key == j_key:
@@ -408,12 +418,11 @@ class Game(State):
 
     def check_collisions(self):
         # set up some local variables
-        L = self.map_parser
-        solids = L.collisionList
+        map_parser = self.map_parser
+        solids = map_parser.collisionList
         player = self.player
         projectiles = self.projectiles
         player.update(solids)
-        self.enemy_projectiles.update(solids)
         for en in self.enemies:
             en.update(solids)
             for b in en.bullets:
@@ -426,15 +435,15 @@ class Game(State):
         if playerExitStageRight: # if the player is off the screen
             self.current_room_number += 1         # cycle the map up
             self.current_room = self.room_list[self.current_room_number]
-            L.open_map(self.current_room.map_file)   # call new instance method to load new room
-            L.reinit()          # the reinitialize method to build new room
+            map_parser.open_map(self.current_room.map_file)   # call new instance method to load new room
+            map_parser.reinit()          # the reinitialize method to build new room
             player.set_position(self.current_room.player_pos_left)
             self.reset_groups()  # finally reset the Game state's sprite groups
         elif playerExitStageLeft:
             self.current_room_number -= 1
             self.current_room = self.room_list[self.current_room_number]
-            L.open_map(self.current_room.map_file)
-            L.reinit()
+            map_parser.open_map(self.current_room.map_file)
+            map_parser.reinit()
             player.set_position(self.current_room.player_pos_right)
             self.reset_groups()
 
@@ -449,7 +458,6 @@ class Game(State):
         self.enemies.draw(self.screen)
         self.items.draw(self.screen)
         self.projectiles.draw(self.screen)
-        self.enemy_projectiles.draw(self.screen)
         self.mainSprite.draw(self.screen)
         if self.show_debug:
             self.heads_up_display.show_debug()
