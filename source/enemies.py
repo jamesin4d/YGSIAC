@@ -32,28 +32,32 @@ class Enemy(Base):
     target_y_range = False
     horizontal_speed = 0
     vertical_speed = 0
+
+    target = None
+    barriers = None
+    state = None
+    dx = ()
+    dy = ()
+    boundsL = None
+    boundsR = None
     damage = 0
     has_hit_player = False
     hit_timer = 0
     bullets = []
+    walk_speed = 0
+
 
     def __init__(self, x, y , left, right):
         Base.__init__(self)
-        self.target = None
-        self.barriers = None
-        self.start_x = None
-        self.state = None
-        self.dx = ()
-        self.dy = ()
         self.boundsL = left
         self.boundsR = right
         self.set_position((x,y))
-        self.walk_speed = 0
-        self.alertFrames = SpriteSheet.strip_sheet('img/enemies/alert.png',15,16,5,16)
-        self.calm = self.alertFrames[2]
-        self.warned = self.alertFrames[1]
+        alertFrames = SpriteSheet.strip_sheet('img/enemies/alert.png',15,16,5,16)
+        self.calm = alertFrames[2]
+        self.warned = alertFrames[1]
         self.aware = False # just in case....
-        self.danger = self.alertFrames[0]
+        self.danger = alertFrames[0]
+
 
     def check_target(self):
         self.target_x_range = False

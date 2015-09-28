@@ -10,7 +10,7 @@ from engine import *
 
 def main():
     pygame.init()
-    pygame.display.set_mode((800, 600))
+    pygame.display.set_mode((800, 600), pygame.RESIZABLE)
     pygame.display.set_caption("You've Gotten Stuck In A Cave")
     e = Engine()
     e.current_state = Logo()

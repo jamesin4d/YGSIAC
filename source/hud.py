@@ -27,12 +27,13 @@ class HUD(object):
         x = self.player.rect.x
         y = self.player.rect.y-10
         display_info(self.screen, "Ammunition: " + str(ammo),20,144,6)
-        if ammo <= 0:
-            display_info(self.screen, "press 'R' ", 12, x,y)
+        #if ammo <= 0:
+         #   display_info(self.screen, "press 'R' ", 12, x,y)
 
     def display_viewer(self):
         pos = [110,0]
         self.screen.blit(self.box, pos)
+        self.box.blit(self.player.weapon.image, (16,16))
 
     def display_health_bar(self):
         health = self.player.health

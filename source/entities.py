@@ -281,11 +281,9 @@ class Base(Entity):
         if self.falling:
             if not self.attacking:
                 if self.direction == "left":
-                    frame = (self.rect.y//10) % len(self.jump_frames_left)
-                    self.image = self.jump_frames_left[frame]
+                    self.image = self.jump_frames_left[1]
                 if self.direction == "right":
-                    frame = (self.rect.y//10) % len(self.jump_frames_right)
-                    self.image = self.jump_frames_right[frame]
+                    self.image = self.jump_frames_right[1]
 
         if self.idle and not self.attacking:
             self.action_timer += .5

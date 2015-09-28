@@ -31,8 +31,8 @@ class Player(Base):
     onGround = False
     canJump = False
     walk_speed = 5
-    jump_speed = 11
-    gravity = 1.5
+    jump_speed = 9.75
+    gravity = 1.0
     direction = 'right'
     melee_damage = .5
     throwing = False

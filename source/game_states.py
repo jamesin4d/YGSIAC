@@ -15,6 +15,7 @@ from weapons import *
 import sys
 pygame.init()
 
+
 # -----------------Splash screen state---------------------------------------------------------
 class Logo(State):
     def __init__(self):
@@ -24,6 +25,7 @@ class Logo(State):
         self.image = pygame.image.load("img/logo.png")
         self.alpha = 0
         self.image.set_alpha(0)
+        self.image = pygame.transform.scale(self.image, self.screen.get_size())
         self.image_pos = center(self.image.get_size(), self.screen.get_size())
         self.fade = False
         self.lifetime = Timer(1)
@@ -56,6 +58,9 @@ class Logo(State):
 
     def check_events(self):
         for e in pygame.event.get():
+            if e.type == pygame.VIDEORESIZE:
+                self.image = pygame.transform.scale(self.image, (e.w, e.h))
+                self.screen = pygame.display.set_mode((e.w, e.h), pygame.RESIZABLE)
             if e.type == pygame.QUIT:
                 self.close_game()
 # any key skips it, cause I really hate when you cant skip things
@@ -122,10 +127,10 @@ class StartScreen(State):
         self.next = Game()
         self.screen.fill((200,200,200))
         self.image = pygame.image.load('img/startscreen.png')
+        self.image = pygame.transform.scale(self.image, self.screen.get_size())
         self.image_pos = center(self.image.get_size(), self.screen.get_size())
         self.ups = True
         self.cursor = Cursor()
-
 
     def update_screen(self):
         if self.ups:
@@ -150,7 +155,7 @@ class StartScreen(State):
                 if e.key == pygame.K_ESCAPE:
                     self.next = RealitySimulator()
                     self.quit()
-
+# ---------------Options state-------------------------------------------------
 class Options(State):
      def __init__(self):
         State.__init__(self)
@@ -158,6 +163,7 @@ class Options(State):
         self.done = False
         self.screen.fill((40,40,50))
         self.image = pygame.image.load('img/optionsscreen.png')
+        self.image = pygame.transform.scale(self.image, self.screen.get_size())
         self.image_pos = center(self.image.get_size(), self.screen.get_size())
         self.ups = True
 
@@ -178,7 +184,6 @@ class Options(State):
                  if e.key == pygame.K_ESCAPE:
                      self.next = RealitySimulator()
                      self.quit()
-
 # --------------------now...close your eyes...----------------------------------------------------
 class RealitySimulator(State):
     def __init__(self):
@@ -188,6 +193,7 @@ class RealitySimulator(State):
         self.image = pygame.image.load("img/quitscreen.png")
         self.alpha = 0
         self.image.set_alpha(0)
+        self.image = pygame.transform.scale(self.image, self.screen.get_size())
         self.image_pos = center(self.image.get_size(), self.screen.get_size())
         self.fade = False
         self.lifetime = Timer(1)
@@ -230,6 +236,7 @@ class GameOver(State):
         self.next = StartScreen()
         self.screen.fill((40,40,40))
         self.image = pygame.image.load("img/gameover.png")
+        self.image = pygame.transform.scale(self.image, self.screen.get_size())
         self.image_pos = center(self.image.get_size(), self.screen.get_size())
 
     def update_screen(self):
@@ -320,6 +327,8 @@ class Game(State):
         r = pg.K_r
         tab = pg.K_TAB
         for e in pg.event.get():
+            if e.type == pg.VIDEORESIZE:
+                print e
             if e.type == pg.QUIT:
                 self.close_game()
                 sys.exit()
@@ -369,7 +378,8 @@ class Game(State):
                 elif e.key == s and p.yvelocity > 0:
                     p.move_y(0)
                 elif e.key == r:
-                    p.reload()
+                    pass
+                    #p.reload()
                 elif e.key == k_key:
                     p.attack('',True)
                 elif e.key == j_key:

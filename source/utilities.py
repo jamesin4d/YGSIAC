@@ -125,6 +125,22 @@ class SpriteSheet(object):
         return image
 
     @staticmethod
+    def strip_sheet_no_convert(filename,sheet_x,sheet_y,image_x,image_y):
+        frames = []
+        sprite_sheet = pygame.image.load(filename)
+        sprite_sheet.set_colorkey((255,255,255))
+        sheet_width = sheet_x
+        sheet_height = sheet_y
+        img_width = image_x
+        img_height = image_y
+        for y in range(0, sheet_height, img_height):
+            for x in range(0, sheet_width, img_width):
+                r = pygame.Rect(x,y,img_width, img_height)
+                t = sprite_sheet.subsurface(r)
+                frames.append(t)
+        return frames
+
+    @staticmethod
     def strip_sheet(filename,sheet_x,sheet_y,image_x,image_y):
         frames = []
         sprite_sheet = pygame.image.load(filename).convert()
@@ -142,47 +158,3 @@ class SpriteSheet(object):
 
 
 
-#-----------------------------------------------------------------------------------
-#Generic parent class for GUIs
-# below is my attempts at gui. the parent class Widget works pretty well
-# as does the Line_of_text class, the Bar won't update right
-#TODO fix  bar.update
-#-----------------------------------------------------------------------------------
-class Widget(pygame.Surface):
-    def __init__(self, size):
-        pygame.Surface.__init__(self, size)
-        self.size = size
-        self.screen = pygame.display.get_surface()
-        self.rect = self.get_rect()
-#---positioning methods
-    def set_pos(self, pos):
-        self.rect.topleft = pos
-    def get_pos(self):
-        return self.rect.topleft
-#-------------drawing method
-    def redraw(self):
-        self.screen.blit(self, self.rect)
-        pygame.display.update(self.rect)
-
-#int(max(min(currentHP / float(maxHP) * health_bar_width, health_bar_width), 0))
-# health bar widget
-class Bar(Widget):
-    def __init__(self, size=(100, 14)):
-        Widget.__init__(self, size)
-        self.length = size[0]
-    def update(self, length, max_length):
-        self.fill((100,130,90))
-        self.length = int(max(min(length/ float(max_length)*100, 100), 0))
-        #pygame.draw.line(self, (100,130,100), (0, 2), (self.length*perc,2),10)
-        self.redraw()
-# line of text widget
-
-class Line_of_text(Widget):
-    def __init__(self, text, bgc, size=10, font="8bit.ttf"):
-        self.font = pygame.font.Font(font, size)
-        image = self.font.render(text, 0, (0,0,0), bgc)
-        Widget.__init__(self, image.get_size())
-        self.blit(image, (0,0))
-
-    def update(self):
-        self.redraw()
