@@ -71,8 +71,6 @@ class Player(Base):
             self.attacking = True
             self.idle = False
 
-
-
     def update(self, objects):
         self.animate()
         self.move_and_check(objects)

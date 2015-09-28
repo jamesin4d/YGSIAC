@@ -135,6 +135,7 @@ class StartScreen(State):
     def update_screen(self):
         if self.ups:
             self.screen.fill((200,200,200))
+            self.image = pygame.transform.scale(self.image, self.screen.get_size())
             self.screen.blit(self.image, self.image_pos)
             self.cursor.display(self.screen)
             pygame.display.flip()
@@ -142,6 +143,9 @@ class StartScreen(State):
         # GTFO
     def check_events(self):
         for e in pygame.event.get():
+            if e.type == pygame.VIDEORESIZE:
+                self.image = pygame.transform.scale(self.image, (e.w, e.h))
+                self.screen = pygame.display.set_mode((e.w, e.h), pygame.RESIZABLE)
             if e.type == pygame.QUIT:
                 self.close_game()
             if e.type == pygame.KEYDOWN:
@@ -170,12 +174,16 @@ class Options(State):
      def update_screen(self):
          if self.ups:
              self.screen.fill((40,40,50))
+             self.image = pygame.transform.scale(self.image, self.screen.get_size())
              self.screen.blit(self.image, self.image_pos)
              pygame.display.flip()
 # MOTHERFUCKING OR STATEMENTS!??!?
  #GTFO
      def check_events(self):
          for e in pygame.event.get():
+             if e.type == pygame.VIDEORESIZE:
+                self.image = pygame.transform.scale(self.image, (e.w, e.h))
+                self.screen = pygame.display.set_mode((e.w, e.h), pygame.RESIZABLE)
              if e.type == pygame.QUIT:
                  self.close_game()
              if e.type == pygame.KEYDOWN:
@@ -202,6 +210,7 @@ class RealitySimulator(State):
     def update_screen(self):
         if self.update_s:
             self.screen.fill((200,200,200))
+            self.image = pygame.transform.scale(self.image, self.screen.get_size())
             self.screen.blit(self.image, self.image_pos)
             pygame.display.update()
     def tick(self):
@@ -222,6 +231,9 @@ class RealitySimulator(State):
 
     def check_events(self):
         for e in pygame.event.get():
+            if e.type == pygame.VIDEORESIZE:
+                self.image = pygame.transform.scale(self.image, (e.w, e.h))
+                self.screen = pygame.display.set_mode((e.w, e.h), pygame.RESIZABLE)
             if e.type == pygame.QUIT:
                 self.close_game()
             if e.type == pygame.KEYDOWN:
@@ -241,23 +253,29 @@ class GameOver(State):
 
     def update_screen(self):
         self.screen.fill((40,40,40))
+        self.image = pygame.transform.scale(self.image, self.screen.get_size())
         self.screen.blit(self.image, self.image_pos)
         pygame.display.flip()
     def check_events(self):
         for e in pygame.event.get():
+            if e.type == pygame.VIDEORESIZE:
+                self.image = pygame.transform.scale(self.image, (e.w, e.h))
+                self.screen = pygame.display.set_mode((e.w, e.h), pygame.RESIZABLE)
             if e.type == pygame.QUIT:
                 self.close_game()
             if e.type == pygame.KEYDOWN:
                 self.quit()
 #------------------------ Game state!--------------------------------------------------------------
 class Game(State):
-
     def __init__(self):
         #blam, initiate that parent class
         State.__init__(self)
         self.kill_prev = True
         self.screen.fill((0,0,0))
         self.show_debug = False
+        self.canvas = pygame.image.load('img/blankcanvas.png').convert()
+        self.canvas = pygame.transform.scale(self.canvas, self.screen.get_size())
+        self.canvas_pos = center(self.canvas.get_size(), self.screen.get_size())
 
         self.room_list = [
             StartRoom(),
@@ -277,26 +295,24 @@ class Game(State):
         self.solids = pygame.sprite.Group()
         self.background = pygame.sprite.Group()
         self.items = pygame.sprite.Group()
-        self.enemy_projectiles = pygame.sprite.Group()
+
         self.mainSprite.add(self.player)
         self.reset_groups()
 
     def reset_groups(self):
-        level = self.map_parser
+        map_parser = self.map_parser
         self.background = None
         self.solids = None
         self.enemies = None
         self.projectiles = None
-        self.enemy_projectiles = None
         self.items = None
         self.items = pygame.sprite.Group()
         self.projectiles = pygame.sprite.Group()
-        self.enemy_projectiles = pygame.sprite.Group()
         self.background = pygame.sprite.Group()
-        for b in level.background:
+        for b in map_parser.background:
             self.background.add(b)
         self.solids = pygame.sprite.Group()
-        for so in level.collisionList:
+        for so in map_parser.collisionList:
             self.solids.add(so)
         self.enemies = pygame.sprite.Group()
         for e in self.current_room.enemy_list:
@@ -314,21 +330,23 @@ class Game(State):
         keypress = pg.KEYDOWN
         keyrelease = pg.KEYUP
         esc = pg.K_ESCAPE
-        w = pg.K_w
-        s = pg.K_s
-        d = pg.K_d
-        a = pg.K_a
+        w_key = pg.K_w
+        s_key = pg.K_s
+        d_key = pg.K_d
+        a_key = pg.K_a
         j_key = pg.K_j
         k_key = pg.K_k
-        up = pg.K_UP
-        down = pg.K_DOWN
-        left = pg.K_LEFT
-        right = pg.K_RIGHT
-        r = pg.K_r
-        tab = pg.K_TAB
+        up_arrow = pg.K_UP
+        down_arrow = pg.K_DOWN
+        left_arrow = pg.K_LEFT
+        right_arrow = pg.K_RIGHT
+        r_key = pg.K_r
+        tab_key = pg.K_TAB
         for e in pg.event.get():
             if e.type == pg.VIDEORESIZE:
-                print e
+                self.screen = pygame.display.set_mode((e.w, e.h), pygame.RESIZABLE)
+                self.canvas = pygame.transform.scale(self.canvas, self.screen.get_size())
+
             if e.type == pg.QUIT:
                 self.close_game()
                 sys.exit()
@@ -336,30 +354,30 @@ class Game(State):
                 if e.key == esc:
                     self.close_game()
                     sys.exit()
-                if e.key == a:
+                if e.key == a_key:
                     p.walk_left()
-                if e.key == d:
+                if e.key == d_key:
                     p.walk_right()
-                if e.key == w:
+                if e.key == w_key:
                     p.jump(-p.jump_speed)
                 if e.key == j_key:
                     p.attack('throwing',False)
                 if e.key == k_key:
                     p.attack('melee',False)
-                if e.key == tab:
+                if e.key == tab_key:
                     self.show_debug = not self.show_debug
                     for en in self.enemies:
                         self.heads_up_display.enemy_debug(en)
-                elif e.key == up:
+                elif e.key == up_arrow:
                     if self.show_debug:
                         p.jump_speed += 0.25
-                elif e.key == down:
+                elif e.key == down_arrow:
                     if self.show_debug:
                         p.jump_speed -= 0.25
-                elif e.key == left:
+                elif e.key == left_arrow:
                     if self.show_debug:
                         p.walk_speed -= 0.25
-                elif e.key == right:
+                elif e.key == right_arrow:
                     if self.show_debug:
                         p.walk_speed += 0.25
                 elif e.key == pg.K_g:
@@ -369,15 +387,15 @@ class Game(State):
                     if self.show_debug:
                         p.gravity -= 0.1
             elif e.type == keyrelease:
-                if e.key == a and p.xvelocity < 0:
+                if e.key == a_key and p.xvelocity < 0:
                     p.move_x(0)
-                elif e.key == d and p.xvelocity > 0:
+                elif e.key == d_key and p.xvelocity > 0:
                     p.move_x(0)
-                elif e.key == w and p.yvelocity < 0:
+                elif e.key == w_key and p.yvelocity < 0:
                     p.move_y(0)
-                elif e.key == s and p.yvelocity > 0:
+                elif e.key == s_key and p.yvelocity > 0:
                     p.move_y(0)
-                elif e.key == r:
+                elif e.key == r_key:
                     pass
                     #p.reload()
                 elif e.key == k_key:
@@ -425,7 +443,7 @@ class Game(State):
             self.quit()
 
     def update_screen(self):
-
+        self.screen.blit(self.canvas, self.canvas_pos)
         self.background.draw(self.screen)
         self.solids.draw(self.screen)
         self.enemies.draw(self.screen)

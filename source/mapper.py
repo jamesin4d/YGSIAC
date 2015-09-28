@@ -9,23 +9,7 @@ import json
 import pygame
 from entities import BackgroundTile, SolidBlock
 
-class Level:
-    map_file = None
-    enemy_list = None
-    item_list = None
-    def __init__(self):
-        self.enemy_list = []
-        self.item_list = []
 
-class RoomOne(Level):
-    def __init__(self):
-        Level.__init__(self)
-        self.map_file = 'maps/roomone.json'
-
-class RoomTwo(Level):
-    def __init__(self):
-        Level.__init__(self)
-        self.map_file = "maps/roomtwo.json"
 
 
 # Mapper class *NOW WITH COMMENTS*
@@ -41,9 +25,7 @@ class Mapper(object):
     background = None
     all_tiles = None
     def __init__(self):
-        self.done = False
-        self.next = None
-        self.paused = False
+
         self.tilewidth = 0
         self.tileheight = 0
 
