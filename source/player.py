@@ -8,6 +8,21 @@
 from items import *
 from weapons import *
 from enemies import *
+import json
+
+def jdefault(obj):
+    return obj.__dict__
+
+class Save(object):
+    def __init__(self, health, location, ammo):
+        s = self
+        s.health = health
+        s.current_location = location
+        s.ammunition = ammo
+
+
+
+
 
 class Player(Base):
     health = 9
@@ -36,6 +51,7 @@ class Player(Base):
     direction = 'right'
     melee_damage = .5
     throwing = False
+    save = None
     def __init__(self):
         Base.__init__(self)
         self.get_frames('img/player/heroLeft.png', 'img/player/heroRight.png','img/player/jumpLeft.png','img/player/jumpRight.png',
@@ -44,6 +60,25 @@ class Player(Base):
             self.canShoot = True
             self.damage = self.weapon.damage
         self.rect = pygame.Rect(0,0,16,16)
+
+
+    def load_progress(self):
+        save_file = open('player.json').read()
+        opened_save = json.loads(save_file)
+        if 'ammunition' in opened_save:
+            ammo = opened_save['ammunition']
+            self.munitions = ammo
+        if 'health' in opened_save:
+            health = opened_save['health']
+            self.health = health
+        if 'current_location' in opened_save:
+            current_location = opened_save['current_location']
+            self.set_position((current_location[0], current_location[1]))
+
+    def save_progress(self):
+        self.save = Save(self.health, self.get_position(), self.munitions)
+        with open('player.json','w') as outfile:
+            json.dump(self.save, default=jdefault, fp=outfile,indent=4)
 
     def check_ammo(self):
         if self.weapon is not None:

@@ -8,6 +8,7 @@
 from game_states import *
 from engine import *
 
+
 def main():
     pygame.init()
     pygame.display.set_mode((800, 600), pygame.RESIZABLE)
