@@ -45,7 +45,6 @@ class StartRoom(Room):
             [Candle(500,544)],
             [Candle(768,544)],
 
-
         ]
         # for each arrayed item:
         for e in enemies:
@@ -54,8 +53,6 @@ class StartRoom(Room):
         for i in items:
             item = i[0]
             self.item_list.append(item)
-
-
 
 class RoomTwoTheCave(Room):
     def __init__(self):

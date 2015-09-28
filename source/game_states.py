@@ -373,6 +373,7 @@ class Game(State):
                     p.attack('throwing',False)
                 if e.key == k_key:
                     p.attack('melee',False)
+
                 if e.key == t_key:
                     p.load_progress()
                 if e.key == tab_key:

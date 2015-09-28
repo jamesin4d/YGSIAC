@@ -61,6 +61,7 @@ class Player(Base):
             self.damage = self.weapon.damage
         self.rect = pygame.Rect(0,0,16,16)
 
+
     def load_progress(self):
         save_file = open('player.json').read()
         opened_save = json.loads(save_file)

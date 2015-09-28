@@ -9,9 +9,6 @@ import json
 import pygame
 from entities import BackgroundTile, SolidBlock
 
-
-
-
 # Mapper class *NOW WITH COMMENTS*
 #-------------------------------------------------------------------------
 class Mapper(object):
