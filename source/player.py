@@ -15,10 +15,26 @@ def jdefault(obj):
 
 class Save(object):
     def __init__(self, health, location, ammo):
-        s = self
-        s.health = health
-        s.current_location = location
-        s.ammunition = ammo
+        self.health = health
+        self.current_location = location
+        self.ammunition = ammo
+
+    def load_progress(self, player):
+        save_file = open('player.json').read()
+        opened_save = json.loads(save_file)
+        if 'ammunition' in opened_save:
+            ammo = opened_save['ammunition']
+            self.ammunition = ammo
+        if 'health' in opened_save:
+            health = opened_save['health']
+            self.health = health
+        if 'current_location' in opened_save:
+            current_location = opened_save['current_location']
+            player.set_position((current_location[0], current_location[1]))
+
+    def save_progress(self):
+        with open('player.json','w') as outfile:
+            json.dump(self, default=jdefault, fp=outfile,indent=4)
 
 
 
@@ -43,8 +59,7 @@ class Player(Base):
     if weapon is None:
         munitions = 0
     action = False
-    onGround = False
-    canJump = False
+
     walk_speed = 5
     jump_speed = 9.75
     gravity = 1.0
@@ -62,24 +77,6 @@ class Player(Base):
         self.rect = pygame.Rect(0,0,16,16)
 
 
-    def load_progress(self):
-        save_file = open('player.json').read()
-        opened_save = json.loads(save_file)
-        if 'ammunition' in opened_save:
-            ammo = opened_save['ammunition']
-            self.munitions = ammo
-        if 'health' in opened_save:
-            health = opened_save['health']
-            self.health = health
-        if 'current_location' in opened_save:
-            current_location = opened_save['current_location']
-            self.set_position((current_location[0], current_location[1]))
-
-    def save_progress(self):
-        self.save = Save(self.health, self.get_position(), self.munitions)
-        with open('player.json','w') as outfile:
-            json.dump(self.save, default=jdefault, fp=outfile,indent=4)
-
     def check_ammo(self):
         if self.weapon is not None:
             if self.munitions > 0:
@@ -92,10 +89,8 @@ class Player(Base):
             self.munitions = self.weapon.clip_size
             self.canShoot = True
 
-
     def attack(self, attack_type, key_released):
         if not key_released:
-            self.action_timer = 0
             self.attack_released = False
             self.attacking = True
             self.idle = False
