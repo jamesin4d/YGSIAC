@@ -16,6 +16,7 @@ random.seed()
 class Entity(pygame.sprite.Sprite):
     def __init__(self):
         pygame.sprite.Sprite.__init__(self)
+        self.image = None
 
 # these are the basic map tiles that the map parsing module creates from
 # json data, background tiles and solid tiles are put into seperate lists
@@ -24,13 +25,11 @@ class BackgroundTile(Entity):
     def __init__(self):
         Entity.__init__(self)
 
+
 class SolidBlock(Entity):
     def __init__(self):
         Entity.__init__(self)
 
-class ExitBlock(Entity):
-    def __init__(self):
-        Entity.__init__(self)
 
 
 # ------------------------------------------------------------
@@ -83,6 +82,7 @@ class Base(Entity):
     idle = False
     melee = False
     throwing = False
+    all_frames = None
 
     def __init__(self):
         Entity.__init__(self)
@@ -91,48 +91,44 @@ class Base(Entity):
         # JESUS FUCK ROBIN! LOOK HOW SHORT THIS FRAME GETTING METHOD GOT!
         strip = SpriteSheet.strip_sheet
         # refer to utilities.SpriteSheet.strip_sheet() for argument explainations
-
+        frames = []
         self.walking_frames_left = strip(walkL,96,20,16,20)
+        frames.append(self.walking_frames_left)
         self.walking_frames_right = strip(walkR,96,20,16,20)
+        frames.append(self.walking_frames_right)
 
         self.jump_frames_right = strip(jumpR,48,20,16,20)
+        frames.append(self.jump_frames_right)
+
         self.jump_frames_left = strip(jumpL,48,20,16,20)
+        frames.append(self.jump_frames_left)
 
         self.punch_frames_left = strip(punchL,48,20,16,20)
+        frames.append(self.punch_frames_left)
+
         self.punch_frames_right = strip(punchR,48,20,16,20)
+        frames.append(self.punch_frames_right)
 
         self.idle_frames_left = strip(idleL,48,20,16,20)
+        frames.append(self.idle_frames_left)
+
         self.idle_frames_right = strip(idleR,48,20,16,20)
+        frames.append(self.idle_frames_right)
 
         self.image = self.idle_frames_right[2]
         self.rect = pygame.Rect((0,0,16,20))
+        self.all_frames = frames
 
     def set_position(self, (x, y)):
         # position setter method
         self.rect.x = x
         self.rect.y = y
-    
+
+
     def get_position(self):
             #position get method, returns (x,y)
             return self.rect.topleft
 
-    def get_rect_position(self):
-        r = self.rect
-        left = r.left
-        right = r.right
-        top = r.top
-        bottom = r.bottom
-        midleft = r.midleft
-        midright = r.midright
-        midtop = r.midtop
-        midbottom = r.midbottom
-        rectangle = (left, right, top, bottom)
-        rectangle_two = (midleft,midright,midtop,midbottom)
-        print "left, right, top, bottom"
-        print rectangle
-        print 'midleft, midright, midtop, midbottom'
-        print rectangle_two
-        return rectangle
 
     def aim(self, target):
         offset = (target.rect.centery - self.rect.centery, target.rect.centerx - self.rect.centerx)
@@ -266,6 +262,7 @@ class Base(Entity):
                     if self.throwing: self.throwing = False
                     self.attacking = False
                     self.idle = True
+
         if self.moving:
             if self.direction == "left":
                 frame = (self.rect.x//15) % len(self.walking_frames_left)
@@ -273,11 +270,13 @@ class Base(Entity):
             if self.direction == "right":
                 frame = (self.rect.x//15) % len(self.walking_frames_right)
                 self.image = self.walking_frames_right[frame]
+
         if self.jumping:
             if self.direction == "left":
                 self.image = self.jump_frames_left[2]
             if self.direction == "right":
                 self.image = self.jump_frames_right[0]
+
         if self.falling:
             if not self.attacking:
                 if self.direction == "left":
@@ -304,8 +303,8 @@ class Base(Entity):
                 if self.action_timer > 8:
                     self.image = self.idle_frames_left[2]
 
-    def update(self, objects):
-        pass
+
+
 
 
 

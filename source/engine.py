@@ -5,8 +5,10 @@
 #
 #
 #--------------------------------------------------------------------
-import pygame
 import sys
+
+import pygame
+
 
 class Engine(object):
     #a generic state mach

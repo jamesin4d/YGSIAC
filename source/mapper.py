@@ -22,7 +22,6 @@ class Mapper(object):
     background = None
     all_tiles = None
     def __init__(self):
-
         self.tilewidth = 0
         self.tileheight = 0
 
@@ -34,6 +33,7 @@ class Mapper(object):
         self.mapheight = self.layers[0]["height"]
         self.mapwidth = self.layers[0]["width"]
         self.tile_id = 1
+
 # this makes everything usable again for when another new_inst is used
     def reinit(self):
         self.all_tiles = None

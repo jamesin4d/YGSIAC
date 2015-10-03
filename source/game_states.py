@@ -11,7 +11,7 @@ from rooms import *
 from player import Player
 from hud import HUD
 from weapons import *
-import json
+from camera import *
 # GAME STATES *NOW WITH COMMENTS!!*
 import sys
 pygame.init()
@@ -132,6 +132,7 @@ class StartScreen(State):
         self.image_pos = center(self.image.get_size(), self.screen.get_size())
         self.ups = True
         self.cursor = Cursor()
+        print self.screen.get_size()
 
     def update_screen(self):
         if self.ups:
@@ -178,8 +179,7 @@ class Options(State):
              self.image = pygame.transform.scale(self.image, self.screen.get_size())
              self.screen.blit(self.image, self.image_pos)
              pygame.display.flip()
-# MOTHERFUCKING OR STATEMENTS!??!?
- #GTFO
+
      def check_events(self):
          for e in pygame.event.get():
              if e.type == pygame.VIDEORESIZE:
@@ -267,12 +267,10 @@ class GameOver(State):
             if e.type == pygame.KEYDOWN:
                 self.quit()
 
-
-def jdefault(obj):
-    return obj.__dict__
-
-
-
+class Pause(State):
+    def __init__(self):
+        State.__init__(self)
+        self.kill_prev = False
 #------------------------ Game state!--------------------------------------------------------------
 class Game(State):
     def __init__(self):
@@ -288,6 +286,7 @@ class Game(State):
         self.room_list = [
             StartRoom(),
             RoomTwoTheCave(),
+            ThirdRoom()
         ]
         self.current_room_number = 0
         self.current_room = self.room_list[self.current_room_number]
@@ -304,6 +303,7 @@ class Game(State):
         self.background = pygame.sprite.Group()
         self.items = pygame.sprite.Group()
 
+        self.camera = Camera(complex_camera,(800,608))
         self.mainSprite.add(self.player)
         self.reset_groups()
 
@@ -316,6 +316,7 @@ class Game(State):
         self.items = None
         self.items = pygame.sprite.Group()
         self.projectiles = pygame.sprite.Group()
+
         self.background = pygame.sprite.Group()
         for b in map_parser.background:
             self.background.add(b)
@@ -351,11 +352,12 @@ class Game(State):
         r_key = pg.K_r
         t_key = pg.K_t
         tab_key = pg.K_TAB
+
         for e in pg.event.get():
             if e.type == pg.VIDEORESIZE:
                 self.screen = pygame.display.set_mode((e.w, e.h), pygame.RESIZABLE)
-                self.canvas = pygame.transform.scale(self.canvas, self.screen.get_size())
-
+                screen_size = self.screen.get_size()
+                self.canvas = pygame.transform.scale(self.canvas, screen_size)
             if e.type == pg.QUIT:
                 self.close_game()
                 sys.exit()
@@ -378,8 +380,7 @@ class Game(State):
                     p.load_progress()
                 if e.key == tab_key:
                     self.show_debug = not self.show_debug
-                    for en in self.enemies:
-                        self.heads_up_display.enemy_debug(en)
+
                 elif e.key == up_arrow:
                     if self.show_debug:
                         p.jump_speed += 0.25
@@ -413,7 +414,7 @@ class Game(State):
                     p.attack('',True)
                 elif e.key == j_key:
                     if p.canShoot:
-                        self.projectiles.add(Rock(p.rect.center,p))
+                        self.projectiles.add(Rock(p.rect.center,p.direction))
                         p.munitions -= 1
                     p.attack('',True)
 
@@ -421,6 +422,7 @@ class Game(State):
         # set up some local variables
         map_parser = self.map_parser
         solids = map_parser.collisionList
+        self.camera.update(self.player)
         player = self.player
         projectiles = self.projectiles
         player.update(solids)
@@ -428,7 +430,7 @@ class Game(State):
             en.update(solids)
             for b in en.bullets:
                 self.projectiles.add(b)
-        projectiles.update(solids, self.enemies)
+        projectiles.update(solids, self.enemies, player)
         for i in self.items:
             i.update()
         playerExitStageRight = player.rect.x > 800
@@ -454,12 +456,19 @@ class Game(State):
 
     def update_screen(self):
         self.screen.blit(self.canvas, self.canvas_pos)
-        self.background.draw(self.screen)
-        self.solids.draw(self.screen)
-        self.enemies.draw(self.screen)
-        self.items.draw(self.screen)
-        self.projectiles.draw(self.screen)
-        self.mainSprite.draw(self.screen)
+        for b in self.background:
+            self.screen.blit(b.image, self.camera.apply(b))
+        for s in self.solids:
+            self.screen.blit(s.image, self.camera.apply(s))
+        for e in self.enemies:
+            self.screen.blit(e.image, self.camera.apply(e))
+        for i in self.items:
+            self.screen.blit(i.image, self.camera.apply(i))
+        for p in self.projectiles:
+            self.screen.blit(p.image, self.camera.apply(p))
+        for m in self.mainSprite:
+            self.screen.blit(m.image, self.camera.apply(m))
+
         if self.show_debug:
             self.heads_up_display.show_debug()
         self.heads_up_display.update()
