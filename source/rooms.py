@@ -18,6 +18,14 @@ class Room:
     item_list = None # item_list attribute
     player_pos_left = None
     player_pos_right = None
+    tile_height = None
+    tile_width = None
+    room_rect = None
+    collision_list = None
+    background = None
+    foreground = None
+    next_room = None
+
     def __init__(self):
         self.enemy_list = []
         self.item_list = []
@@ -30,35 +38,15 @@ class Room:
 class StartRoom(Room):
     def __init__(self):
         Room.__init__(self) # call parent class
-        self.player_pos_left = (75,75)
+        self.player_pos_left = (80,240)
         self.player_pos_right = (740, 550)
-        self.map_file = 'maps/cae.json'
+        self.map_file = 'maps/opening.json'
         cell_width = 16
         cell_height = 16
-        enemies = [
-            [Rat(31*cell_width, 9*cell_height,27*cell_width, 38*cell_width)]
 
-        ]
-        items = [
-            [Candle(75,152)],
-            [Candle(150,152)],
-            [Candle(225,152)],
-            [Candle(300,152)],
-            [Candle(500,100)],
-            [Candle(500,250)],
-            [Candle(600,300)],
-            [Candle(650,544)],
-            [Candle(500,544)],
-            [Candle(768,544)],
 
-        ]
         # for each arrayed item:
-        for e in enemies:
-            enemy = e[0]
-            self.enemy_list.append(enemy)
-        for i in items:
-            item = i[0]
-            self.item_list.append(item)
+
 
 class RoomTwoTheCave(Room):
     def __init__(self):
