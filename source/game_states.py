@@ -11,6 +11,7 @@ from rooms import *
 from player import Player
 from hud import HUD
 from weapons import *
+from camera import *
 # GAME STATES *NOW WITH COMMENTS!!*
 import sys
 pygame.init()
@@ -302,6 +303,7 @@ class Game(State):
         self.background = pygame.sprite.Group()
         self.items = pygame.sprite.Group()
 
+        self.camera = Camera(complex_camera,(800,608))
         self.mainSprite.add(self.player)
         self.reset_groups()
 
@@ -314,6 +316,7 @@ class Game(State):
         self.items = None
         self.items = pygame.sprite.Group()
         self.projectiles = pygame.sprite.Group()
+
         self.background = pygame.sprite.Group()
         for b in map_parser.background:
             self.background.add(b)
@@ -377,8 +380,7 @@ class Game(State):
                     p.load_progress()
                 if e.key == tab_key:
                     self.show_debug = not self.show_debug
-                    for en in self.enemies:
-                        self.heads_up_display.enemy_debug(en)
+
                 elif e.key == up_arrow:
                     if self.show_debug:
                         p.jump_speed += 0.25
@@ -420,7 +422,7 @@ class Game(State):
         # set up some local variables
         map_parser = self.map_parser
         solids = map_parser.collisionList
-
+        self.camera.update(self.player)
         player = self.player
         projectiles = self.projectiles
         player.update(solids)
@@ -454,12 +456,19 @@ class Game(State):
 
     def update_screen(self):
         self.screen.blit(self.canvas, self.canvas_pos)
-        self.background.draw(self.screen)
-        self.solids.draw(self.screen)
-        self.enemies.draw(self.screen)
-        self.items.draw(self.screen)
-        self.projectiles.draw(self.screen)
-        self.mainSprite.draw(self.screen)
+        for b in self.background:
+            self.screen.blit(b.image, self.camera.apply(b))
+        for s in self.solids:
+            self.screen.blit(s.image, self.camera.apply(s))
+        for e in self.enemies:
+            self.screen.blit(e.image, self.camera.apply(e))
+        for i in self.items:
+            self.screen.blit(i.image, self.camera.apply(i))
+        for p in self.projectiles:
+            self.screen.blit(p.image, self.camera.apply(p))
+        for m in self.mainSprite:
+            self.screen.blit(m.image, self.camera.apply(m))
+
         if self.show_debug:
             self.heads_up_display.show_debug()
         self.heads_up_display.update()

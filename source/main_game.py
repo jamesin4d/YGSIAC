@@ -9,9 +9,16 @@ from game_states import *
 from engine import *
 
 
+
 def main():
+    WIN_WIDTH = 600
+    WIN_HEIGHT = 300
+    DISPLAY = (WIN_WIDTH, WIN_HEIGHT)
+    DEPTH = 32
+    FLAGS = 0
+    CAMERA_SLACK = 30
     pygame.init()
-    pygame.display.set_mode((800, 600), pygame.RESIZABLE)
+    pygame.display.set_mode(DISPLAY, FLAGS, DEPTH)
     pygame.display.set_caption("You've Gotten Stuck In A Cave")
     e = Engine()
     e.current_state = Logo()
