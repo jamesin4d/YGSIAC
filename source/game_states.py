@@ -302,14 +302,16 @@ class Game(State):
         self.solids = pygame.sprite.Group()
         self.background = pygame.sprite.Group()
         self.items = pygame.sprite.Group()
+        self.foreground = pygame.sprite.Group()
 
-        self.camera = Camera(complex_camera,(800,608))
+        self.camera = Camera(complex_camera, self.map_parser.map_rect)
         self.mainSprite.add(self.player)
         self.reset_groups()
 
     def reset_groups(self):
         map_parser = self.map_parser
         self.background = None
+        self.foreground = None
         self.solids = None
         self.enemies = None
         self.projectiles = None
@@ -323,6 +325,9 @@ class Game(State):
         self.solids = pygame.sprite.Group()
         for so in map_parser.collisionList:
             self.solids.add(so)
+        self.foreground = pygame.sprite.Group()
+        for f in map_parser.foreground:
+            self.foreground.add(f)
         self.enemies = pygame.sprite.Group()
         for e in self.current_room.enemy_list:
             e.target = self.player
@@ -433,7 +438,7 @@ class Game(State):
         projectiles.update(solids, self.enemies, player)
         for i in self.items:
             i.update()
-        playerExitStageRight = player.rect.x > 800
+        playerExitStageRight = player.rect.x > self.map_parser.map_rect[0]
         playerExitStageLeft = player.rect.x < 0
         if playerExitStageRight: # if the player is off the screen
             self.current_room_number += 1         # cycle the map up
@@ -458,6 +463,8 @@ class Game(State):
         self.screen.blit(self.canvas, self.canvas_pos)
         for b in self.background:
             self.screen.blit(b.image, self.camera.apply(b))
+        for f in self.foreground:
+            self.screen.blit(f.image, self.camera.apply(f))
         for s in self.solids:
             self.screen.blit(s.image, self.camera.apply(s))
         for e in self.enemies:
