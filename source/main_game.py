@@ -11,8 +11,8 @@ from engine import *
 
 
 def main():
-    WIN_WIDTH = 600
-    WIN_HEIGHT = 300
+    WIN_WIDTH = 800
+    WIN_HEIGHT = 600
     DISPLAY = (WIN_WIDTH, WIN_HEIGHT)
     DEPTH = 32
     FLAGS = 0

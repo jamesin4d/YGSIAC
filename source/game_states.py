@@ -132,7 +132,6 @@ class StartScreen(State):
         self.image_pos = center(self.image.get_size(), self.screen.get_size())
         self.ups = True
         self.cursor = Cursor()
-        print self.screen.get_size()
 
     def update_screen(self):
         if self.ups:
@@ -282,59 +281,11 @@ class Game(State):
         self.canvas = pygame.image.load('img/blankcanvas.png').convert()
         self.canvas = pygame.transform.scale(self.canvas, self.screen.get_size())
         self.canvas_pos = center(self.canvas.get_size(), self.screen.get_size())
-
-        self.room_list = [
-            StartRoom(),
-            RoomTwoTheCave(),
-            ThirdRoom()
-        ]
-        self.current_room_number = 0
-        self.current_room = self.room_list[self.current_room_number]
-        self.map_parser = Mapper()
-        self.map_parser.open_map(self.current_room.map_file)
-        self.map_parser.reinit()
+        self.current_room = StartRoom()
         self.player = Player()
         self.player.set_position(self.current_room.player_pos_left)
+        self.current_room.player = self.player
         self.heads_up_display = HUD(self.player)
-        self.mainSprite = pygame.sprite.Group()
-        self.projectiles = pygame.sprite.Group()
-        self.enemies = pygame.sprite.Group()
-        self.solids = pygame.sprite.Group()
-        self.background = pygame.sprite.Group()
-        self.items = pygame.sprite.Group()
-        self.foreground = pygame.sprite.Group()
-
-        self.camera = Camera(complex_camera, self.map_parser.map_rect)
-        self.mainSprite.add(self.player)
-        self.reset_groups()
-
-    def reset_groups(self):
-        map_parser = self.map_parser
-        self.background = None
-        self.foreground = None
-        self.solids = None
-        self.enemies = None
-        self.projectiles = None
-        self.items = None
-        self.items = pygame.sprite.Group()
-        self.projectiles = pygame.sprite.Group()
-
-        self.background = pygame.sprite.Group()
-        for b in map_parser.background:
-            self.background.add(b)
-        self.solids = pygame.sprite.Group()
-        for so in map_parser.collisionList:
-            self.solids.add(so)
-        self.foreground = pygame.sprite.Group()
-        for f in map_parser.foreground:
-            self.foreground.add(f)
-        self.enemies = pygame.sprite.Group()
-        for e in self.current_room.enemy_list:
-            e.target = self.player
-            self.enemies.add(e)
-        for i in self.current_room.item_list:
-            self.items.add(i)
-        return
 
 # events loop, feeds the player.dir values to handle player
 # animation, also handles the player jump and walk speed
@@ -419,63 +370,28 @@ class Game(State):
                     p.attack('',True)
                 elif e.key == j_key:
                     if p.canShoot:
-                        self.projectiles.add(Rock(p.rect.center,p.direction))
                         p.munitions -= 1
                     p.attack('',True)
 
     def check_collisions(self):
         # set up some local variables
-        map_parser = self.map_parser
-        solids = map_parser.collisionList
-        self.camera.update(self.player)
-        player = self.player
-        projectiles = self.projectiles
-        player.update(solids)
-        for en in self.enemies:
-            en.update(solids)
-            for b in en.bullets:
-                self.projectiles.add(b)
-        projectiles.update(solids, self.enemies, player)
-        for i in self.items:
-            i.update()
-        playerExitStageRight = player.rect.x > self.map_parser.map_rect[0]
-        playerExitStageLeft = player.rect.x < 0
-        if playerExitStageRight: # if the player is off the screen
-            self.current_room_number += 1         # cycle the map up
-            self.current_room = self.room_list[self.current_room_number]
-            map_parser.open_map(self.current_room.map_file)   # call new instance method to load new room
-            map_parser.reinit()          # the reinitialize method to build new room
-            player.set_position(self.current_room.player_pos_left)
-            self.reset_groups()  # finally reset the Game state's sprite groups
-        elif playerExitStageLeft:
-            self.current_room_number -= 1
-            self.current_room = self.room_list[self.current_room_number]
-            map_parser.open_map(self.current_room.map_file)
-            map_parser.reinit()
-            player.set_position(self.current_room.player_pos_right)
-            self.reset_groups()
+        self.current_room.check_collisions()
+        if self.current_room.goto_next:
+            self.current_room = self.current_room.next_room()
+            self.player.set_position(self.current_room.player_pos_left)
+            self.current_room.player = self.player
+        if self.current_room.goto_previous:
+            self.current_room = self.current_room.previous_room()
+            self.player.set_position(self.current_room.player_pos_right)
+            self.current_room.player = self.player
 
-        if player.dead:
+        if self.player.dead:
             self.next = GameOver()
             self.quit()
 
     def update_screen(self):
         self.screen.blit(self.canvas, self.canvas_pos)
-        for b in self.background:
-            self.screen.blit(b.image, self.camera.apply(b))
-        for f in self.foreground:
-            self.screen.blit(f.image, self.camera.apply(f))
-        for s in self.solids:
-            self.screen.blit(s.image, self.camera.apply(s))
-        for e in self.enemies:
-            self.screen.blit(e.image, self.camera.apply(e))
-        for i in self.items:
-            self.screen.blit(i.image, self.camera.apply(i))
-        for p in self.projectiles:
-            self.screen.blit(p.image, self.camera.apply(p))
-        for m in self.mainSprite:
-            self.screen.blit(m.image, self.camera.apply(m))
-
+        self.current_room.update_screen()
         if self.show_debug:
             self.heads_up_display.show_debug()
         self.heads_up_display.update()

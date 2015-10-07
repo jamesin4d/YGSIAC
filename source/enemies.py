@@ -52,11 +52,7 @@ class Enemy(Base):
         self.boundsL = left
         self.boundsR = right
         self.set_position((x,y))
-        alertFrames = SpriteSheet.strip_sheet('img/enemies/alert.png',15,16,5,16)
-        self.calm = alertFrames[2]
-        self.warned = alertFrames[1]
         self.aware = False # just in case....
-        self.danger = alertFrames[0]
 
 
     def check_target(self):
@@ -97,45 +93,6 @@ class Enemy(Base):
                 self.hit_timer = 0
         return diff
 
-    def watch_surroundings(self):
-        if self.target_y_range:
-            self.idle = False
-            self.alerts += 0.3
-            if self.alerts >= 60:
-                self.alerts = 60
-                self.alerted = True
-        elif not self.target_y_range:
-            self.alerts-=0.1
-            if self.alerts <= 0:
-                self.alerts = 0
-                self.alerted = False
-        if self.target_in_range:
-            self.alerts += 1
-            self.aggression += 0.5
-            if self.aggression >= 60:
-                self.aggression = 60
-                self.aggressive = True
-        elif not self.target_in_range:
-            self.aggression -= 1
-            self.alerts -= .5
-            if self.aggression <= 0:
-                self.aggressive = False
-                self.aggression = 0
-            if self.alerts <= 0:
-                self.alerted = False
-                self.alerts = 0
-        if self.aggressive and self.alerted:
-
-            self.boundsL = 100
-            self.boundsR = 700
-
-    def display_alert(self):
-        if not self.aggressive or self.alerted:
-            self.image.blit(self.calm, (0, 0))
-            if self.alerted:
-                self.image.blit(self.warned,(0,0))
-            if self.aggressive:
-                self.image.blit(self.danger,(0,0))
 
 
 
@@ -154,86 +111,14 @@ class Enemy(Base):
             self.jump(-7)
 
 
-    def pursue_directly(self):
-        if self.dx != 0:
-            if self.dx < -10:
-                self.move_x(-2)
-            elif self.dx > 10:
-                self.move_x(2)
-        if self.dy != 0:
-            if self.dy < -10:
-                self.move_y(-2)
-            elif self.dy > 10:
-                self.move_y(2)
 
-    def pursue_target(self):
-        dx = self.dx
-        dy = self.dy
-        if dx != 0 or dy != 0:
-            if dx < -1:
-                self.move(-2,0)
-            if dx > 1:
-                self.move(2,0)
-            if dy < -1:
-                self.move(0,-2)
-            if dy > 1:
-                self.move(0,2)
-
-    def flee_target(self):
-        dx = self.dx
-        dy = self.dy
-        if dx != 0 or dy != 0:
-            if dx < -1:
-                self.move(2,0)
-            if dx > 1:
-                self.move(-2,0)
-            if dy < -1:
-                self.move(0,2)
-            if dy > 1:
-                self.move(0,-2)
-
-    def flee_directly(self):
-        if self.dx != 0:
-            if self.dx < -10:
-                self.move_x(2)
-            elif self.dx > 10:
-                self.move_x(-2)
-        if self.dy != 0:
-            if self.dy < -10:
-                self.move_y(2)
-            elif self.dy > 10:
-                self.move_y(-2)
-
-class Security(Enemy):
-    def __init__(self, x, y , left, right):
-        self.get_frames('img/enemies/basic/basicLeft.png', 'img/enemies/basic/basicRight.png', 'img/enemies/basic/jumpLeft.png', 'img/enemies/basic/jumpRight.png',
-                        'img/enemies/basic/punchLeft.png', 'img/enemies/basic/punchRight.png', 'img/enemies/basic/idleLeft.png', 'img/enemies/basic/idleRight.png')
-        Enemy.__init__(self, x, y , left, right)
-        self.health = random.randint(6,8)
-        self.max_health = 8.0
-        self.bullets = []
-        self.shot_timer = random.randint(10,20)
-        self.walk_speed = 3.5
-        self.gravity = 1
-        self.get_started()
-        self.bullets = []
-
-    def fire_round(self):
-        self.bullets.append(Bullets(self.rect.center, self))
-
-    def update(self, objects):
-        if self.aggressive:
-            self.fire_round()
-        self.animate()
-        self.move_and_check(objects)
-        self.check_target()
-        self.watch_surroundings()
-        self.roam()
 
 
 class Rat(Enemy):
     def __init__(self, x, y , left, right):
         self.rat_frames()
+        self.walking_frames_left = []
+        self.walking_frames_right = []
         Enemy.__init__(self, x, y , left, right)
         self.health = random.randint(3,6)
         self.max_health = 6.0
@@ -263,11 +148,12 @@ class Rat(Enemy):
         self.move_and_check(objects)
         self.animate()
         self.check_target()
-        self.watch_surroundings()
         self.roam()
 
 class Bat(Enemy):
     def __init__(self, x, y , left, right):
+        self.walking_frames_left = []
+        self.walking_frames_right = []
         self.bat_frames()
         Enemy.__init__(self, x, y , left, right)
         self.health = random.randint(3,6)
@@ -298,7 +184,6 @@ class Bat(Enemy):
         self.move_and_check(objects)
         self.animate()
         self.check_target()
-        self.watch_surroundings()
         self.roam()
 
 
