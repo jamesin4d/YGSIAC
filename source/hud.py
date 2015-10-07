@@ -72,17 +72,6 @@ class HUD(object):
             self.screen.blit(barLeft[3], LeftPosition)
             self.screen.blit(barRight[5], RightPosition)
 
-
-
-    def enemy_debug(self, enemy):
-        display_info(self.screen, 'Enemy Alert Value: ' + str(enemy.alerts),16,500,100)
-        display_info(self.screen, 'Enemy Alerted: ' + str(enemy.alerted),16,500,110)
-        display_info(self.screen, 'Enemy Aggression Value: ' + str(enemy.aggression),16,500,120)
-        display_info(self.screen, 'Enemy Aggressive: ' + str(enemy.aggressive),16,500,130)
-
-
-
-
     def show_debug(self):
         p = self.player
         print_info(self.screen, "-Left & Right arrows adjust walk speed, Up & down adjust jump-",10, 0)
@@ -98,8 +87,6 @@ class HUD(object):
         print_info(self.screen,"Collide Top: " + str(p.collide_top),10,10)
         print_info(self.screen,"Collide bottom: " + str(p.collide_bottom),10,11)
         print_info(self.screen,"Player melee: " + str(p.melee),10,12)
-
-
 
 
     def update(self):

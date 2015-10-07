@@ -8,29 +8,75 @@
 #--------------------------------------------------------------------
 from enemies import *
 from items import *
-
-
+from mapper import *
+from camera import *
 
 # Generic parent class for a Room
 class Room:
     map_file = None # has a map_file attribute
-    enemy_list = None # enemy_list attribute
-    item_list = None # item_list attribute
-    player_pos_left = None
-    player_pos_right = None
-    tile_height = None
-    tile_width = None
-    room_rect = None
-    collision_list = None
+    map_dictionary = None
+    map_rect = None
+    collision = None
     background = None
     foreground = None
-    next_room = None
+    tileheight = None
+    tilewidth = None
+    enemy_list = None # enemy_list attribute
+    item_list = None # item_list attribute
 
+    player_pos_left = None
+    player_pos_right = None
+    player = None
+
+    camera = None
+    next_room = None
+    previous_room = None
+    goto_previous = False
+    goto_next = False
     def __init__(self):
         self.enemy_list = []
         self.item_list = []
         self.player_pos_left = ()
         self.player_pos_right = ()
+        self.screen = pygame.display.get_surface()
+
+    def get_map_info(self):
+        self.map_dictionary = quickmap(self.map_file)
+        md = self.map_dictionary
+        self.map_rect = md["map_rect"]
+        self.collision = md['collision']
+        self.background = md['background']
+        self.foreground = md['foreground']
+        self.tileheight = md['tileheight']
+        self.tilewidth = md['tilewidth']
+        self.camera = Camera(complex_camera, self.map_rect)
+        
+    def check_collisions(self):
+        self.camera.update(self.player)
+        self.player.update(self.collision)
+        if self.player.rect.x > self.map_rect[0]:
+            self.goto_next_room()
+        if self.player.rect.x < 0:
+            self.goto_previous_room()
+
+    def update_screen(self):
+        for b in self.background:
+            self.screen.blit(b.image, self.camera.apply(b))
+        for f in self.foreground:
+            self.screen.blit(f.image, self.camera.apply(f))
+        for c in self.collision:
+            self.screen.blit(c.image, self.camera.apply(c))
+        self.screen.blit(self.player.image, self.camera.apply(self.player))
+
+
+    def goto_next_room(self):
+        self.goto_next = True
+        self.screen.fill((0,0,0))
+        return self.next_room
+    def goto_previous_room(self):
+        self.goto_previous = True
+        self.screen.fill((0,0,0))
+        return self.previous_room
 
 
 # Name each specific room something unique, these generic names are
@@ -39,52 +85,29 @@ class StartRoom(Room):
     def __init__(self):
         Room.__init__(self) # call parent class
         self.player_pos_left = (80,240)
-        self.player_pos_right = (740, 550)
+        self.player_pos_right = (1560, 240)
         self.map_file = 'maps/opening.json'
-        cell_width = 16
-        cell_height = 16
-
-
-        # for each arrayed item:
+        self.next_room = RoomTwoTheCave
+        self.get_map_info()
 
 
 class RoomTwoTheCave(Room):
     def __init__(self):
         Room.__init__(self)
-        self.map_file = "maps/cave.json"
-        self.player_pos_left = (15, 580)
-        self.player_pos_right = (776,368)
-        enemies = [
-        ]
+        self.map_file = "maps/openingsecond.json"
+        self.player_pos_left = (80, 240)
+        self.player_pos_right = (98*16,15*16)
+        self.previous_room = StartRoom
+        self.next_room = ThirdRoom
+        self.get_map_info()
 
-        items = [
-            [Candle(80,110)],
-            [Candle(200,100)],
-            [Candle(345,125)],
-            [Candle(500,100)],
-            [Candle(450,250)],
-            [Candle(600,250)],
-            [Candle(650,600)],
-            [Candle(50,550)],
-            [Candle(150,530)],
-            [Candle(200,500)],
-            [Candle(275,550)],
-
-
-        ]
-
-        # for each arrayed item:
-        for e in enemies:
-            enemy = e[0]
-            self.enemy_list.append(enemy)
-
-        for i in items:
-            item = i[0]
-            self.item_list.append(item)
 
 class ThirdRoom(Room):
     def __init__(self):
         Room.__init__(self)
-        self.map_file = "maps/third.json"
-        self.player_pos_left = (15, 368)
+        self.map_file = "maps/thehole.json"
+        self.player_pos_left = (32, 32)
+        self.previous_room = RoomTwoTheCave
+        self.get_map_info()
+
         enemies = []

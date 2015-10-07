@@ -25,12 +25,9 @@ class BackgroundTile(Entity):
     def __init__(self):
         Entity.__init__(self)
 
-
 class SolidBlock(Entity):
     def __init__(self):
         Entity.__init__(self)
-
-
 
 # ------------------------------------------------------------
 # Base sprite parent class, holds attributes to inherit
@@ -57,14 +54,7 @@ class Base(Entity):
     attacking = False
     attack_released = False
 
-    walking_frames_left = [] # lists to hold walking frames
-    walking_frames_right = [] # pulled from a spritesheet
-    jump_frames_right = []  #jump frames
-    jump_frames_left = []
-    punch_frames_left = [] # punching frames
-    punch_frames_right = []
-    idle_frames_left = [] # standing still frames
-    idle_frames_right = []
+
     image = None # which image is being shown
     rect = None # the collision rectangle
 
@@ -87,48 +77,21 @@ class Base(Entity):
     def __init__(self):
         Entity.__init__(self)
 
-    def get_frames(self, walkL, walkR, jumpL, jumpR, punchL, punchR, idleL, idleR):
+    @staticmethod
+    def get_frames(frame_list,ix,iy,fx,fy):
         # JESUS FUCK ROBIN! LOOK HOW SHORT THIS FRAME GETTING METHOD GOT!
         strip = SpriteSheet.strip_sheet
-        # refer to utilities.SpriteSheet.strip_sheet() for argument explainations
-        frames = []
-        self.walking_frames_left = strip(walkL,96,20,16,20)
-        frames.append(self.walking_frames_left)
-        self.walking_frames_right = strip(walkR,96,20,16,20)
-        frames.append(self.walking_frames_right)
+        return strip(frame_list,ix,iy,fx,fy)
 
-        self.jump_frames_right = strip(jumpR,48,20,16,20)
-        frames.append(self.jump_frames_right)
-
-        self.jump_frames_left = strip(jumpL,48,20,16,20)
-        frames.append(self.jump_frames_left)
-
-        self.punch_frames_left = strip(punchL,48,20,16,20)
-        frames.append(self.punch_frames_left)
-
-        self.punch_frames_right = strip(punchR,48,20,16,20)
-        frames.append(self.punch_frames_right)
-
-        self.idle_frames_left = strip(idleL,48,20,16,20)
-        frames.append(self.idle_frames_left)
-
-        self.idle_frames_right = strip(idleR,48,20,16,20)
-        frames.append(self.idle_frames_right)
-
-        self.image = self.idle_frames_right[2]
-        self.rect = pygame.Rect((0,0,16,20))
-        self.all_frames = frames
 
     def set_position(self, (x, y)):
         # position setter method
         self.rect.x = x
         self.rect.y = y
 
-
     def get_position(self):
             #position get method, returns (x,y)
             return self.rect.topleft
-
 
     def aim(self, target):
         offset = (target.rect.centery - self.rect.centery, target.rect.centerx - self.rect.centerx)
@@ -234,75 +197,7 @@ class Base(Entity):
                     self.collide_bottom = True
 
     def animate(self):
-        if self.attacking:
-            if not self.attack_released:
-                self.action_timer = 0
-                if self.direction == 'left':
-                    self.image = self.punch_frames_left[2]
-                if self.direction == 'right':
-                    self.image = self.punch_frames_right[0]
-            if self.attack_released:
-                self.action_timer += 1
-                if self.action_timer == 2:
-                    if self.direction == 'left':
-                        self.rect.x -= 2
-                        self.image = self.punch_frames_left[0]
-                    if self.direction == 'right':
-                        self.rect.x += 2
-                        self.image = self.punch_frames_right[1]
-                if self.action_timer == 3:
-                    if self.direction == 'left':
-                        self.rect.x -= 4
-                        self.image = self.punch_frames_left[1]
-                    if self.direction == 'right':
-                        self.rect.x += 4
-                        self.image = self.punch_frames_right[2]
-                if self.action_timer == 6:
-                    if self.melee: self.melee = False
-                    if self.throwing: self.throwing = False
-                    self.attacking = False
-                    self.idle = True
-
-        if self.moving:
-            if self.direction == "left":
-                frame = (self.rect.x//15) % len(self.walking_frames_left)
-                self.image = self.walking_frames_left[frame]
-            if self.direction == "right":
-                frame = (self.rect.x//15) % len(self.walking_frames_right)
-                self.image = self.walking_frames_right[frame]
-
-        if self.jumping:
-            if self.direction == "left":
-                self.image = self.jump_frames_left[2]
-            if self.direction == "right":
-                self.image = self.jump_frames_right[0]
-
-        if self.falling:
-            if not self.attacking:
-                if self.direction == "left":
-                    self.image = self.jump_frames_left[1]
-                if self.direction == "right":
-                    self.image = self.jump_frames_right[1]
-
-        if self.idle and not self.attacking:
-            self.action_timer += .5
-            if self.action_timer == 12:
-                self.action_timer = 0
-            if self.direction == "right":
-                if self.action_timer > 0:
-                    self.image = self.idle_frames_right[0]
-                if self.action_timer > 4:
-                    self.image = self.idle_frames_right[1]
-                if self.action_timer > 8:
-                    self.image = self.idle_frames_right[2]
-            if self.direction == "left":
-                if self.action_timer > 0:
-                    self.image = self.idle_frames_left[0]
-                if self.action_timer > 4:
-                    self.image = self.idle_frames_left[1]
-                if self.action_timer > 8:
-                    self.image = self.idle_frames_left[2]
-
+        pass
 
 
 

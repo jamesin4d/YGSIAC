@@ -9,20 +9,29 @@ import json
 import pygame
 from entities import BackgroundTile, SolidBlock
 
+
 def quickmap(filename):
     map_dictionary = json.loads(open(filename).read())
     rows = map_dictionary["height"]
     columns = map_dictionary["width"]
     tileheight = map_dictionary["tileheight"]
     tilewidth = map_dictionary["tilewidth"]
-    world_rect = (columns*tilewidth, rows*tileheight)
+    map_rect = (columns*tilewidth, rows*tileheight)
 
     layers = map_dictionary["layers"]
     tilesets = map_dictionary["tilesets"]
     all_tiles = gather_images_from_set(tilesets)
 
-    collision_list, background, foreground = populate_sprite_lists(layers, all_tiles, tileheight, tilewidth)
-    return world_rect, collision_list, background, foreground, tileheight, tilewidth
+    collision, background, foreground = populate_sprite_lists(layers, all_tiles, tileheight, tilewidth)
+    quickmap_dictionary = {
+        'map_rect': map_rect,
+        'collision': collision,
+        'background': background,
+        'foreground': foreground,
+        'tileheight': tileheight,
+        'tilewidth': tilewidth
+    }
+    return quickmap_dictionary
 
 def gather_images_from_set(tileset):
     all_tiles = {}
@@ -32,7 +41,7 @@ def gather_images_from_set(tileset):
     iw = tileset[0]["imagewidth"]
     th = tileset[0]["tileheight"]
     tw = tileset[0]["tilewidth"]
-    set_surf = pygame.image.load(img)
+    set_surf = pygame.image.load('maps/' + img)
     set_surf.set_colorkey((255,255,255))
     for y in range(0,ih,th): #(start:0, range:imageheight, step: tileheight)
         for x in range(0,iw,tw):
@@ -81,9 +90,6 @@ def populate_sprite_lists(layers, all_tiles, tw, th):
                         background.append(tile)
                 index += 1
 
-    print len(collision_list)
-    print len(background)
-    print len(foreground)
     return collision_list, background, foreground
 
 

@@ -5,7 +5,6 @@
 #
 #
 #--------------------------------------------------------------------
-from items import *
 from weapons import *
 from enemies import *
 import json
@@ -60,6 +59,14 @@ class Player(Base):
         munitions = 0
     action = False
 
+    walking_frames_left = [] # lists to hold walking frames
+    walking_frames_right = [] # pulled from a spritesheet
+    jump_frames_right = []  #jump frames
+    jump_frames_left = []
+    punch_frames_left = [] # punching frames
+    punch_frames_right = []
+    idle_frames_left = [] # standing still frames
+    idle_frames_right = []
     walk_speed = 5
     jump_speed = 9.75
     gravity = 1.0
@@ -69,8 +76,16 @@ class Player(Base):
     save = None
     def __init__(self):
         Base.__init__(self)
-        self.get_frames('img/player/heroLeft.png', 'img/player/heroRight.png','img/player/jumpLeft.png','img/player/jumpRight.png',
-                        'img/player/punchLeft.png','img/player/punchRight.png','img/player/idleLeft.png','img/player/idleRight.png')
+        self.walking_frames_left = self.get_frames('img/player/heroLeft.png',96,20,16,20)
+        self.walking_frames_right = self.get_frames('img/player/heroRight.png',96,20,16,20)
+        self.jump_frames_left = self.get_frames('img/player/jumpLeft.png',48,20,16,20)
+        self.jump_frames_right = self.get_frames('img/player/jumpRight.png',48,20,16,20)
+        self.idle_frames_left = self.get_frames('img/player/idleLeft.png',48,20,16,20)
+        self.idle_frames_right = self.get_frames('img/player/idleRight.png',48,20,16,20)
+        self.punch_frames_left = self.get_frames('img/player/punchLeft.png',48,20,16,20)
+        self.punch_frames_right = self.get_frames('img/player/punchRight.png',48,20,16,20)
+        self.image = self.walking_frames_right[0]
+
         if self.weapon is not None:
             self.canShoot = True
             self.damage = self.weapon.damage
@@ -100,6 +115,78 @@ class Player(Base):
             self.attack_released = True
             self.attacking = True
             self.idle = False
+
+
+    def animate(self):
+        if self.attacking:
+            if not self.attack_released:
+                self.action_timer = 0
+                if self.direction == 'left':
+                    self.image = self.punch_frames_left[2]
+                if self.direction == 'right':
+                    self.image = self.punch_frames_right[0]
+            if self.attack_released:
+                self.action_timer += 1
+                if self.action_timer == 2:
+                    if self.direction == 'left':
+                        self.rect.x -= 2
+                        self.image = self.punch_frames_left[0]
+                    if self.direction == 'right':
+                        self.rect.x += 2
+                        self.image = self.punch_frames_right[1]
+                if self.action_timer == 3:
+                    if self.direction == 'left':
+                        self.rect.x -= 4
+                        self.image = self.punch_frames_left[1]
+                    if self.direction == 'right':
+                        self.rect.x += 4
+                        self.image = self.punch_frames_right[2]
+                if self.action_timer == 6:
+                    if self.melee: self.melee = False
+                    if self.throwing: self.throwing = False
+                    self.attacking = False
+                    self.idle = True
+
+        if self.moving:
+            if self.direction == "left":
+                frame = (self.rect.x//15) % len(self.walking_frames_left)
+                self.image = self.walking_frames_left[frame]
+            if self.direction == "right":
+                frame = (self.rect.x//15) % len(self.walking_frames_right)
+                self.image = self.walking_frames_right[frame]
+
+        if self.jumping:
+            if self.direction == "left":
+                self.image = self.jump_frames_left[2]
+            if self.direction == "right":
+                self.image = self.jump_frames_right[0]
+
+        if self.falling:
+            if not self.attacking:
+                if self.direction == "left":
+                    self.image = self.jump_frames_left[1]
+                if self.direction == "right":
+                    self.image = self.jump_frames_right[1]
+
+        if self.idle and not self.attacking:
+            self.action_timer += .5
+            if self.action_timer == 12:
+                self.action_timer = 0
+            if self.direction == "right":
+                if self.action_timer > 0:
+                    self.image = self.idle_frames_right[0]
+                if self.action_timer > 4:
+                    self.image = self.idle_frames_right[1]
+                if self.action_timer > 8:
+                    self.image = self.idle_frames_right[2]
+            if self.direction == "left":
+                if self.action_timer > 0:
+                    self.image = self.idle_frames_left[0]
+                if self.action_timer > 4:
+                    self.image = self.idle_frames_left[1]
+                if self.action_timer > 8:
+                    self.image = self.idle_frames_left[2]
+
 
     def update(self, objects):
         self.animate()
