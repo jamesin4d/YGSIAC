@@ -46,14 +46,9 @@ class Enemy(Base):
     bullets = []
     walk_speed = 0
 
-
-    def __init__(self, x, y , left, right):
+    def __init__(self):
         Base.__init__(self)
-        self.boundsL = left
-        self.boundsR = right
-        self.set_position((x,y))
         self.aware = False # just in case....
-
 
     def check_target(self):
         self.target_x_range = False
@@ -93,38 +88,46 @@ class Enemy(Base):
                 self.hit_timer = 0
         return diff
 
-
+    def check_for_player_collision(self, xvel, yvel):
+            if pygame.sprite.collide_rect(self, self.target):
+                if xvel < 0:
+                    self.rect.left = self.target.rect.right
+                    self.collide_left = True
+                if xvel > 0:
+                    self.rect.right = self.target.rect.left
+                    self.collide_right = True
+                if yvel < 0:
+                    self.rect.top = self.target.rect.bottom
+                    self.collide_top = True
+                if yvel > 0:
+                    self.rect.bottom = self.target.rect.top
+                    self.collide_bottom = True
 
 
     def get_started(self):
-        if self.xvelocity == 0:
-            self.xvelocity += 2
-            if self.xvelocity > self.walk_speed:
-                self.xvelocity = self.walk_speed
-
-    def roam(self):
-        if self.rect.x >= self.boundsR:
-            self.walk_left()
-        if self.rect.x <= self.boundsL:
+        if self.rect.x > self.boundsL:
             self.walk_right()
-        if self.collide_right or self.collide_left:
-            self.jump(-7)
 
-
-
-
+    def check_move_back(self):
+        if self.collide_right:
+            self.walk_left()
+        elif self.collide_left:
+            self.walk_right()
 
 class Rat(Enemy):
     def __init__(self, x, y , left, right):
-        self.rat_frames()
+        Enemy.__init__(self)
         self.walking_frames_left = []
         self.walking_frames_right = []
-        Enemy.__init__(self, x, y , left, right)
         self.health = random.randint(3,6)
         self.max_health = 6.0
-        self.walk_speed = 2
+        self.walk_speed = 4
         self.damage = 1
         self.gravity = 1
+        self.rat_frames()
+        self.boundsL = left
+        self.boundsR = right
+        self.set_position((x,y))
         self.get_started()
 
     def rat_frames(self):
@@ -146,16 +149,20 @@ class Rat(Enemy):
 
     def update(self, objects):
         self.move_and_check(objects)
+        self.check_move_back()
+
         self.animate()
-        self.check_target()
-        self.roam()
 
 class Bat(Enemy):
     def __init__(self, x, y , left, right):
         self.walking_frames_left = []
         self.walking_frames_right = []
         self.bat_frames()
-        Enemy.__init__(self, x, y , left, right)
+        self.boundsL = left
+        self.boundsR = right
+        self.set_position((x,y))
+
+        Enemy.__init__(self)
         self.health = random.randint(3,6)
         self.max_health = 6.0
         self.walk_speed = 4
@@ -183,7 +190,6 @@ class Bat(Enemy):
     def update(self, objects):
         self.move_and_check(objects)
         self.animate()
-        self.check_target()
         self.roam()
 
 

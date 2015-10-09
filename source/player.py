@@ -46,17 +46,14 @@ class Player(Base):
     equipment = {
         'head' : None,
         'body' : None,
-        'weapon' : Rock,
+        'weapon' : None,
         'feet' : None
     }
     head = equipment['head']
     body = equipment['body']
     weapon = equipment['weapon']
     feet = equipment['feet']
-    if weapon is not None:
-        munitions = weapon.clip_size
-    if weapon is None:
-        munitions = 0
+    ammo = None
     action = False
 
     walking_frames_left = [] # lists to hold walking frames
@@ -67,41 +64,43 @@ class Player(Base):
     punch_frames_right = []
     idle_frames_left = [] # standing still frames
     idle_frames_right = []
-    walk_speed = 5
-    jump_speed = 9.75
-    gravity = 1.0
+    walk_speed = 10.0
+    jump_speed = 20.0
+    gravity = 2.0
     direction = 'right'
     melee_damage = .5
-    throwing = False
     save = None
+    melee = False
+    throwing = False
     def __init__(self):
         Base.__init__(self)
-        self.walking_frames_left = self.get_frames('img/player/heroLeft.png',96,20,16,20)
-        self.walking_frames_right = self.get_frames('img/player/heroRight.png',96,20,16,20)
-        self.jump_frames_left = self.get_frames('img/player/jumpLeft.png',48,20,16,20)
-        self.jump_frames_right = self.get_frames('img/player/jumpRight.png',48,20,16,20)
-        self.idle_frames_left = self.get_frames('img/player/idleLeft.png',48,20,16,20)
-        self.idle_frames_right = self.get_frames('img/player/idleRight.png',48,20,16,20)
-        self.punch_frames_left = self.get_frames('img/player/punchLeft.png',48,20,16,20)
-        self.punch_frames_right = self.get_frames('img/player/punchRight.png',48,20,16,20)
+        self.walking_frames_left = self.get_frames('img/player/heroLeft.png',384,80,64,80)
+        self.walking_frames_right = self.get_frames('img/player/heroRight.png',384,80,64,80)
+        self.jump_frames_left = self.get_frames('img/player/jumpLeft.png',192,80,64,80)
+        self.jump_frames_right = self.get_frames('img/player/jumpRight.png',192,80,64,80)
+        self.idle_frames_left = self.get_frames('img/player/idleLeft.png',192,80,64,80)
+        self.idle_frames_right = self.get_frames('img/player/idleRight.png',192,80,64,80)
+        self.punch_frames_left = self.get_frames('img/player/punchLeft.png',192,80,64,80)
+        self.punch_frames_right = self.get_frames('img/player/punchRight.png',192,80,64,80)
         self.image = self.walking_frames_right[0]
+        self.rect = pygame.Rect(0,0,64,80)
 
         if self.weapon is not None:
             self.canShoot = True
             self.damage = self.weapon.damage
-        self.rect = pygame.Rect(0,0,16,16)
+
 
 
     def check_ammo(self):
         if self.weapon is not None:
-            if self.munitions > 0:
+            if self.ammo > 0:
                 self.canShoot = True
-            elif self.munitions <= 0:
+            elif self.ammo <= 0:
                 self.canShoot = False
 
     def reload(self):
         if self.weapon is not None:
-            self.munitions = self.weapon.clip_size
+            self.ammo = self.weapon.clip_size
             self.canShoot = True
 
     def attack(self, attack_type, key_released):
@@ -123,7 +122,7 @@ class Player(Base):
                 self.action_timer = 0
                 if self.direction == 'left':
                     self.image = self.punch_frames_left[2]
-                if self.direction == 'right':
+                elif self.direction == 'right':
                     self.image = self.punch_frames_right[0]
             if self.attack_released:
                 self.action_timer += 1
@@ -131,7 +130,7 @@ class Player(Base):
                     if self.direction == 'left':
                         self.rect.x -= 2
                         self.image = self.punch_frames_left[0]
-                    if self.direction == 'right':
+                    elif self.direction == 'right':
                         self.rect.x += 2
                         self.image = self.punch_frames_right[1]
                 if self.action_timer == 3:
@@ -149,42 +148,42 @@ class Player(Base):
 
         if self.moving:
             if self.direction == "left":
-                frame = (self.rect.x//15) % len(self.walking_frames_left)
+                frame = (self.rect.x//29) % len(self.walking_frames_left)
                 self.image = self.walking_frames_left[frame]
-            if self.direction == "right":
-                frame = (self.rect.x//15) % len(self.walking_frames_right)
+            elif self.direction == "right":
+                frame = (self.rect.x//29) % len(self.walking_frames_right)
                 self.image = self.walking_frames_right[frame]
 
         if self.jumping:
             if self.direction == "left":
                 self.image = self.jump_frames_left[2]
-            if self.direction == "right":
+            elif self.direction == "right":
                 self.image = self.jump_frames_right[0]
 
         if self.falling:
             if not self.attacking:
                 if self.direction == "left":
                     self.image = self.jump_frames_left[1]
-                if self.direction == "right":
+                elif self.direction == "right":
                     self.image = self.jump_frames_right[1]
 
         if self.idle and not self.attacking:
             self.action_timer += .5
-            if self.action_timer == 12:
+            if self.action_timer == 20:
                 self.action_timer = 0
             if self.direction == "right":
                 if self.action_timer > 0:
                     self.image = self.idle_frames_right[0]
-                if self.action_timer > 4:
+                if self.action_timer > 6:
                     self.image = self.idle_frames_right[1]
-                if self.action_timer > 8:
+                if self.action_timer > 12:
                     self.image = self.idle_frames_right[2]
-            if self.direction == "left":
+            elif self.direction == "left":
                 if self.action_timer > 0:
                     self.image = self.idle_frames_left[0]
-                if self.action_timer > 4:
+                if self.action_timer > 6:
                     self.image = self.idle_frames_left[1]
-                if self.action_timer > 8:
+                if self.action_timer > 12:
                     self.image = self.idle_frames_left[2]
 
 

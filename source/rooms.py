@@ -54,6 +54,8 @@ class Room:
     def check_collisions(self):
         self.camera.update(self.player)
         self.player.update(self.collision)
+        for e in self.enemy_list:
+            e.update(self.collision)
         if self.player.rect.x > self.map_rect[0]:
             self.goto_next_room()
         if self.player.rect.x < 0:
@@ -66,6 +68,9 @@ class Room:
             self.screen.blit(f.image, self.camera.apply(f))
         for c in self.collision:
             self.screen.blit(c.image, self.camera.apply(c))
+
+        for e in self.enemy_list:
+            self.screen.blit(e.image, self.camera.apply(e))
         self.screen.blit(self.player.image, self.camera.apply(self.player))
 
 
@@ -84,17 +89,24 @@ class Room:
 class StartRoom(Room):
     def __init__(self):
         Room.__init__(self) # call parent class
-        self.player_pos_left = (80,240)
+        self.player_pos_left = (80,85)
         self.player_pos_right = (1560, 240)
-        self.map_file = 'maps/opening.json'
+        self.map_file = 'maps/larger.json'
         self.next_room = RoomTwoTheCave
         self.get_map_info()
+
+        enemies = [
+            Rat(500,500,300,1000)
+        ]
+        for e in enemies:
+            self.enemy_list.append(e)
+            e.target = self.player
 
 
 class RoomTwoTheCave(Room):
     def __init__(self):
         Room.__init__(self)
-        self.map_file = "maps/openingsecond.json"
+        self.map_file = "maps/longer.json"
         self.player_pos_left = (80, 240)
         self.player_pos_right = (98*16,15*16)
         self.previous_room = StartRoom
