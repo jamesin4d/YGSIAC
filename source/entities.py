@@ -70,9 +70,6 @@ class Base(Entity):
 
     action_timer = 0
     idle = False
-    melee = False
-    throwing = False
-    all_frames = None
 
     def __init__(self):
         Entity.__init__(self)

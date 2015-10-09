@@ -23,17 +23,17 @@ class HUD(object):
         self.screen.blit(self.canvas, pos)
 
     def display_ammo(self):
-        ammo = self.player.munitions
+        #ammo = self.player.munitions
         x = self.player.rect.x
         y = self.player.rect.y-10
-        display_info(self.screen, "Ammunition: " + str(ammo),20,144,6)
+        #display_info(self.screen, "Ammunition: " + str(ammo),20,144,6)
         #if ammo <= 0:
          #   display_info(self.screen, "press 'R' ", 12, x,y)
 
     def display_viewer(self):
         pos = [110,0]
         self.screen.blit(self.box, pos)
-        self.box.blit(self.player.weapon.image, (16,16))
+        #self.box.blit(self.player.weapon.image, (16,16))
 
     def display_health_bar(self):
         health = self.player.health
@@ -90,7 +90,6 @@ class HUD(object):
 
 
     def update(self):
-        self.draw_hud_canvas()
         self.display_ammo()
         self.display_health_bar()
         self.display_viewer()

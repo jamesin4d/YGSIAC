@@ -374,6 +374,7 @@ class Game(State):
                     p.attack('',True)
 
     def check_collisions(self):
+
         # set up some local variables
         self.current_room.check_collisions()
         if self.current_room.goto_next:
