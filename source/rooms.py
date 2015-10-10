@@ -89,18 +89,18 @@ class Room:
 class StartRoom(Room):
     def __init__(self):
         Room.__init__(self) # call parent class
-        self.player_pos_left = (80,85)
-        self.player_pos_right = (1560, 240)
+
         self.map_file = 'maps/larger.json'
         self.next_room = RoomTwoTheCave
         self.get_map_info()
-
+        self.player_pos_left = (80,85)
+        self.player_pos_right = (36*self.tilewidth, 16*self.tileheight)
         enemies = [
             Rat(500,500,300,1000)
         ]
         for e in enemies:
+
             self.enemy_list.append(e)
-            e.target = self.player
 
 
 class RoomTwoTheCave(Room):
