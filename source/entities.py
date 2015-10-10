@@ -51,9 +51,10 @@ class Base(Entity):
     onGround = False # true if entity has bottom collision
     canJump = False # true if on ground is true
     direction = None # a string of either 'left'/'right'/'up'
-    attacking = False
+    attacking = False #true if entity is attacking
     attack_released = False
-
+    hit_timer = Timer(30)
+    hit_timer.deactivate()
 
     image = None # which image is being shown
     rect = None # the collision rectangle
@@ -96,7 +97,10 @@ class Base(Entity):
         return self.angle
 
     def take_damage(self, quanta):
-        self.health -= quanta
+        if not self.hit_timer.active:
+            self.hit_timer.activate()
+            self.health -= quanta
+
         if self.health < 1:
             self.kill()
             self.dead = True
@@ -176,6 +180,8 @@ class Base(Entity):
             self.idle = True
 
     def check_for_collision(self, xvel, yvel, objects):
+        if self.hit_timer.active: self.hit_timer.update()
+        if self.hit_timer.update(): self.hit_timer.deactivate()
         self.onGround = False
         for obj in objects:
             if pygame.sprite.collide_rect(self, obj):

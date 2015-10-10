@@ -38,9 +38,8 @@ class Logo(State):
             self.screen.fill((0,0,0))
             self.screen.blit(self.image, self.image_pos)
             pygame.display.update()
-# alternately, pygame.display.update() can be used,
     def tick(self):
-        self.clock.tick(10)
+        self.clock.tick(30)
 # this is where the timer comes in, any value is fine
         if self.lifetime.update():
             if not self.fade:
@@ -285,6 +284,7 @@ class Game(State):
         self.player = Player()
         self.player.set_position(self.current_room.player_pos_left)
         self.current_room.player = self.player
+
         self.heads_up_display = HUD(self.player)
 
 # events loop, feeds the player.dir values to handle player
@@ -374,6 +374,11 @@ class Game(State):
                     p.attack('',True)
 
     def check_collisions(self):
+
+        for e in self.current_room.enemy_list:
+            e.target = self.player
+            if e.dead:
+                    self.current_room.enemy_list.remove(e)
 
         # set up some local variables
         self.current_room.check_collisions()

@@ -64,6 +64,7 @@ class Player(Base):
     punch_frames_right = []
     idle_frames_left = [] # standing still frames
     idle_frames_right = []
+
     walk_speed = 10.0
     jump_speed = 20.0
     gravity = 2.0
@@ -72,18 +73,19 @@ class Player(Base):
     save = None
     melee = False
     throwing = False
+
     def __init__(self):
         Base.__init__(self)
-        self.walking_frames_left = self.get_frames('img/player/heroLeft.png',384,80,64,80)
-        self.walking_frames_right = self.get_frames('img/player/heroRight.png',384,80,64,80)
-        self.jump_frames_left = self.get_frames('img/player/jumpLeft.png',192,80,64,80)
-        self.jump_frames_right = self.get_frames('img/player/jumpRight.png',192,80,64,80)
-        self.idle_frames_left = self.get_frames('img/player/idleLeft.png',192,80,64,80)
-        self.idle_frames_right = self.get_frames('img/player/idleRight.png',192,80,64,80)
-        self.punch_frames_left = self.get_frames('img/player/punchLeft.png',192,80,64,80)
-        self.punch_frames_right = self.get_frames('img/player/punchRight.png',192,80,64,80)
+        self.walking_frames_left = self.get_frames('img/player/heroLeft.png',384,64,64,64)
+        self.walking_frames_right = self.get_frames('img/player/heroRight.png',384,64,64,64)
+        self.jump_frames_left = self.get_frames('img/player/jumpLeft.png',192,64,64,64)
+        self.jump_frames_right = self.get_frames('img/player/jumpRight.png',192,64,64,64)
+        self.idle_frames_left = self.get_frames('img/player/idleLeft.png',192,64,64,64)
+        self.idle_frames_right = self.get_frames('img/player/idleRight.png',192,64,64,64)
+        self.punch_frames_left = self.get_frames('img/player/punchLeft.png',192,64,64,64)
+        self.punch_frames_right = self.get_frames('img/player/punchRight.png',192,64,64,64)
         self.image = self.walking_frames_right[0]
-        self.rect = pygame.Rect(0,0,64,80)
+        self.rect = pygame.Rect(0,0,64,64)
 
         if self.weapon is not None:
             self.canShoot = True

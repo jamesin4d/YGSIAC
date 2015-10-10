@@ -42,7 +42,6 @@ class Enemy(Base):
     boundsR = None
     damage = 0
     has_hit_player = False
-    hit_timer = 0
     bullets = []
     walk_speed = 0
 
@@ -70,39 +69,24 @@ class Enemy(Base):
         if self.target_x_range and self.target_y_range:
             self.target_in_range = True
         else: self.target_in_range = False
-
-        contact = pygame.sprite.collide_rect(self, self.target)
-        if contact:
-            if self.target.attacking:
-                self.has_hit_player = True
-                if self.target.melee:
-                    self.take_damage(self.target.melee_damage)
-            elif not self.target.attacking:
-                if self.hit_timer == 0:
-                    self.has_hit_player = True
-                    self.target.take_damage(self.damage)
-        if self.has_hit_player:
-            self.hit_timer += 1
-            if self.hit_timer >= 20:
-                self.has_hit_player = False
-                self.hit_timer = 0
         return diff
 
-    def check_for_player_collision(self, xvel, yvel):
-            if pygame.sprite.collide_rect(self, self.target):
-                if xvel < 0:
-                    self.rect.left = self.target.rect.right
+    def check_for_player_collision(self):
+        target = self.target
+        if pygame.sprite.collide_rect(self, target):
+            if target.falling:
+                self.take_damage(6)
+            elif target.xvelocity == 0:
+                target.take_damage(1)
+                if self.xvelocity <= 0:
+                    self.rect.left = target.rect.right
                     self.collide_left = True
-                if xvel > 0:
-                    self.rect.right = self.target.rect.left
+                elif self.xvelocity >= 0:
+                    self.rect.right = target.rect.left
                     self.collide_right = True
-                if yvel < 0:
-                    self.rect.top = self.target.rect.bottom
-                    self.collide_top = True
-                if yvel > 0:
-                    self.rect.bottom = self.target.rect.top
-                    self.collide_bottom = True
-
+            elif target.xvelocity != 0:
+                self.xvelocity = target.xvelocity
+                target.take_damage(1)
 
     def get_started(self):
         if self.rect.x > self.boundsL:
@@ -119,6 +103,7 @@ class Rat(Enemy):
         Enemy.__init__(self)
         self.walking_frames_left = []
         self.walking_frames_right = []
+        self.death_frames = []
         self.health = random.randint(3,6)
         self.max_health = 6.0
         self.walk_speed = 4
@@ -133,6 +118,8 @@ class Rat(Enemy):
     def rat_frames(self):
         rat_left = SpriteSheet.strip_sheet('img/enemies/rat/ratLeft.png',128,32,32,32)
         rat_right = SpriteSheet.strip_sheet('img/enemies/rat/ratRight.png',128,32,32,32)
+        rat_death = SpriteSheet.strip_sheet('img/enemies/rat/ratDeath.png',160,32,32,32)
+        self.death_frames = rat_death
         self.walking_frames_left = rat_left
         self.walking_frames_right = rat_right
         self.image = self.walking_frames_right[0]
@@ -149,8 +136,8 @@ class Rat(Enemy):
 
     def update(self, objects):
         self.move_and_check(objects)
+        self.check_for_player_collision()
         self.check_move_back()
-
         self.animate()
 
 class Bat(Enemy):
