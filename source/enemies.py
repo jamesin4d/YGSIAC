@@ -103,7 +103,6 @@ class Rat(Enemy):
         Enemy.__init__(self)
         self.walking_frames_left = []
         self.walking_frames_right = []
-        self.death_frames = []
         self.health = random.randint(3,6)
         self.max_health = 6.0
         self.walk_speed = 4
@@ -118,8 +117,6 @@ class Rat(Enemy):
     def rat_frames(self):
         rat_left = SpriteSheet.strip_sheet('img/enemies/rat/ratLeft.png',128,32,32,32)
         rat_right = SpriteSheet.strip_sheet('img/enemies/rat/ratRight.png',128,32,32,32)
-        rat_death = SpriteSheet.strip_sheet('img/enemies/rat/ratDeath.png',160,32,32,32)
-        self.death_frames = rat_death
         self.walking_frames_left = rat_left
         self.walking_frames_right = rat_right
         self.image = self.walking_frames_right[0]
