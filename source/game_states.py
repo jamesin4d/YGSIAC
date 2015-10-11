@@ -5,7 +5,7 @@
 #
 #
 # --------------------------------------------------------------------
-from mapper import Mapper
+from mapper import *
 from engine import State
 from rooms import *
 from player import Player
@@ -78,9 +78,9 @@ class Cursor(object):
     def __init__(self):
         self.image = pygame.image.load('img/cursor.png')
         self.positions = {
-            'start': (400, 356),
-            'options': (400, 416),
-            'quit': (400, 478)
+            'start': (680, 425),
+            'options': (680, 490),
+            'quit': (680, 560)
         }
         self.pos = self.positions['start']
         self.pos_list = [
@@ -284,7 +284,6 @@ class Game(State):
         self.player = Player()
         self.player.set_position(self.current_room.player_pos_left)
         self.current_room.player = self.player
-
         self.heads_up_display = HUD(self.player)
 
 # events loop, feeds the player.dir values to handle player
@@ -374,13 +373,12 @@ class Game(State):
                     p.attack('',True)
 
     def check_collisions(self):
-
         for e in self.current_room.enemy_list:
             e.target = self.player
             if e.dead:
-                    self.current_room.enemy_list.remove(e)
-
-        # set up some local variables
+                pu = Energy(e.rect.center)
+                self.current_room.item_list.append(pu)
+                self.current_room.enemy_list.remove(e)
         self.current_room.check_collisions()
         if self.current_room.goto_next:
             self.current_room = self.current_room.next_room()
@@ -390,7 +388,6 @@ class Game(State):
             self.current_room = self.current_room.previous_room()
             self.player.set_position(self.current_room.player_pos_right)
             self.current_room.player = self.player
-
         if self.player.dead:
             self.next = GameOver()
             self.quit()

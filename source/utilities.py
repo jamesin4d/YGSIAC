@@ -6,18 +6,13 @@
 # 9/6 7:58 pm
 import pygame
 
-try:
-    pygame.mixer.init()
-except:
-    print "could not initialize sound"
-    sound = False
-
+#these are just two methods that do the same thing with different arguments
 def print_info(surface, msg, x, row=0):
     font = pygame.font.Font(None, 12)
     text = font.render(msg, 1, (254,254,254))
     pos = [x,10+16*row]
     surface.blit(text, pos)
-
+# they are used to put text on a surface, message = 'whatever you want'
 def display_info(surface, message, font_size,  x, y):
     near_white = (254,254,254)
     font = pygame.font.Font(None, font_size)
@@ -25,40 +20,17 @@ def display_info(surface, message, font_size,  x, y):
     pos = [x,y]
     surface.blit(text, pos)
 
-class NoSound:
-    def play(self): pass
+def text_widget(r,g,b, text, size, x,y):
+    screen = pygame.display.get_surface()
+    col = color(r,g,b)
 
-def load_game_images():
-    names = [
-        "img/logo.png",
-        "img/startscreen.png",
-        "img/quitscreen.png",
-        "img/security.png",
-        "img/hero.png",
-        "img/bullet2.png",
-        "img/cursor.png",
-        "img/dialog.png",
-        "img/health.png",
-        "maps/set.png",  ]
-    game_images = load_graphics(names)
-    return game_images
 
-def color(r,g,b,a):
-    return pygame.Color((r,g,b,a))
+
+def color(r,g,b):
+    return pygame.Color((r,g,b))
 
 def rect(x,y,w,h):
     return pygame.Rect(x,y,w,h)
-
-
-def load_sound(sound_file):
-    try:
-        return pygame.mixer.Sound(sound_file)
-    except:
-        print "could not load sound:", sound_file
-    return NoSound()
-
-def set_music(filename):
-    pygame.mixer.music.load(filename)
 
 def get_image(image):
     img =  pygame.image.load(image).convert()
@@ -70,12 +42,6 @@ def load_graphics(names):
     for n in names:
         gfx[n] = get_image(n)
     return gfx
-
-def load_sounds(names):
-    sounds = {}
-    for n in names:
-        sounds[n] = load_sound(n)
-    return sounds
 
 #---------------------------------------------------------------------
 class Timer(object):

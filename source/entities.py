@@ -88,8 +88,8 @@ class Base(Entity):
         self.rect.y = y
 
     def get_position(self):
-            #position get method, returns (x,y)
-            return self.rect.topleft
+        #position get method, returns (x,y)
+        return self.rect.topleft
 
     def aim(self, target):
         offset = (target.rect.centery - self.rect.centery, target.rect.centerx - self.rect.centerx)
@@ -100,7 +100,6 @@ class Base(Entity):
         if not self.hit_timer.active:
             self.hit_timer.activate()
             self.health -= quanta
-
         if self.health < 1:
             self.kill()
             self.dead = True
