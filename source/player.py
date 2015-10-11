@@ -7,37 +7,6 @@
 #--------------------------------------------------------------------
 from weapons import *
 from enemies import *
-import json
-
-def jdefault(obj):
-    return obj.__dict__
-
-class Save(object):
-    def __init__(self, health, location, ammo):
-        self.health = health
-        self.current_location = location
-        self.ammunition = ammo
-
-    def load_progress(self, player):
-        save_file = open('player.json').read()
-        opened_save = json.loads(save_file)
-        if 'ammunition' in opened_save:
-            ammo = opened_save['ammunition']
-            self.ammunition = ammo
-        if 'health' in opened_save:
-            health = opened_save['health']
-            self.health = health
-        if 'current_location' in opened_save:
-            current_location = opened_save['current_location']
-            player.set_position((current_location[0], current_location[1]))
-
-    def save_progress(self):
-        with open('player.json','w') as outfile:
-            json.dump(self, default=jdefault, fp=outfile,indent=4)
-
-
-
-
 
 class Player(Base):
     health = 9
@@ -148,7 +117,7 @@ class Player(Base):
                     self.attacking = False
                     self.idle = True
 
-        if self.moving:
+        elif self.moving:
             if self.direction == "left":
                 frame = (self.rect.x//29) % len(self.walking_frames_left)
                 self.image = self.walking_frames_left[frame]
@@ -156,20 +125,20 @@ class Player(Base):
                 frame = (self.rect.x//29) % len(self.walking_frames_right)
                 self.image = self.walking_frames_right[frame]
 
-        if self.jumping:
+        elif self.jumping:
             if self.direction == "left":
                 self.image = self.jump_frames_left[2]
-            elif self.direction == "right":
+            if self.direction == "right":
                 self.image = self.jump_frames_right[0]
 
-        if self.falling:
+        elif self.falling:
             if not self.attacking:
                 if self.direction == "left":
                     self.image = self.jump_frames_left[1]
-                elif self.direction == "right":
+                if self.direction == "right":
                     self.image = self.jump_frames_right[1]
 
-        if self.idle and not self.attacking:
+        elif self.idle and not self.attacking:
             self.action_timer += .5
             if self.action_timer == 20:
                 self.action_timer = 0
@@ -180,7 +149,7 @@ class Player(Base):
                     self.image = self.idle_frames_right[1]
                 if self.action_timer > 12:
                     self.image = self.idle_frames_right[2]
-            elif self.direction == "left":
+            if self.direction == "left":
                 if self.action_timer > 0:
                     self.image = self.idle_frames_left[0]
                 if self.action_timer > 6:

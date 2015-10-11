@@ -9,6 +9,36 @@ from utilities import *
 from entities import Entity
 import math
 
+
+class Energy(Entity):
+    def __init__(self, position):
+        Entity.__init__(self)
+        self.frames = SpriteSheet.strip_sheet('img/entities/dropitems/pickup.png',128,16,16,16)
+        self.image = self.frames[0]
+        self.image.set_colorkey((255,255,255))
+        self.rect = self.image.get_rect(center=position)
+        self.anim_timer = 0
+
+
+    def update(self):
+        self.anim_timer += 0.5
+        if self.anim_timer > 0:
+            self.image = self.frames[0]
+        if self.anim_timer > 5:
+            self.image = self.frames[1]
+        if self.anim_timer > 10:
+            self.image = self.frames[2]
+        if self.anim_timer > 15:
+            self.image = self.frames[3]
+        if self.anim_timer > 20:
+            self.image = self.frames[4]
+        if self.anim_timer > 25:
+            self.image = self.frames[5]
+        if self.anim_timer > 30:
+            self.anim_timer = 0
+
+
+
 # --------------------------------------------------------------------
 # A simple unidirectional bullet class, the 'owner' is whoever shot the bullet
 # ---------------------------------------------------------------------

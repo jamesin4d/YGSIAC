@@ -56,6 +56,8 @@ class Room:
         self.player.update(self.collision)
         for e in self.enemy_list:
             e.update(self.collision)
+        for i in self.item_list:
+            i.update()
         if self.player.rect.x > self.map_rect[0]:
             self.goto_next_room()
         if self.player.rect.x < 0:
@@ -68,7 +70,8 @@ class Room:
             self.screen.blit(f.image, self.camera.apply(f))
         for c in self.collision:
             self.screen.blit(c.image, self.camera.apply(c))
-
+        for i in self.item_list:
+            self.screen.blit(i.image, self.camera.apply(i))
         for e in self.enemy_list:
             self.screen.blit(e.image, self.camera.apply(e))
         self.screen.blit(self.player.image, self.camera.apply(self.player))
