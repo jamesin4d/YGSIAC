@@ -8,20 +8,15 @@
 from weapons import *
 from enemies import *
 
+class Inventory(object):
+    def __init__(self):
+        self.slots = {}
+
+
+
 class Player(Base):
     health = 9
     max_health = 9.0
-    med = 2
-    equipment = {
-        'head' : None,
-        'body' : None,
-        'weapon' : None,
-        'feet' : None
-    }
-    head = equipment['head']
-    body = equipment['body']
-    weapon = equipment['weapon']
-    feet = equipment['feet']
     ammo = None
     action = False
 
@@ -45,20 +40,17 @@ class Player(Base):
 
     def __init__(self):
         Base.__init__(self)
-        self.walking_frames_left = self.get_frames('img/player/heroLeft.png',384,64,64,64)
-        self.walking_frames_right = self.get_frames('img/player/heroRight.png',384,64,64,64)
-        self.jump_frames_left = self.get_frames('img/player/jumpLeft.png',192,64,64,64)
-        self.jump_frames_right = self.get_frames('img/player/jumpRight.png',192,64,64,64)
-        self.idle_frames_left = self.get_frames('img/player/idleLeft.png',192,64,64,64)
-        self.idle_frames_right = self.get_frames('img/player/idleRight.png',192,64,64,64)
-        self.punch_frames_left = self.get_frames('img/player/punchLeft.png',192,64,64,64)
-        self.punch_frames_right = self.get_frames('img/player/punchRight.png',192,64,64,64)
+        self.walking_frames_left = self.get_frames('img/player/greyL.png',384,64,64,64)
+        self.walking_frames_right = self.get_frames('img/player/greyR.png',384,64,64,64)
+        self.jump_frames_left = self.get_frames('img/player/gjL.png',192,64,64,64)
+        self.jump_frames_right = self.get_frames('img/player/gjR.png',192,64,64,64)
+        self.idle_frames_left = self.get_frames('img/player/giL.png',192,64,64,64)
+        self.idle_frames_right = self.get_frames('img/player/giR.png',192,64,64,64)
+        self.punch_frames_left = self.get_frames('img/player/gpL.png',192,64,64,64)
+        self.punch_frames_right = self.get_frames('img/player/gpR.png',192,64,64,64)
         self.image = self.walking_frames_right[0]
         self.rect = pygame.Rect(0,0,64,64)
 
-        if self.weapon is not None:
-            self.canShoot = True
-            self.damage = self.weapon.damage
 
 
 
@@ -117,7 +109,7 @@ class Player(Base):
                     self.attacking = False
                     self.idle = True
 
-        elif self.moving:
+        if self.moving:
             if self.direction == "left":
                 frame = (self.rect.x//29) % len(self.walking_frames_left)
                 self.image = self.walking_frames_left[frame]
@@ -125,21 +117,21 @@ class Player(Base):
                 frame = (self.rect.x//29) % len(self.walking_frames_right)
                 self.image = self.walking_frames_right[frame]
 
-        elif self.jumping:
+        if self.jumping:
             if self.direction == "left":
                 self.image = self.jump_frames_left[2]
             if self.direction == "right":
                 self.image = self.jump_frames_right[0]
 
-        elif self.falling:
+        if self.falling:
             if not self.attacking:
                 if self.direction == "left":
                     self.image = self.jump_frames_left[1]
                 if self.direction == "right":
                     self.image = self.jump_frames_right[1]
 
-        elif self.idle and not self.attacking:
-            self.action_timer += .5
+        if self.idle and not self.attacking:
+            self.action_timer += 1
             if self.action_timer == 20:
                 self.action_timer = 0
             if self.direction == "right":
@@ -161,4 +153,3 @@ class Player(Base):
     def update(self, objects):
         self.animate()
         self.move_and_check(objects)
-        self.check_ammo()

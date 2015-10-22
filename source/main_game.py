@@ -12,7 +12,7 @@ os.environ['SDL_VIDEO_WINDOW_POS'] = "%d,%d" % (120,20)
 
 def main():
     WIN_WIDTH = 1200
-    WIN_HEIGHT = 700
+    WIN_HEIGHT = 480
     DISPLAY = (WIN_WIDTH, WIN_HEIGHT)
     DEPTH = 32
     FLAGS = 0
