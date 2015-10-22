@@ -58,6 +58,9 @@ class Room:
             e.update(self.collision)
         for i in self.item_list:
             i.update()
+            i.check_collisions(self.player)
+            if i.inactive:
+                self.item_list.remove(i)
         if self.player.rect.x > self.map_rect[0]:
             self.goto_next_room()
         if self.player.rect.x < 0:
@@ -76,7 +79,6 @@ class Room:
             self.screen.blit(e.image, self.camera.apply(e))
         self.screen.blit(self.player.image, self.camera.apply(self.player))
 
-
     def goto_next_room(self):
         self.goto_next = True
         self.screen.fill((0,0,0))
@@ -93,7 +95,7 @@ class StartRoom(Room):
     def __init__(self):
         Room.__init__(self) # call parent class
 
-        self.map_file = 'maps/larger.json'
+        self.map_file = 'maps/junk.json'
         self.next_room = RoomTwoTheCave
         self.get_map_info()
         self.player_pos_left = (80,85)

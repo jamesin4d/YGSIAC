@@ -294,25 +294,13 @@ class Game(State):
         keypress = pg.KEYDOWN
         keyrelease = pg.KEYUP
         esc = pg.K_ESCAPE
-        w_key = pg.K_w
         s_key = pg.K_s
         d_key = pg.K_d
-        a_key = pg.K_a
-        j_key = pg.K_j
-        k_key = pg.K_k
         up_arrow = pg.K_UP
-        down_arrow = pg.K_DOWN
         left_arrow = pg.K_LEFT
         right_arrow = pg.K_RIGHT
-        r_key = pg.K_r
-        t_key = pg.K_t
-        tab_key = pg.K_TAB
 
         for e in pg.event.get():
-            if e.type == pg.VIDEORESIZE:
-                self.screen = pygame.display.set_mode((e.w, e.h), pygame.RESIZABLE)
-                screen_size = self.screen.get_size()
-                self.canvas = pygame.transform.scale(self.canvas, screen_size)
             if e.type == pg.QUIT:
                 self.close_game()
                 sys.exit()
@@ -320,63 +308,33 @@ class Game(State):
                 if e.key == esc:
                     self.close_game()
                     sys.exit()
-                if e.key == a_key:
+                if e.key == left_arrow:
                     p.walk_left()
-                if e.key == d_key:
+                if e.key == right_arrow:
                     p.walk_right()
-                if e.key == w_key:
+                if e.key == up_arrow:
                     p.jump(-p.jump_speed)
-                if e.key == j_key:
+                if e.key == s_key:
                     p.attack('throwing',False)
-                if e.key == k_key:
+                if e.key == d_key:
                     p.attack('melee',False)
-
-                if e.key == t_key:
-                    p.load_progress()
-                if e.key == tab_key:
-                    self.show_debug = not self.show_debug
-
-                elif e.key == up_arrow:
-                    if self.show_debug:
-                        p.jump_speed += 0.25
-                elif e.key == down_arrow:
-                    if self.show_debug:
-                        p.jump_speed -= 0.25
-                elif e.key == left_arrow:
-                    if self.show_debug:
-                        p.walk_speed -= 0.25
-                elif e.key == right_arrow:
-                    if self.show_debug:
-                        p.walk_speed += 0.25
-                elif e.key == pg.K_g:
-                    if self.show_debug:
-                        p.gravity += 0.1
-                elif e.key == pg.K_f:
-                    if self.show_debug:
-                        p.gravity -= 0.1
             elif e.type == keyrelease:
-                if e.key == a_key and p.xvelocity < 0:
+                if e.key == left_arrow and p.xvelocity < 0:
                     p.move_x(0)
-                elif e.key == d_key and p.xvelocity > 0:
+                elif e.key == right_arrow and p.xvelocity > 0:
                     p.move_x(0)
-                elif e.key == w_key and p.yvelocity < 0:
+                elif e.key == up_arrow and p.yvelocity < 0:
                     p.move_y(0)
-                elif e.key == s_key and p.yvelocity > 0:
-                    p.move_y(0)
-                elif e.key == r_key:
-                    p.save_progress()
-                elif e.key == k_key:
+                elif e.key == s_key:
                     p.attack('',True)
-                elif e.key == j_key:
-                    if p.canShoot:
-                        p.munitions -= 1
+                elif e.key == d_key:
                     p.attack('',True)
 
     def check_collisions(self):
         for e in self.current_room.enemy_list:
             e.target = self.player
             if e.dead:
-                pu = Energy(e.rect.center)
+                pu = PickUp(e.rect.center)
                 self.current_room.item_list.append(pu)
                 self.current_room.enemy_list.remove(e)
         self.current_room.check_collisions()

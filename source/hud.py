@@ -7,7 +7,6 @@
 #--------------------------------------------------------------------
 
 from utilities import *
-from gooey import *
 
 class HUD(object):
     def __init__(self, player):

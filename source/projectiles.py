@@ -10,7 +10,7 @@ from entities import Entity
 import math
 
 
-class Energy(Entity):
+class PickUp(Entity):
     def __init__(self, position):
         Entity.__init__(self)
         self.frames = SpriteSheet.strip_sheet('img/entities/dropitems/pickup.png',128,16,16,16)
@@ -18,10 +18,16 @@ class Energy(Entity):
         self.image.set_colorkey((255,255,255))
         self.rect = self.image.get_rect(center=position)
         self.anim_timer = 0
+        self.inactive = False
+
+    def check_collisions(self, obj):
+        col = pygame.sprite.collide_rect(self, obj)
+        if col:
+            self.inactive = True
 
 
-    def update(self):
-        self.anim_timer += 0.5
+    def animate(self):
+        self.anim_timer += 1
         if self.anim_timer > 0:
             self.image = self.frames[0]
         if self.anim_timer > 5:
@@ -36,6 +42,10 @@ class Energy(Entity):
             self.image = self.frames[5]
         if self.anim_timer > 30:
             self.anim_timer = 0
+
+
+    def update(self):
+        self.animate()
 
 
 
