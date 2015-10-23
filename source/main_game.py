@@ -14,12 +14,12 @@ def main():
     WIN_WIDTH = 1200
     WIN_HEIGHT = 480
     DISPLAY = (WIN_WIDTH, WIN_HEIGHT)
-    DEPTH = 32
-    FLAGS = 0
+    #DEPTH = 32
+    #FLAGS = 0
     #CAMERA_SLACK = 32
     pygame.init()
-    pygame.display.set_mode(DISPLAY, FLAGS, DEPTH)
-    pygame.display.set_caption("You've Gotten Stuck In A Cave")
+    pygame.display.set_mode(DISPLAY)
+    pygame.display.set_caption("You've Gotten Stuck Making A Game!")
     e = Engine()
     e.current_state = Logo()
     e.run()

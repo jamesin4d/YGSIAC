@@ -40,8 +40,8 @@ class Player(Base):
 
     def __init__(self):
         Base.__init__(self)
-        self.walking_frames_left = self.get_frames('img/player/greyL.png',384,64,64,64)
-        self.walking_frames_right = self.get_frames('img/player/greyR.png',384,64,64,64)
+        self.walking_frames_left = self.get_frames('img/player/greyL.png',288,64,48,64)
+        self.walking_frames_right = self.get_frames('img/player/greyR.png',288,64,48,64)
         self.jump_frames_left = self.get_frames('img/player/gjL.png',192,64,64,64)
         self.jump_frames_right = self.get_frames('img/player/gjR.png',192,64,64,64)
         self.idle_frames_left = self.get_frames('img/player/giL.png',192,64,64,64)
@@ -49,7 +49,7 @@ class Player(Base):
         self.punch_frames_left = self.get_frames('img/player/gpL.png',192,64,64,64)
         self.punch_frames_right = self.get_frames('img/player/gpR.png',192,64,64,64)
         self.image = self.walking_frames_right[0]
-        self.rect = pygame.Rect(0,0,64,64)
+        self.rect = pygame.Rect(0,0,48,64)
 
 
 
