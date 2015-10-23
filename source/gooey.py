@@ -8,8 +8,9 @@
 import pygame
 
 class Widget(pygame.Surface):
-    def __init__(self, size):
+    def __init__(self, size, image=None):
         pygame.Surface.__init__(self, size)
+        self.image = image
         self.size = size
         self.screen = pygame.display.get_surface()
         self.rect = self.get_rect()
@@ -21,7 +22,9 @@ class Widget(pygame.Surface):
         return self.rect.topleft
 
     def draw(self):
-        self.screen.blit(self, self.rect)
+        if self.image is None:
+            self.screen.blit(self, self.rect)
+        else: self.screen.blit(self.image, self.rect)
         pygame.display.update(self.rect)
 
 

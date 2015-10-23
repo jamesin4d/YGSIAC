@@ -12,6 +12,7 @@ from player import Player
 from hud import HUD
 from weapons import *
 from camera import *
+from gooey import *
 # GAME STATES *NOW WITH COMMENTS!!*
 import sys
 pygame.init()
@@ -23,7 +24,7 @@ class Logo(State):
         State.__init__(self)
         self.next = StartScreen()
         self.screen.fill((0,0,0))
-        self.image = pygame.image.load("img/logo.png")
+        self.image = get_image("img/logo.png")
         self.alpha = 0
         self.image.set_alpha(0)
         self.image = pygame.transform.scale(self.image, self.screen.get_size())
@@ -69,79 +70,74 @@ class Logo(State):
 
     def quit(self):
         State.quit(self)
-# cursor object -------------------------------------------------------------------------------
-# currently hardcoded for only startscreen state positions, but works well
-# extending it to work else where would probably only require putting
-# in more location dictionaries to cycle through for different screens
-# ----------------------------------------------------------------------------------------------
-class Cursor(object):
-    def __init__(self):
-        self.image = pygame.image.load('img/cursor.png')
-        self.positions = {
-            'start': (680, 425),
-            'options': (680, 490),
-            'quit': (680, 560)
-        }
-        self.pos = self.positions['start']
-        self.pos_list = [
-            self.positions['start'],
-            self.positions['options'],
-            self.positions['quit']
-        ]
-        self.index = 0
 
-    def select(self):
-        if self.index == 0:
-            return Game()
-        if self.index == 1:
-            return Options()
-        if self.index == 2:
-            return RealitySimulator()
-
-    def cycle_down(self):
-        if self.index == 2:
-            self.index = 0
-            self.pos = self.pos_list[self.index]
-        else:
-            self.index += 1
-            self.pos = self.pos_list[self.index]
-        return
-
-    def cycle_up(self):
-        if self.index == 0:
-            self.index = 2
-            self.pos = self.pos_list[self.index]
-        else:
-            self.index -= 1
-            self.pos = self.pos_list[self.index]
-        return
-
-    def display(self, screen):
-        screen.blit(self.image, self.pos)
 # ----------------Start screen state-------------------------------------------------------------
 class StartScreen(State):
+    game_start = False
+    options_start = False
+    quit_game = False
     def __init__(self):
         State.__init__(self)
         self.kill_prev = True
         self.done = False
         self.next = Game()
         self.screen.fill((200,200,200))
-        self.image = pygame.image.load('img/startscreen.png')
+        self.image = get_image('img/startscreen.png')
+        self.start = Widget((147,21),image=get_image('img/start.png'))
+        self.start.set_position((800,200))
+        self.option = Widget((191,24),image=get_image('img/option.png'))
+        self.option.set_position((800,250))
+        self.quitbtn = Widget((125,24),image=get_image('img/quit.png'))
+        self.quitbtn.set_position((800, 300))
         self.image = pygame.transform.scale(self.image, self.screen.get_size())
         self.image_pos = center(self.image.get_size(), self.screen.get_size())
         self.ups = True
-        self.cursor = Cursor()
+        self.cursor = Widget((64,64), image=get_image('img/cursor.png'))
+        self.cursor_index = 1
+        self.cursor_positioning_guidance_system()
+
+
+# overly long description of CPGS is unnecessary
+    def cursor_positioning_guidance_system(self,selected=False):
+        if self.cursor_index > 3: self.cursor_index = 1
+        if self.cursor_index < 1: self.cursor_index = 3
+        positions = {
+            'start':(736,200),
+            'options':(736,250),
+            'quit':(736,300)
+        }
+        if self.cursor_index == 1:
+            self.cursor.set_position(positions['start'])
+            if selected:
+                self.next = Game()
+                self.quit()
+        if self.cursor_index == 2:
+            self.cursor.set_position(positions['options'])
+            if selected:
+                self.next = Options()
+                self.quit()
+        if self.cursor_index == 3:
+            self.cursor.set_position(positions['quit'])
+            if selected:
+                self.next = RealitySimulator()
+                self.quit()
+
+
+
 
     def update_screen(self):
         if self.ups:
             self.screen.fill((200,200,200))
             self.image = pygame.transform.scale(self.image, self.screen.get_size())
             self.screen.blit(self.image, self.image_pos)
-            self.cursor.display(self.screen)
+            self.cursor.draw()
+            self.start.draw()
+            self.option.draw()
+            self.quitbtn.draw()
             pygame.display.flip()
-# MOTHERFUCKING OR STATEMENTS!??!?
-        # GTFO
+
     def check_events(self):
+        self.cursor_positioning_guidance_system() # checks where cursor should be
         for e in pygame.event.get():
             if e.type == pygame.VIDEORESIZE:
                 self.image = pygame.transform.scale(self.image, (e.w, e.h))
@@ -150,12 +146,11 @@ class StartScreen(State):
                 self.close_game()
             if e.type == pygame.KEYDOWN:
                 if e.key == pygame.K_DOWN or e.key == pygame.K_s:
-                    self.cursor.cycle_down()
+                    self.cursor_index += 1
                 if e.key == pygame.K_UP or e.key == pygame.K_w:
-                    self.cursor.cycle_up()
+                    self.cursor_index -= 1
                 if e.key == pygame.K_SPACE:
-                    self.next = self.cursor.select()
-                    self.quit()
+                    self.cursor_positioning_guidance_system(selected=True)
                 if e.key == pygame.K_ESCAPE:
                     self.next = RealitySimulator()
                     self.quit()
