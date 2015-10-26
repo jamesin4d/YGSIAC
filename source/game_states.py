@@ -310,6 +310,7 @@ class Game(State):
                 if e.key == up_arrow:
                     p.jump(-p.jump_speed)
                 if e.key == s_key:
+                    self.current_room.item_list.append(Bullets(p.rect.center,p))
                     p.attack('throwing',False)
                 if e.key == d_key:
                     p.attack('melee',False)
