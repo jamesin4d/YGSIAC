@@ -29,7 +29,7 @@ class Player(Base):
     idle_frames_left = [] # standing still frames
     idle_frames_right = []
 
-    walk_speed = 10.0
+    walk_speed = 7.0
     jump_speed = 20.0
     gravity = 2.0
     direction = 'right'
@@ -40,16 +40,16 @@ class Player(Base):
 
     def __init__(self):
         Base.__init__(self)
-        self.walking_frames_left = self.get_frames('img/player/greyL.png',288,64,48,64)
-        self.walking_frames_right = self.get_frames('img/player/greyR.png',288,64,48,64)
-        self.jump_frames_left = self.get_frames('img/player/gjL.png',192,64,64,64)
-        self.jump_frames_right = self.get_frames('img/player/gjR.png',192,64,64,64)
-        self.idle_frames_left = self.get_frames('img/player/giL.png',192,64,64,64)
-        self.idle_frames_right = self.get_frames('img/player/giR.png',192,64,64,64)
-        self.punch_frames_left = self.get_frames('img/player/gpL.png',192,64,64,64)
-        self.punch_frames_right = self.get_frames('img/player/gpR.png',192,64,64,64)
+        self.walking_frames_left = self.get_frames('img/player/greyL.png',96,16,16,16)
+        self.walking_frames_right = self.get_frames('img/player/greyR.png',96,16,16,16)
+        self.jump_frames_left = self.get_frames('img/player/gjL.png',48,16,16,16)
+        self.jump_frames_right = self.get_frames('img/player/gjR.png',48,16,16,16)
+        self.idle_frames_left = self.get_frames('img/player/giL.png',48,16,16,16)
+        self.idle_frames_right = self.get_frames('img/player/giR.png',48,16,16,16)
+        self.punch_frames_left = self.get_frames('img/player/gpL.png',48,16,16,16)
+        self.punch_frames_right = self.get_frames('img/player/gpR.png',48,16,16,16)
         self.image = self.walking_frames_right[0]
-        self.rect = pygame.Rect(0,0,48,64)
+        self.rect = pygame.Rect(0,0,16,16)
 
 
 

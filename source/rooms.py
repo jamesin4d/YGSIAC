@@ -57,10 +57,11 @@ class Room:
         for e in self.enemy_list:
             e.update(self.collision)
         for i in self.item_list:
-            i.update()
-            i.check_collisions(self.player)
-            if i.inactive:
-                self.item_list.remove(i)
+            i.update(self.collision)
+            if i.dead:self.item_list.remove(i)
+
+
+
         if self.player.rect.x > self.map_rect[0]:
             self.goto_next_room()
         if self.player.rect.x < 0:
