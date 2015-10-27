@@ -5,7 +5,7 @@
 #
 #
 #--------------------------------------------------------------------
-
+from gooey import *
 from utilities import *
 
 class HUD(object):
@@ -17,6 +17,7 @@ class HUD(object):
         self.canvas = pygame.image.load('img/HUD/Canvas.png')
         self.box = pygame.image.load('img/HUD/Box.png')
         self.box.set_colorkey((255,255,255))
+        self.score = Score('Score')
 
     def draw_hud_canvas(self):
         pos = [0,0]

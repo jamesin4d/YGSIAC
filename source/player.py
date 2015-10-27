@@ -29,7 +29,7 @@ class Player(Base):
     idle_frames_left = [] # standing still frames
     idle_frames_right = []
 
-    walk_speed = 7.0
+    walk_speed = 8.0
     jump_speed = 20.0
     gravity = 2.0
     direction = 'right'
@@ -37,6 +37,7 @@ class Player(Base):
     save = None
     melee = False
     throwing = False
+    score = 0
 
     def __init__(self):
         Base.__init__(self)

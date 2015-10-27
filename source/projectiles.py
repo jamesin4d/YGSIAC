@@ -79,7 +79,6 @@ class Bullets(Entity):
             if pygame.sprite.collide_rect(self, s):
                 self.dead = True
 
-
     def check_direction(self):
         if self.direction == 'right':
             self.speed = 15
