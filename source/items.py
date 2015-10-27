@@ -11,9 +11,13 @@ class Item(Base):
     def __init__(self):
         Base.__init__(self)
 
-class Sign(Item):
-    def __init__(self):
+class StarterGun(Item):
+    def __init__(self,x,y):
         Item.__init__(self)
+        start_img = 'img/entities/dropitems/gun.png'
+        self.image = get_image(start_img)
+        self.rect = self.image.get_rect()
+        self.set_position((x,y))
 
 class Candle(Item):
     def __init__(self,x,y):

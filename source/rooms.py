@@ -101,18 +101,16 @@ class StartRoom(Room):
         self.get_map_info()
         self.player_pos_left = (80,85)
         self.player_pos_right = (36*self.tilewidth, 16*self.tileheight)
-        enemies = [
-            Rat(500,500,300,1000)
+        items = [
+            StarterGun(83*16, 5*16)
         ]
-        for e in enemies:
 
-            self.enemy_list.append(e)
-
-
+        for i in items:
+            self.item_list.append(i)
 class RoomTwoTheCave(Room):
     def __init__(self):
         Room.__init__(self)
-        self.map_file = "maps/longer.json"
+        self.map_file = "maps/level2.json"
         self.player_pos_left = (80, 240)
         self.player_pos_right = (98*16,15*16)
         self.previous_room = StartRoom

@@ -30,7 +30,7 @@ class Logo(State):
         self.image = pygame.transform.scale(self.image, self.screen.get_size())
         self.image_pos = center(self.image.get_size(), self.screen.get_size())
         self.fade = False
-        self.lifetime = Timer(1)
+        self.lifetime = Timer(5)
         self.update_s = True
 
     def update_screen(self):
@@ -82,17 +82,17 @@ class StartScreen(State):
         self.done = False
         self.next = Game()
         self.screen.fill((200,200,200))
-        self.image = get_image('img/startscreen.png')
-        self.start = Widget((147,21),image=get_image('img/start.png'))
+        self.image = get_image('img/startscreen/startscreen.png')
+        self.start = Widget((147,21),image=get_image('img/startscreen/start.png'))
         self.start.set_position((800,200))
-        self.option = Widget((191,24),image=get_image('img/option.png'))
+        self.option = Widget((191,24),image=get_image('img/startscreen/option.png'))
         self.option.set_position((800,250))
-        self.quitbtn = Widget((125,24),image=get_image('img/quit.png'))
+        self.quitbtn = Widget((125,24),image=get_image('img/startscreen/quit.png'))
         self.quitbtn.set_position((800, 300))
         self.image = pygame.transform.scale(self.image, self.screen.get_size())
         self.image_pos = center(self.image.get_size(), self.screen.get_size())
         self.ups = True
-        self.cursor = Widget((64,64), image=get_image('img/cursor.png'))
+        self.cursor = Widget((64,64), image=get_image('img/startscreen/cursor.png'))
         self.cursor_index = 1
         self.cursor_positioning_guidance_system()
 
@@ -121,9 +121,6 @@ class StartScreen(State):
             if selected:
                 self.next = RealitySimulator()
                 self.quit()
-
-
-
 
     def update_screen(self):
         if self.ups:
@@ -161,7 +158,7 @@ class Options(State):
         self.kill_prev = True
         self.done = False
         self.screen.fill((40,40,50))
-        self.image = pygame.image.load('img/optionsscreen.png')
+        self.image = pygame.image.load('img/optionscreen/optionsscreen.png')
         self.image = pygame.transform.scale(self.image, self.screen.get_size())
         self.image_pos = center(self.image.get_size(), self.screen.get_size())
         self.ups = True
@@ -192,7 +189,7 @@ class RealitySimulator(State):
         State.__init__(self)
         self.next = None
         self.screen.fill((200,200,200))
-        self.image = pygame.image.load("img/quitscreen.png")
+        self.image = pygame.image.load("img/gamequit/quitscreen.png")
         self.alpha = 0
         self.image.set_alpha(0)
         self.image = pygame.transform.scale(self.image, self.screen.get_size())
@@ -241,7 +238,7 @@ class GameOver(State):
         State.__init__(self)
         self.next = StartScreen()
         self.screen.fill((40,40,40))
-        self.image = pygame.image.load("img/gameover.png")
+        self.image = pygame.image.load("img/gamequit/gameover.png")
         self.image = pygame.transform.scale(self.image, self.screen.get_size())
         self.image_pos = center(self.image.get_size(), self.screen.get_size())
 
