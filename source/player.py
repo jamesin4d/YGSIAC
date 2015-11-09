@@ -12,6 +12,10 @@ class Inventory(object):
     def __init__(self):
         self.slots = {}
 
+    def gain(self, key, value):
+        self.slots[key] = value
+
+
 
 
 class Player(Base):
@@ -29,8 +33,8 @@ class Player(Base):
     idle_frames_left = [] # standing still frames
     idle_frames_right = []
 
-    walk_speed = 8.0
-    jump_speed = 20.0
+    walk_speed = 10.0
+    jump_speed = 22.0
     gravity = 2.0
     direction = 'right'
     melee_damage = .5
@@ -41,16 +45,23 @@ class Player(Base):
 
     def __init__(self):
         Base.__init__(self)
-        self.walking_frames_left = self.get_frames('img/player/greyL.png',96,16,16,16)
-        self.walking_frames_right = self.get_frames('img/player/greyR.png',96,16,16,16)
-        self.jump_frames_left = self.get_frames('img/player/gjL.png',48,16,16,16)
-        self.jump_frames_right = self.get_frames('img/player/gjR.png',48,16,16,16)
-        self.idle_frames_left = self.get_frames('img/player/giL.png',48,16,16,16)
-        self.idle_frames_right = self.get_frames('img/player/giR.png',48,16,16,16)
-        self.punch_frames_left = self.get_frames('img/player/gpL.png',48,16,16,16)
-        self.punch_frames_right = self.get_frames('img/player/gpR.png',48,16,16,16)
+        self.walking_frames_left = self.get_frames('img/player/greyL.png',192,32,32,32)
+        self.walking_frames_right = self.get_frames('img/player/greyR.png',192,32,32,32)
+
+        jump_frames = self.get_frames('img/player/greyJump.png',192,32,32,32)
+        self.jump_frames_left = (jump_frames[0],jump_frames[1],jump_frames[2])
+        self.jump_frames_right = (jump_frames[3],jump_frames[4],jump_frames[5])
+
+        punch_frames = self.get_frames('img/player/greyPunch.png',192,32,32,32)
+        self.punch_frames_left = (punch_frames[0],punch_frames[1],punch_frames[2])
+        self.punch_frames_right = (punch_frames[3],punch_frames[4],punch_frames[5])
+
+        idle_frames = self.get_frames('img/player/greyIdle.png',192,32,32,32)
+        self.idle_frames_left = (idle_frames[0],idle_frames[1],idle_frames[2])
+        self.idle_frames_right = (idle_frames[3],idle_frames[4],idle_frames[5])
+
         self.image = self.walking_frames_right[0]
-        self.rect = pygame.Rect(0,0,16,16)
+        self.rect = pygame.Rect(0,0,32,32)
 
 
 
@@ -112,10 +123,10 @@ class Player(Base):
 
         if self.moving:
             if self.direction == "left":
-                frame = (self.rect.x//29) % len(self.walking_frames_left)
+                frame = (self.rect.x//40) % len(self.walking_frames_left)
                 self.image = self.walking_frames_left[frame]
             elif self.direction == "right":
-                frame = (self.rect.x//29) % len(self.walking_frames_right)
+                frame = (self.rect.x//40) % len(self.walking_frames_right)
                 self.image = self.walking_frames_right[frame]
 
         if self.jumping:

@@ -76,10 +76,10 @@ class Base(Entity):
         Entity.__init__(self)
 
     @staticmethod
-    def get_frames(frame_list,ix,iy,fx,fy):
+    def get_frames(frame_sheet, ix, iy, fx, fy):
         # JESUS FUCK ROBIN! LOOK HOW SHORT THIS FRAME GETTING METHOD GOT!
         strip = SpriteSheet.strip_sheet
-        return strip(frame_list,ix,iy,fx,fy)
+        return strip(frame_sheet, ix, iy, fx, fy)
 
 
     def set_position(self, (x, y)):
