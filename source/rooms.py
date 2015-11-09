@@ -96,10 +96,10 @@ class StartRoom(Room):
     def __init__(self):
         Room.__init__(self) # call parent class
 
-        self.map_file = 'maps/junk.json'
+        self.map_file = 'maps/testlevel.json'
         self.next_room = RoomTwoTheCave
         self.get_map_info()
-        self.player_pos_left = (80,85)
+        self.player_pos_left = (80,16)
         self.player_pos_right = (36*self.tilewidth, 16*self.tileheight)
         items = [
             StarterGun(83*16, 5*16)
