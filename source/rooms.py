@@ -79,6 +79,7 @@ class Room:
         for e in self.enemy_list:
             self.screen.blit(e.image, self.camera.apply(e))
         self.screen.blit(self.player.image, self.camera.apply(self.player))
+        self.screen.blit(self.player.friend.image, self.camera.apply(self.player.friend))
 
     def goto_next_room(self):
         self.goto_next = True
@@ -97,33 +98,7 @@ class StartRoom(Room):
         Room.__init__(self) # call parent class
 
         self.map_file = 'maps/testlevel.json'
-        self.next_room = RoomTwoTheCave
         self.get_map_info()
         self.player_pos_left = (80,16)
         self.player_pos_right = (36*self.tilewidth, 16*self.tileheight)
-        items = [
-            StarterGun(83*16, 5*16)
-        ]
 
-        for i in items:
-            self.item_list.append(i)
-class RoomTwoTheCave(Room):
-    def __init__(self):
-        Room.__init__(self)
-        self.map_file = "maps/level2.json"
-        self.player_pos_left = (80, 240)
-        self.player_pos_right = (98*16,15*16)
-        self.previous_room = StartRoom
-        self.next_room = ThirdRoom
-        self.get_map_info()
-
-
-class ThirdRoom(Room):
-    def __init__(self):
-        Room.__init__(self)
-        self.map_file = "maps/thehole.json"
-        self.player_pos_left = (32, 32)
-        self.previous_room = RoomTwoTheCave
-        self.get_map_info()
-
-        enemies = []

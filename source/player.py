@@ -7,6 +7,7 @@
 #--------------------------------------------------------------------
 from weapons import *
 from enemies import *
+from bot_buddy import Nimbot
 
 class Inventory(object):
     def __init__(self):
@@ -45,6 +46,14 @@ class Player(Base):
 
     def __init__(self):
         Base.__init__(self)
+        self.gather_frame_sets()
+        self.image = self.walking_frames_right[0]
+        self.rect = pygame.Rect(0,0,32,32)
+        self.friend = Nimbot()
+        self.friend.set_position(self.rect.topleft)
+
+
+    def gather_frame_sets(self):
         self.walking_frames_left = self.get_frames('img/player/greyL.png',192,32,32,32)
         self.walking_frames_right = self.get_frames('img/player/greyR.png',192,32,32,32)
 
@@ -59,11 +68,6 @@ class Player(Base):
         idle_frames = self.get_frames('img/player/greyIdle.png',192,32,32,32)
         self.idle_frames_left = (idle_frames[0],idle_frames[1],idle_frames[2])
         self.idle_frames_right = (idle_frames[3],idle_frames[4],idle_frames[5])
-
-        self.image = self.walking_frames_right[0]
-        self.rect = pygame.Rect(0,0,32,32)
-
-
 
 
     def check_ammo(self):
@@ -92,6 +96,7 @@ class Player(Base):
 
 
     def animate(self):
+
         if self.attacking:
             if not self.attack_released:
                 self.action_timer = 0
@@ -165,3 +170,5 @@ class Player(Base):
     def update(self, objects):
         self.animate()
         self.move_and_check(objects)
+        self.friend.set_position(self.rect.topright)
+        self.friend.update()
