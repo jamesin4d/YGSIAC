@@ -17,7 +17,7 @@ You get scared in a crisis.
    * items base class started, can "interact" with player, it's one of those should work in theory situations, been only slightly         tested, so it probably needs some adjustment.
    * enemies base class started, some simple AI is being tested. Currently the enemy detects when player is in range, tracks players
      position, following and shooting at the player if they are close enough. Enemies will also flee if their health drops below a       certain point. The collision detection is set up, though collision response still needs implemented.    
-   *CAMERA! the camera module I wrote so long ago lives again! 
+   * CAMERA! the camera module I wrote so long ago lives again! 
    * a few test levels have been made up, though none of the that's set in stone.
    * a utilities module is made up with various scripts that help out around the house from time to time, good people, real good people.
    * going through major changes, most features being overhauled daily.
