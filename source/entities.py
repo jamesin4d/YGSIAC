@@ -76,10 +76,10 @@ class Base(Entity):
         Entity.__init__(self)
 
     @staticmethod
-    def get_frames(frame_list,ix,iy,fx,fy):
+    def get_frames(frame_sheet, ix, iy, fx, fy):
         # JESUS FUCK ROBIN! LOOK HOW SHORT THIS FRAME GETTING METHOD GOT!
         strip = SpriteSheet.strip_sheet
-        return strip(frame_list,ix,iy,fx,fy)
+        return strip(frame_sheet, ix, iy, fx, fy)
 
 
     def set_position(self, (x, y)):
@@ -202,7 +202,30 @@ class Base(Entity):
         pass
 
 
+class Loading_animated(Base):
+    def __init__(self):
+        Base.__init__(self)
+        self.frames = self.get_frames('img/trans/loading.png',200,96,200,32)
+        self.image = self.frames[0]
+        self.rect = self.image.get_rect()
+        self.anim_duration = 10
+        self.anim_counter = 0
+        self.current_frame = 0
 
+    def animate(self):
+        if self.anim_counter < self.anim_duration:
+            self.anim_counter += 1
+        if self.anim_counter == self.anim_duration:
+            self.current_frame += 1
+            self.anim_counter = 0
+        if self.current_frame >= len(self.frames):
+            self.current_frame = 0
+        self.image = self.frames[self.current_frame]
+
+    def update(self):
+        #print 'count:', self.anim_counter
+        #print 'current', self.current_frame
+        self.animate()
 
 
 

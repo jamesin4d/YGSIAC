@@ -38,40 +38,19 @@ class HUD(object):
 
     def display_health_bar(self):
         health = self.player.health
-        frames = SpriteSheet.strip_sheet(self.healthBarImage, 320,32,32,32)
-        barLeft = [frames[0],frames[7],frames[8], frames[9]]
-        barRight = [frames[1],frames[2],frames[3],frames[4],frames[5],frames[6]]
-        heartPosition = [5,0]
-        LeftPosition = [42,0]
-        RightPosition = [74,0]
-        self.screen.blit(self.various[1],heartPosition)
+        heart_one_Position = [6,0]
+        heart_two_Position = [40,0]
+        heart_three_Position = [74,0]
         if health == 9:
-            self.screen.blit(barLeft[0], LeftPosition)
-            self.screen.blit(barRight[0], RightPosition)
-        if health == 8:
-            self.screen.blit(barLeft[0], LeftPosition)
-            self.screen.blit(barRight[1], RightPosition)
-        if health == 7:
-            self.screen.blit(barLeft[0], LeftPosition)
-            self.screen.blit(barRight[2], RightPosition)
+            self.screen.blit(self.various[1],heart_one_Position)
+            self.screen.blit(self.various[1],heart_two_Position)
+            self.screen.blit(self.various[1],heart_three_Position)
         if health == 6:
-            self.screen.blit(barLeft[0], LeftPosition)
-            self.screen.blit(barRight[3], RightPosition)
-        if health == 5:
-            self.screen.blit(barLeft[0], LeftPosition)
-            self.screen.blit(barRight[4], RightPosition)
-        if health == 4:
-            self.screen.blit(barLeft[1], LeftPosition)
-            self.screen.blit(barRight[5], RightPosition)
+            self.screen.blit(self.various[1],heart_one_Position)
+            self.screen.blit(self.various[1],heart_two_Position)
         if health == 3:
-            self.screen.blit(barLeft[2], LeftPosition)
-            self.screen.blit(barRight[5], RightPosition)
-        if health == 2:
-            self.screen.blit(barLeft[3], LeftPosition)
-            self.screen.blit(barRight[5], RightPosition)
-        if health == 1:
-            self.screen.blit(barLeft[3], LeftPosition)
-            self.screen.blit(barRight[5], RightPosition)
+            self.screen.blit(self.various[1],heart_one_Position)
+
 
     def show_debug(self):
         p = self.player

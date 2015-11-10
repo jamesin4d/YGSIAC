@@ -13,6 +13,7 @@ from hud import HUD
 from weapons import *
 from camera import *
 from gooey import *
+from entities import *
 # GAME STATES *NOW WITH COMMENTS!!*
 import sys
 pygame.init()
@@ -71,6 +72,53 @@ class Logo(State):
     def quit(self):
         State.quit(self)
 
+
+class Transition(State):
+    def __init__(self, next_state):
+        State.__init__(self)
+        self.next_state = next_state
+        self.screen.fill((0,0,0))
+        self.image = get_image("img/trans/transition.png")
+        self.image = pygame.transform.scale(self.image, self.screen.get_size())
+        self.image_pos = center(self.image.get_size(), self.screen.get_size())
+        self.loading_bar = Loading_animated()
+        self.loading_bar_pos = (600, 440)
+        self.update_s = True
+        self.length = 90
+        self.count = 0
+
+
+
+    def update_screen(self):
+        self.loading_bar.update()
+        self.counter()
+        if self.update_s:
+#            makes sure the screen stays black
+            self.screen.fill((0,0,0))
+            self.screen.blit(self.image, self.image_pos)
+            self.screen.blit(self.loading_bar.image, self.loading_bar_pos)
+
+            pygame.display.update()
+
+    def counter(self):
+        if self.count < self.length:
+            self.count += 1
+            if self.count >= self.length:
+                self.next = self.next_state()
+                self.quit()
+
+
+    def check_events(self):
+        for e in pygame.event.get():
+            if e.type == pygame.VIDEORESIZE:
+                self.image = pygame.transform.scale(self.image, (e.w, e.h))
+                self.screen = pygame.display.set_mode((e.w, e.h), pygame.RESIZABLE)
+            if e.type == pygame.QUIT:
+                self.close_game()
+
+    def quit(self):
+        State.quit(self)
+
 # ----------------Start screen state-------------------------------------------------------------
 class StartScreen(State):
     game_start = False
@@ -123,7 +171,7 @@ class StartScreen(State):
         for b in self.button_list:
             b.update()
         if self.start.clicked:
-            self.next = Game()
+            self.next = Transition(Game)
             self.quit()
         if self.options.clicked:
             self.next = Options()
@@ -297,7 +345,6 @@ class Game(State):
                 if e.key == up_arrow:
                     p.jump(-p.jump_speed)
                 if e.key == s_key:
-                    self.current_room.item_list.append(Bullets(p.rect.center,p))
                     p.attack('throwing',False)
                 if e.key == d_key:
                     p.attack('melee',False)
@@ -339,6 +386,7 @@ class Game(State):
         if self.show_debug:
             self.heads_up_display.show_debug()
         self.heads_up_display.update()
+
         pygame.display.update()
 
 
