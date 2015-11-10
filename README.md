@@ -8,7 +8,7 @@ You get scared in a crisis.
  currently requires pygame 1.9.1, and python 2.7.
  why not python 3?
  cause i'm livin' in the stoneage like a caveman, back off!
- ### Arrow keys to walk, up to jump, S & D are currently "punch"
+### Arrow keys to walk, up to jump, S & D are currently "punch"
  
    * Title screen is navigated with the mouse. loading screen added, mostly for effect.
    * splash screen, title screen, game state machine working well
