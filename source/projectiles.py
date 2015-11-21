@@ -5,9 +5,49 @@
 #
 #
 #--------------------------------------------------------------------
-from utilities import *
-from entities import Entity
+
+from entities import *
 import math
+
+
+class Swing(Base):
+    def __init__(self):
+        Base.__init__(self)
+        self.right_frames = self.get_frames('img/player/swing.png', 80, 16, 16, 16)
+        self.left_frames = self.get_frames('img/player/swingL.png', 80, 16, 16, 16)
+        self.image = self.right_frames[0]
+        self.rect = self.image.get_rect()
+        self.anim_duration = 7
+        self.anim_counter = 0
+        self.current_frame = 0
+        self.direction =  0
+        #------ programming tangent -----------------------------------------
+        # experimenting with using 0, and 1 as 'placeholder' boolean values,
+        # in situations where true/false isn't relative, and hurts the understandability of code.
+        # direction = false/true - built in language boolean tool, probably computed pretty quickly
+        # BUT -- it doesn't make any DAMN sense in human language.
+        # direction = "left"/"right" - more readable, but i'd imagine string comparisons take a little
+        # more time to compute. ---- So the reasoning here is that the machine-friendly number is
+        # human-friendly enough when used carefully, a cool language feature would be to be able
+        # to string together normally incompatible value types like so;---------------------
+        # direction = 0 = 'left'
+        # but i think thats about the same as having a direction dictionary key/value relationship
+        # to itterate the data.
+        # i'm sure it doesn't really matter when making a 2d not-so-resource-hungry game.
+
+    def animate(self):
+        if self.anim_counter < self.anim_duration:
+            self.anim_counter += 1
+        if self.anim_counter == self.anim_duration:
+            self.current_frame += 1
+            self.anim_counter = 0
+        if self.current_frame >= len(self.right_frames):
+            self.current_frame = 0
+
+        self.image = self.right_frames[self.current_frame]
+
+    def update(self):
+        self.animate()
 
 
 class PickUp(Entity):

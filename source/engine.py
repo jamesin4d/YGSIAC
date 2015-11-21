@@ -77,7 +77,7 @@ class State(object):
         pass
 
     def tick(self):
-        self.clock.tick(30)
+        self.clock.tick(40)
 
     def quit(self):
         self.done = True
