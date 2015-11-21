@@ -52,23 +52,6 @@ class HUD(object):
             self.screen.blit(self.various[1],heart_one_Position)
 
 
-    def show_debug(self):
-        p = self.player
-        print_info(self.screen, "-Left & Right arrows adjust walk speed, Up & down adjust jump-",10, 0)
-        print_info(self.screen,"Player y-velocity: " + str(p.yvelocity),10,1)
-        print_info(self.screen,"Player x-velocity: " + str(p.xvelocity),10,2)
-        print_info(self.screen,"Player on the ground: " + str(p.onGround),10,3)
-        print_info(self.screen,"Player walk speed: " + str(p.walk_speed),10,4)
-        print_info(self.screen,"Player jump speed: " + str(p.jump_speed),10,5)
-        print_info(self.screen,"Gravity: " + str(p.gravity),10,6)
-        print_info(self.screen,"'G' raises gravity, 'F' lowers it",10,7)
-        print_info(self.screen,"Collide Left: " + str(p.collide_left),10,8)
-        print_info(self.screen,"Collide Right: " + str(p.collide_right),10,9)
-        print_info(self.screen,"Collide Top: " + str(p.collide_top),10,10)
-        print_info(self.screen,"Collide bottom: " + str(p.collide_bottom),10,11)
-        print_info(self.screen,"Player melee: " + str(p.melee),10,12)
-
-
     def update(self):
         self.display_ammo()
         self.display_health_bar()

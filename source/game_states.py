@@ -345,9 +345,8 @@ class Game(State):
                 if e.key == up_arrow:
                     p.jump(-p.jump_speed)
                 if e.key == s_key:
-                    p.attack('throwing',False)
-                if e.key == d_key:
-                    p.attack('melee',False)
+                    p.attack(False)
+
             elif e.type == keyrelease:
                 if e.key == left_arrow and p.xvelocity < 0:
                     p.move_x(0)
@@ -356,9 +355,8 @@ class Game(State):
                 elif e.key == up_arrow and p.yvelocity < 0:
                     p.move_y(0)
                 elif e.key == s_key:
-                    p.attack('',True)
-                elif e.key == d_key:
-                    p.attack('',True)
+                    p.attack(True)
+
 
     def check_collisions(self):
         for e in self.current_room.enemy_list:

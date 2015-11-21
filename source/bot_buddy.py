@@ -31,3 +31,5 @@ class Nimbot(Base):
         #print 'count:', self.anim_counter
         #print 'current', self.current_frame
         self.animate()
+
+

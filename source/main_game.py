@@ -21,5 +21,5 @@ def main():
     pygame.display.set_mode(DISPLAY)
     pygame.display.set_caption("You're Making A Game!")
     e = Engine()
-    e.current_state = Logo()
+    e.current_state = Game()
     e.run()

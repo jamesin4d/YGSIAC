@@ -52,6 +52,9 @@ class Player(Base):
         self.friend = Nimbot()
         self.friend.set_position(self.rect.topleft)
 
+        self.attack_animation = Swing()
+        
+
 
     def gather_frame_sets(self):
         self.walking_frames_left = self.get_frames('img/player/greyL.png',192,32,32,32)
@@ -82,13 +85,11 @@ class Player(Base):
             self.ammo = self.weapon.clip_size
             self.canShoot = True
 
-    def attack(self, attack_type, key_released):
+    def attack(self, key_released):
         if not key_released:
             self.attack_released = False
             self.attacking = True
             self.idle = False
-            if attack_type == 'melee': self.melee = True
-            if attack_type == 'throwing': self.throwing = True
         if key_released:
             self.attack_released = True
             self.attacking = True
@@ -98,12 +99,14 @@ class Player(Base):
     def animate(self):
 
         if self.attacking:
+            #while the attack key is held, display this frame
             if not self.attack_released:
                 self.action_timer = 0
                 if self.direction == 'left':
                     self.image = self.punch_frames_left[2]
                 elif self.direction == 'right':
                     self.image = self.punch_frames_right[0]
+            # when the key is released, animate, mate.
             if self.attack_released:
                 self.action_timer += 1
                 if self.action_timer == 2:
