@@ -78,8 +78,13 @@ class Room:
             self.screen.blit(i.image, self.camera.apply(i))
         for e in self.enemy_list:
             self.screen.blit(e.image, self.camera.apply(e))
+
+        if not self.player.knife_attack.finished:
+            self.screen.blit(self.player.knife_attack.image, self.camera.apply(self.player.knife_attack))
+
         self.screen.blit(self.player.image, self.camera.apply(self.player))
         self.screen.blit(self.player.friend.image, self.camera.apply(self.player.friend))
+
 
     def goto_next_room(self):
         self.goto_next = True
