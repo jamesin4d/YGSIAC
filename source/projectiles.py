@@ -10,17 +10,19 @@ from entities import *
 import math
 
 
-class Swing(Base):
+class Knife(Base):
     def __init__(self):
         Base.__init__(self)
-        self.right_frames = self.get_frames('img/player/swing.png', 80, 16, 16, 16)
-        self.left_frames = self.get_frames('img/player/swingL.png', 80, 16, 16, 16)
+        self.right_frames = self.get_frames('img/player/swing.png', 96, 8, 16, 8)
+        self.left_frames = self.get_frames('img/player/swingL.png', 96, 8, 16, 8)
         self.image = self.right_frames[0]
         self.rect = self.image.get_rect()
-        self.anim_duration = 7
+        self.anim_duration = 3
         self.anim_counter = 0
         self.current_frame = 0
         self.direction =  0
+        self.finished = True
+
         #------ programming tangent -----------------------------------------
         # experimenting with using 0, and 1 as 'placeholder' boolean values,
         # in situations where true/false isn't relative, and hurts the understandability of code.
@@ -44,10 +46,27 @@ class Swing(Base):
         if self.current_frame >= len(self.right_frames):
             self.current_frame = 0
 
-        self.image = self.right_frames[self.current_frame]
+        if self.direction == 0:
+            self.image = self.right_frames[self.current_frame]
+        if self.direction == 1:
+            self.image = self.left_frames[self.current_frame]
 
-    def update(self):
+    def check_collisions(self, objects):
+        for obj in objects:
+            col = pygame.sprite.collide_rect(self, obj)
+            if col:
+                self.finished = True
+
+
+
+    def update(self, objects):
+        if self.direction == 0:
+            self.move_x(12)
+        if self.direction == 1:
+            self.move_x(-12)
+        self.rect.x += self.xvelocity
         self.animate()
+        self.check_collisions(objects)
 
 
 class PickUp(Entity):

@@ -34,7 +34,7 @@ class HUD(object):
     def display_viewer(self):
         pos = [110,0]
         self.screen.blit(self.box, pos)
-        #self.box.blit(self.player.weapon.image, (16,16))
+        self.box.blit(self.player.knife_attack.image, (8,13))
 
     def display_health_bar(self):
         health = self.player.health
