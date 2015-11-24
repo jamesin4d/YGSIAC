@@ -33,7 +33,7 @@ class Player(Base):
     idle_frames_left = [] # standing still frames
     idle_frames_right = []
 
-    walk_speed = 10.0
+    walk_speed = 15.0
     jump_speed = 22.0
     gravity = 2.0
     direction = 'right'
@@ -122,10 +122,10 @@ class Player(Base):
 
         if self.moving:
             if self.direction == "left":
-                frame = (self.rect.x//20) % len(self.walking_frames_left)
+                frame = (self.rect.x//50) % len(self.walking_frames_left)
                 self.image = self.walking_frames_left[frame]
             elif self.direction == "right":
-                frame = (self.rect.x//20) % len(self.walking_frames_right)
+                frame = (self.rect.x//50) % len(self.walking_frames_right)
                 self.image = self.walking_frames_right[frame]
 
         if self.jumping:
