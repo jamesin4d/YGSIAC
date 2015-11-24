@@ -89,6 +89,9 @@ def populate_sprite_lists(layers, all_tiles, tw, th):
                         tile.image = all_tiles[id_key]
                         background.append(tile)
                 index += 1
+    print len(collision_list)
+    print len(background)
+    print len(foreground)
     return collision_list, background, foreground
 
 

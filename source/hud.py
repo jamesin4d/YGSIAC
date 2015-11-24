@@ -38,9 +38,9 @@ class HUD(object):
 
     def display_health_bar(self):
         health = self.player.health
-        heart_one_Position = [6,0]
-        heart_two_Position = [40,0]
-        heart_three_Position = [74,0]
+        heart_one_Position = [6,5]
+        heart_two_Position = [40,5]
+        heart_three_Position = [74,5]
         if health == 9:
             self.screen.blit(self.various[1],heart_one_Position)
             self.screen.blit(self.various[1],heart_two_Position)
