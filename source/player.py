@@ -48,6 +48,9 @@ class Player(Base):
         self.friend = Nimbot()
         self.friend.set_position(self.rect.topleft)
         self.knife_attack = Knife()
+        jumpSound = 'sounds/jump.wav'
+        self.jumpSound = pygame.mixer.Sound(jumpSound)
+
 
 
 
@@ -63,9 +66,9 @@ class Player(Base):
         self.punch_frames_left = (punch_frames[0],punch_frames[1],punch_frames[2])
         self.punch_frames_right = (punch_frames[3],punch_frames[4],punch_frames[5])
         # grab all the idles frames froms thes sheets
-        idle_frames = self.get_frames('img/player/greyIdle.png',192,32,32,32)
-        self.idle_frames_left = (idle_frames[0],idle_frames[1],idle_frames[2])
-        self.idle_frames_right = (idle_frames[3],idle_frames[4],idle_frames[5])
+        idle_frames = self.get_frames('img/player/greyIdle.png',256,32,32,32)
+        self.idle_frames_left = (idle_frames[0],idle_frames[1],idle_frames[2],idle_frames[3])
+        self.idle_frames_right = (idle_frames[4],idle_frames[5],idle_frames[6],idle_frames[7])
 
 
     def attack(self, key_released):
@@ -129,6 +132,7 @@ class Player(Base):
                 self.image = self.walking_frames_right[frame]
 
         if self.jumping:
+
             if self.direction == "left":
                 self.image = self.jump_frames_left[2]
             if self.direction == "right":

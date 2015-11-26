@@ -56,16 +56,13 @@ class Room:
         self.player.update(self.collision)
         for e in self.enemy_list:
             e.update(self.collision)
-        for i in self.item_list:
-            i.update(self.collision)
-            if i.dead:self.item_list.remove(i)
-
-
-
-        if self.player.rect.x > self.map_rect[0]:
-            self.goto_next_room()
-        if self.player.rect.x < 0:
-            self.goto_previous_room()
+        #for i in self.item_list:
+        #    i.update(self.collision)
+        #    if i.dead:self.item_list.remove(i)
+        #if self.player.rect.x > self.map_rect[0]:
+        #    self.goto_next_room()
+        #if self.player.rect.x < 0:
+        #    self.goto_previous_room()
 
     def update_screen(self):
         for b in self.background:
@@ -104,6 +101,6 @@ class StartRoom(Room):
 
         self.map_file = 'maps/testlevel.json'
         self.get_map_info()
-        self.player_pos_left = (80,16)
+        self.player_pos_left = (3*self.tilewidth, 8*self.tileheight)
         self.player_pos_right = (36*self.tilewidth, 16*self.tileheight)
 
