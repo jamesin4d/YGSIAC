@@ -18,8 +18,9 @@ def main():
     #FLAGS = 0
     #CAMERA_SLACK = 32
     pygame.init()
+    pygame.mixer.init()
     pygame.display.set_mode(DISPLAY)
     pygame.display.set_caption("You're Making A Game!")
     e = Engine()
-    e.current_state = Game()
+    e.current_state = Logo()
     e.run()

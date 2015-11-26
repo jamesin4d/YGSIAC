@@ -45,6 +45,7 @@ class Logo(State):
 # this is where the timer comes in, any value is fine
         if self.lifetime.update():
             if not self.fade:
+
 # the real control in how long the splash screen lasts is here, in the alpha
                 self.alpha += 6
                 self.image.set_alpha(self.alpha)
@@ -135,6 +136,9 @@ class StartScreen(State):
         self.image_pos = center(self.image.get_size(), self.screen.get_size())
         self.ups = True
         self.set_up_buttons()
+        music = 'sounds/startscreen.wav'
+        self.music = pygame.mixer.Sound(music)
+        #self.music.play()
 
 
     def set_up_buttons(self):
@@ -343,6 +347,7 @@ class Game(State):
                 if e.key == right_arrow:
                     p.walk_right()
                 if e.key == up_arrow:
+                    p.jumpSound.play()
                     p.jump(-p.jump_speed)
                 if e.key == s_key:
                     p.attack(False)
