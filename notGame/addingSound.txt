@@ -38,9 +38,9 @@ class Entity(Base)
         sound = 'sounds/dicklazorz.wav' <---------- make a variable reference to the filepath
         self.sound = pygame.mixer.Sound(sound) <--- pass that as an argument to instance a sound object
 
-    def jump(self)
+    def shootLazors(self)
         self.sound.play() <------------------------ then when the action you want the sound bound to occurs
-        self.yvelocity += 10                        call the play method of your new sound object.
+        self.dick.add(lazorz)                       call the play method of your new sound object.
 
 
 THIRD:
