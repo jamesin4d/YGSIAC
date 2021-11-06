@@ -1,6 +1,22 @@
 # -YGSIAC-
-You get scared in a crisis.
+Youth gains sentience, intelligence, and compassion.
+#rebirth update. 
+ Pygame 2 is apparently a year old
+ And so, I'm digging up YGSIAC from the cyber grave to update it to the new era.
+This means:
+* python 3
+* a purpose to the actual game itself? 
+* whole new code
+* some other things I'll come up with later!
+So, prior to the rebirth update coming soon, the game lacked direction and purpose,
+being driven mostly by a frenzy to learn programming. Years later I return with a fresh perspective and ideas 
+for my dearly beloved ygsiac...
+Stay tuned.
 
+
+
+
+#DEPRECATED
 # This is the game project so far
 
 # DONE:
